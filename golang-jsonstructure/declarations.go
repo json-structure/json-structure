@@ -1,6 +1,7 @@
 package jsonstructure
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -21,8 +22,10 @@ type TypeDecl struct {
 	// common
 	Type     string `json:"type"`
 	Format   string `json:"format"`
-	Required bool   `json:"required"`
 	Nullable bool   `json:"nullable"`
+	// store RawMessage to distinguish between "nil" and "null"
+	DefaultRaw json.RawMessage `json:"default"`
+	Default    interface{}     `json:"-"`
 	// number
 	MultipleOf       *decimal.Decimal `json:"multipleOf"`
 	Minimum          *decimal.Decimal `json:"minimum"`
@@ -129,19 +132,18 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 		err = errorAt(err, scope)
 		errs = multierror.AppendNonNil(errs, err)
 	}
-	min := decimal.Zero
-	max := decimal.Zero
+	var min, max *decimal.Decimal
 	if td.Minimum != nil {
-		min = *td.Minimum
+		min = td.Minimum
 	} else if td.ExclusiveMinimum != nil {
-		min = *td.ExclusiveMinimum
+		min = td.ExclusiveMinimum
 	}
 	if td.Maximum != nil {
-		max = *td.Maximum
+		max = td.Maximum
 	} else if td.ExclusiveMaximum != nil {
-		max = *td.ExclusiveMaximum
+		max = td.ExclusiveMaximum
 	}
-	if min.Cmp(max) > 0 {
+	if min != nil && max != nil && min.Cmp(*max) > 0 {
 		err := errors.New("maximum is less than minimum")
 		err = errorAt(err, scope)
 		errs = multierror.AppendNonNil(errs, err)
@@ -182,7 +184,7 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	if td.Type != "struct" {
 		return nil
 	}
-	if td.Fields != nil {
+	if td.Fields == nil {
 		err := errors.New("missing required property 'fields'")
 		err = errorAt(err, scope)
 		return err
@@ -200,7 +202,7 @@ func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 	if td.Type != "array" {
 		return nil
 	}
-	if td.Items != nil {
+	if td.Items == nil {
 		err := errors.New("missing required property 'items'")
 		err = errorAt(err, scope)
 		return err

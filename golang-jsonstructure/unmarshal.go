@@ -35,7 +35,7 @@ func (structure *JSONStructure) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*structure = JSONStructure(shadow)
-	err = structure.Validate()
+	err = structure.ValidateStructure()
 	if err != nil {
 		return err
 	}

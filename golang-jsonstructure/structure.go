@@ -16,7 +16,7 @@ type JSONStructure struct {
 	Main        *TypeDecl                  `json:"main"`
 }
 
-func (structure *JSONStructure) Validate() error {
+func (structure *JSONStructure) ValidateStructure() error {
 	var errs error
 	for k, v := range structure.Types {
 		scope := []string{"types", k}
