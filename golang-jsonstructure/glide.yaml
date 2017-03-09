@@ -1,0 +1,4 @@
+package: github.com/json-structure/json-structure/golang-jsonstructure
+import:
+- package: github.com/shopspring/decimal
+- package: github.com/mspiegel/go-multierror
