@@ -1,6 +1,7 @@
 package jsonstructure
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -73,6 +74,28 @@ var PermissibleFields = map[string]map[string]bool{
 		"minItems": true,
 		"maxItems": true,
 	},
+}
+
+type shadowDecl TypeDecl
+
+func (td *TypeDecl) UnmarshalJSON(data []byte) error {
+	var shadow shadowDecl
+
+	err := json.Unmarshal(data, &shadow)
+	if err != nil {
+		return err
+	}
+	if len(shadow.DefaultRaw) > 0 {
+		reader := bytes.NewReader(shadow.DefaultRaw)
+		decoder := json.NewDecoder(reader)
+		decoder.UseNumber()
+		err := decoder.Decode(&shadow.Default)
+		if err != nil {
+			return err
+		}
+	}
+	*td = TypeDecl(shadow)
+	return nil
 }
 
 func (td *TypeDecl) Validate(structure *JSONStructure, scope []string) error {

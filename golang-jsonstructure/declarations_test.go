@@ -1,6 +1,7 @@
 package jsonstructure
 
 import (
+	"encoding/json"
 	"testing"
 
 	multierror "github.com/mspiegel/go-multierror"
@@ -11,6 +12,21 @@ var negOneInt = -1
 var negOneDec = decimal.NewFromFloat(-1.0)
 var zero = 0
 var posOneInt = 1
+
+func TestUnmarshalJSON(t *testing.T) {
+	var td TypeDecl
+	text := `{
+		"type": "number",
+		"default": 0
+	}`
+	err := json.Unmarshal([]byte(text), &td)
+	if err != nil {
+		t.Error("Unmarshal error", err)
+	}
+	if td.Default != json.Number("0") {
+		t.Error("Default value unmarshal error", td.Default)
+	}
+}
 
 func TestValidateStructureSuccess(t *testing.T) {
 	structure := JSONStructure{}
