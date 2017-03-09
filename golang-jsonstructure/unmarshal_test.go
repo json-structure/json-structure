@@ -184,7 +184,22 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 		t.Error("Expected error")
 	}
 	t.Log(err)
-
+	text = `{
+		"fragments": {
+			"number": {"type": "boolean"}
+		},
+		"types": {
+			"integer": {"type": "boolean"}
+		},		
+		"main": {
+			"type": "boolean"
+		}
+	}`
+	err = json.Unmarshal([]byte(text), &structure)
+	if err == nil {
+		t.Error("Expected error")
+	}
+	t.Log(err)
 	text = `{
 		"fragments": {
 			"a": {

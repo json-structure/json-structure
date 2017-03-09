@@ -98,7 +98,7 @@ func (td *TypeDecl) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (td *TypeDecl) Validate(structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error {
 	var errs error
 	if len(td.Type) == 0 {
 		err := errors.New("missing required property 'type'")
@@ -108,6 +108,10 @@ func (td *TypeDecl) Validate(structure *JSONStructure, scope []string) error {
 	decl := structure.Types[td.Type]
 	if pf == nil && decl == nil {
 		err := fmt.Errorf("Unknown type '%s'", td.Type)
+		return errorAt(err, scope)
+	}
+	if pf == nil {
+		err := detectTypeAliasCycle(structure, decl, nil)
 		return errorAt(err, scope)
 	}
 	e1 := permissible("multipleOf", td.Type, pf, td.MultipleOf != nil, scope)
@@ -138,6 +142,26 @@ func permissible(name string, typ string, fields map[string]bool, observed bool,
 		return errorAt(err, scope)
 	}
 	return nil
+}
+
+func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[string]bool) error {
+	name := td.Type
+	decl := structure.Types[td.Type]
+	if prev[name] {
+		keys := make([]string, 0, len(prev))
+		for k := range prev {
+			keys = append(keys, k)
+		}
+		return fmt.Errorf("Type alias cycle detected %v", keys)
+	}
+	if decl == nil {
+		return nil
+	}
+	if prev == nil {
+		prev = make(map[string]bool)
+	}
+	prev[name] = true
+	return detectTypeAliasCycle(structure, decl, prev)
 }
 
 func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
@@ -214,7 +238,7 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	}
 	for k, v := range td.Fields {
 		newscope := append(scope, "fields", k)
-		err := v.Validate(structure, newscope)
+		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.AppendNonNil(errs, err)
 	}
 	return errs
@@ -231,7 +255,7 @@ func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 		return err
 	}
 	newscope := append(scope, "items")
-	err := td.Items.Validate(structure, newscope)
+	err := td.Items.ValidateDecl(structure, newscope)
 	errs = multierror.AppendNonNil(errs, err)
 	if td.MinItems != nil && *td.MinItems < 0 {
 		err := errors.New("'minItems' must be a non-negative integer")

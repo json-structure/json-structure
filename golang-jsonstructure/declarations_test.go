@@ -180,4 +180,19 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
+	structure = JSONStructure{}
+	structure.Types = make(map[string]*TypeDecl)
+	structure.Types["a"] = &TypeDecl{}
+	structure.Types["b"] = &TypeDecl{}
+	structure.Types["c"] = &TypeDecl{}
+	structure.Types["a"].Type = "b"
+	structure.Types["b"].Type = "a"
+	structure.Types["c"].Type = "c"
+	structure.Main = &TypeDecl{}
+	structure.Main.Type = "boolean"
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
 }

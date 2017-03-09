@@ -25,7 +25,7 @@ func (structure *JSONStructure) ValidateStructure() error {
 			err = errorAt(err, scope)
 			errs = multierror.AppendNonNil(errs, err)
 		} else {
-			err := v.Validate(structure, scope)
+			err := v.ValidateDecl(structure, scope)
 			errs = multierror.AppendNonNil(errs, err)
 		}
 	}
@@ -35,7 +35,7 @@ func (structure *JSONStructure) ValidateStructure() error {
 		err = errorAt(err, scope)
 		errs = multierror.AppendNonNil(errs, err)
 	} else {
-		err := structure.Main.Validate(structure, scope)
+		err := structure.Main.ValidateDecl(structure, scope)
 		errs = multierror.AppendNonNil(errs, err)
 	}
 	return errs

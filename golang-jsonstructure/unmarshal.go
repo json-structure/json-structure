@@ -181,6 +181,7 @@ func transformCompose(shell map[string]interface{}) error {
 	m := shell["main"]
 	if m == nil {
 		err = errors.New("JSON structure missing required 'main' property")
+		err = errorAt(err, nil)
 		return err
 	}
 	if t == nil {
@@ -192,11 +193,13 @@ func transformCompose(shell map[string]interface{}) error {
 	typ, ok = t.(map[string]interface{})
 	if !ok {
 		err = errors.New("'types' property must be a JSON object")
+		err = errorAt(err, nil)
 		errs = multierror.AppendNonNil(errs, err)
 	}
 	frag, ok = f.(map[string]interface{})
 	if !ok {
 		err = errors.New("'fragments' property must be a JSON object")
+		err = errorAt(err, nil)
 		errs = multierror.AppendNonNil(errs, err)
 	}
 	if errs != nil {
@@ -205,19 +208,32 @@ func transformCompose(shell map[string]interface{}) error {
 	dupls := intersection(typ, frag)
 	if len(dupls) > 0 {
 		err = fmt.Errorf("Duplicate keys across 'types' and 'fragments': %v", dupls)
+		err = errorAt(err, nil)
 		return err
 	}
 	for k, v := range frag {
 		prev := []string{k}
 		scope := []string{"fragments", k}
-		err = compose(v, typ, frag, prev, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		if PrimitiveTypes[k] {
+			err = errors.New("Cannot declare fragment with primitive type name")
+			err = errorAt(err, scope)
+			errs = multierror.AppendNonNil(errs, err)
+		} else {
+			err = compose(v, typ, frag, prev, scope)
+			errs = multierror.AppendNonNil(errs, err)
+		}
 	}
 	for k, v := range typ {
 		prev := []string{k}
 		scope := []string{"types", k}
-		err = compose(v, typ, frag, prev, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		if PrimitiveTypes[k] {
+			err = errors.New("Cannot declare type with primitive type name")
+			err = errorAt(err, scope)
+			errs = multierror.AppendNonNil(errs, err)
+		} else {
+			err = compose(v, typ, frag, prev, scope)
+			errs = multierror.AppendNonNil(errs, err)
+		}
 	}
 	prev := []string{}
 	scope := []string{"main"}
