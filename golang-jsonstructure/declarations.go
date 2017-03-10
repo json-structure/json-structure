@@ -274,3 +274,22 @@ func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 	}
 	return errs
 }
+
+func (td *TypeDecl) ValidateDefault(structure *JSONStructure, scope []string) error {
+	var errs error
+	if len(td.DefaultRaw) > 0 {
+		err := td.Validate(td.Default, structure, scope)
+		errs = multierror.Append(errs, err)
+	}
+	for k, v := range td.Fields {
+		newscope := append(scope, k)
+		err := v.ValidateDefault(structure, newscope)
+		errs = multierror.Append(errs, err)
+	}
+	if td.Items != nil {
+		newscope := append(scope, "items")
+		err := td.Items.ValidateDefault(structure, newscope)
+		errs = multierror.Append(errs, err)
+	}
+	return errs
+}

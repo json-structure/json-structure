@@ -162,11 +162,10 @@ func compose(target interface{},
 		err = mapMerge(object, def, scope)
 		errs = multierror.Append(err, errs)
 	}
+	err = mapMerge(object, local, scope)
+	errs = multierror.Append(err, errs)
 	if errs != nil {
 		return errs
-	}
-	for k, v := range local {
-		object[k] = v
 	}
 	delete(object, "compose")
 	return nil

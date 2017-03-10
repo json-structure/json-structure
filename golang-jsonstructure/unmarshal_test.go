@@ -145,6 +145,9 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 	if !structure.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
 		t.Error("Composition failure")
 	}
+	if structure.Types["foo"].Type != "integer" {
+		t.Error("Composition failure")
+	}
 }
 
 func TestUnmarshalStructureFailure(t *testing.T) {

@@ -17,6 +17,18 @@ type JSONStructure struct {
 }
 
 func (structure *JSONStructure) ValidateStructure() error {
+	err := validateStructureDecls(structure)
+	if err != nil {
+		return err
+	}
+	err = validateStructureDefaults(structure)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateStructureDecls(structure *JSONStructure) error {
 	var errs error
 	for k, v := range structure.Types {
 		scope := []string{"types", k}
@@ -38,5 +50,18 @@ func (structure *JSONStructure) ValidateStructure() error {
 		err := structure.Main.ValidateDecl(structure, scope)
 		errs = multierror.Append(errs, err)
 	}
+	return errs
+}
+
+func validateStructureDefaults(structure *JSONStructure) error {
+	var errs error
+	for k, v := range structure.Types {
+		scope := []string{"types", k}
+		err := v.ValidateDefault(structure, scope)
+		errs = multierror.Append(errs, err)
+	}
+	scope := []string{"main"}
+	err := structure.Main.ValidateDefault(structure, scope)
+	errs = multierror.Append(errs, err)
 	return errs
 }
