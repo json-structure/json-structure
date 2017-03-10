@@ -25,14 +25,25 @@ func (structure *JSONStructure) Validate(text []byte) error {
 }
 
 func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
+	name := td.Type
+
+	if !PrimitiveTypes[name] {
+		td = structure.Types[name]
+		if td == nil {
+			err := fmt.Errorf("Unknown type '%s'", name)
+			return errorAt(err, scope)
+		}
+		return td.Validate(value, structure, scope)
+	}
+
 	if value == nil {
-		if td.Nullable {
+		if td.Nullable != nil && *td.Nullable {
 			return nil
 		}
 		err := errors.New("JSON null value when nullable property is false")
 		return errorAt(err, scope)
 	}
-	name := td.Type
+
 	switch name {
 	case "boolean":
 		return validateBoolean(td, value, structure, scope)
@@ -47,12 +58,8 @@ func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope 
 	case "array":
 		return validateArray(td, value, structure, scope)
 	default:
-		td = structure.Types[name]
-		if td == nil {
-			err := fmt.Errorf("Unknown type '%s'", name)
-			return errorAt(err, scope)
-		}
-		return td.Validate(value, structure, scope)
+		err := fmt.Errorf("Internal error. Unhandled primitive type '%s'", name)
+		return errorAt(err, scope)
 	}
 }
 

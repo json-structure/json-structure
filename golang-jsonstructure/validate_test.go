@@ -7,6 +7,7 @@ import (
 )
 
 func TestValidateSuccess(t *testing.T) {
+	affirmative := true
 	text := `{
 		"a": 1,
 		"b": 1.5,
@@ -24,7 +25,7 @@ func TestValidateSuccess(t *testing.T) {
 	structure.Main.Fields["c"] = &TypeDecl{Type: "string"}
 	structure.Main.Fields["d"] = &TypeDecl{Type: "boolean"}
 	structure.Main.Fields["e"] = &TypeDecl{Type: "array", Items: &TypeDecl{Type: "integer"}}
-	structure.Main.Fields["f"] = &TypeDecl{Type: "boolean", Nullable: true}
+	structure.Main.Fields["f"] = &TypeDecl{Type: "boolean", Nullable: &affirmative}
 	err := structure.Validate([]byte(text))
 	if err != nil {
 		t.Error("JSON object validation error ", err)

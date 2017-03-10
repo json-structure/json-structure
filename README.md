@@ -69,14 +69,14 @@ be specified using JSON Structures.
     "types": {
         "node": {
             "type": "struct",
+            "nullable": true,
             "fields": {
                 "data": {
                     "compose": ["positive", "even"],
                     "type": "integer"
                 },
                 "next": {
-                    "type": "node",
-                    "nullable": true
+                    "type": "node"
                 }
             }
         }
@@ -155,7 +155,6 @@ JSON Structure supports the following primitive types.
 | union   | Tagged union. Coming soon |
 | set     | Collection type. Coming soon |
 | map     | Collection type. Coming soon |
-| tuple   | sequence of values of different types. Coming soon |
 
 ## Declaration Names
 
@@ -186,9 +185,13 @@ type declaration.
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
 | type     | string |  Required. Must be either the name of a primitive type or a name defined in the "types" map. |
+
+**Properties Shared By All Primitive Types**
+
+| default  | JSON value |  Use this value when none is provided |
 | format   | string |  Defines additional semantic validation |
 | nullable | boolean|  If true then allow the null value. Default is false. |
-| default  | JSON value |  Use this value when none is provided |
+
 
 **Number and Integer Properties**
 

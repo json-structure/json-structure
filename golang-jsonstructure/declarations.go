@@ -21,9 +21,9 @@ var PrimitiveTypes = map[string]bool{
 
 type TypeDecl struct {
 	// common
-	Type     string `json:"type"`
-	Format   string `json:"format"`
-	Nullable bool   `json:"nullable"`
+	Type     string  `json:"type"`
+	Format   *string `json:"format"`
+	Nullable *bool   `json:"nullable"`
 	// store RawMessage to distinguish between "nil" and "null"
 	DefaultRaw json.RawMessage `json:"default"`
 	Default    interface{}     `json:"-"`
@@ -34,9 +34,9 @@ type TypeDecl struct {
 	ExclusiveMinimum *decimal.Decimal `json:"exclusiveMinimum"`
 	ExclusiveMaximum *decimal.Decimal `json:"exclusiveMaximum"`
 	// string
-	Pattern   string `json:"pattern"`
-	MinLength *int   `json:"minLength"`
-	MaxLength *int   `json:"maxLength"`
+	Pattern   *string `json:"pattern"`
+	MinLength *int    `json:"minLength"`
+	MaxLength *int    `json:"maxLength"`
 	// struct
 	Fields map[string]*TypeDecl `json:"fields"`
 	// array
@@ -46,8 +46,13 @@ type TypeDecl struct {
 }
 
 var PermissibleFields = map[string]map[string]bool{
-	"boolean": map[string]bool{},
+	"boolean": map[string]bool{
+		"format":   true,
+		"nullable": true,
+	},
 	"integer": map[string]bool{
+		"format":           true,
+		"nullable":         true,
 		"multipleOf":       true,
 		"minimum":          true,
 		"maximum":          true,
@@ -55,6 +60,8 @@ var PermissibleFields = map[string]map[string]bool{
 		"exclusiveMaximum": true,
 	},
 	"number": map[string]bool{
+		"format":           true,
+		"nullable":         true,
 		"multipleOf":       true,
 		"minimum":          true,
 		"maximum":          true,
@@ -62,14 +69,20 @@ var PermissibleFields = map[string]map[string]bool{
 		"exclusiveMaximum": true,
 	},
 	"string": map[string]bool{
+		"format":    true,
+		"nullable":  true,
 		"pattern":   true,
 		"minLength": true,
 		"maxLength": true,
 	},
 	"struct": map[string]bool{
-		"fields": true,
+		"format":   true,
+		"nullable": true,
+		"fields":   true,
 	},
 	"array": map[string]bool{
+		"format":   true,
+		"nullable": true,
 		"items":    true,
 		"minItems": true,
 		"maxItems": true,
@@ -112,21 +125,24 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 	}
 	if pf == nil {
 		err := detectTypeAliasCycle(structure, decl, nil)
-		return errorAt(err, scope)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
 	}
-	e1 := permissible("multipleOf", td.Type, pf, td.MultipleOf != nil, scope)
-	e2 := permissible("minimum", td.Type, pf, td.Minimum != nil, scope)
-	e3 := permissible("maximum", td.Type, pf, td.Maximum != nil, scope)
-	e4 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimum != nil, scope)
-	e5 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximum != nil, scope)
-	e6 := permissible("pattern", td.Type, pf, len(td.Pattern) > 0, scope)
-	e7 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
-	e8 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
-	e9 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
-	e10 := permissible("items", td.Type, pf, td.Items != nil, scope)
-	e11 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
-	e12 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12)
+	e1 := permissible("format", td.Type, pf, td.Format != nil, scope)
+	e2 := permissible("nullable", td.Type, pf, td.Nullable != nil, scope)
+	e3 := permissible("multipleOf", td.Type, pf, td.MultipleOf != nil, scope)
+	e4 := permissible("minimum", td.Type, pf, td.Minimum != nil, scope)
+	e5 := permissible("maximum", td.Type, pf, td.Maximum != nil, scope)
+	e6 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimum != nil, scope)
+	e7 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximum != nil, scope)
+	e8 := permissible("pattern", td.Type, pf, td.Pattern != nil, scope)
+	e9 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
+	e10 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
+	e11 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
+	e12 := permissible("items", td.Type, pf, td.Items != nil, scope)
+	e13 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
+	e14 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14)
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)

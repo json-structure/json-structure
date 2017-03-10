@@ -12,6 +12,8 @@ var negOneInt = -1
 var negOneDec = decimal.NewFromFloat(-1.0)
 var zero = 0
 var posOneInt = 1
+var affirmative = true
+var foobar = "foobar"
 
 func TestUnmarshalJSON(t *testing.T) {
 	var td TypeDecl
@@ -68,13 +70,26 @@ func TestValidateStructureFailure(t *testing.T) {
 	t.Log(err)
 	structure = JSONStructure{}
 	structure.Main = &TypeDecl{}
+	structure.Main.Type = "foo"
+	structure.Main.Minimum = &decimal.Zero
+	structure.Main.Nullable = &affirmative
+	structure.Types = make(map[string]*TypeDecl)
+	structure.Types["foo"] = &TypeDecl{}
+	structure.Types["foo"].Type = "integer"
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure when 'type' is foo")
+	}
+	t.Log(err)
+	structure = JSONStructure{}
+	structure.Main = &TypeDecl{}
 	structure.Main.Type = "boolean"
 	structure.Main.MultipleOf = &decimal.Zero
 	structure.Main.Minimum = &decimal.Zero
 	structure.Main.Maximum = &decimal.Zero
 	structure.Main.ExclusiveMinimum = &decimal.Zero
 	structure.Main.ExclusiveMaximum = &decimal.Zero
-	structure.Main.Pattern = "foobar"
+	structure.Main.Pattern = &foobar
 	structure.Main.MinLength = &zero
 	structure.Main.MaxLength = &zero
 	structure.Main.Fields = make(map[string]*TypeDecl)
