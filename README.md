@@ -188,6 +188,8 @@ type declaration.
 
 **Properties Shared By All Primitive Types**
 
+| Property      | JSON |  Description |
+| ------------- | ---- |  ----------- |
 | default  | JSON value |  Use this value when none is provided |
 | format   | string |  Defines additional semantic validation |
 | nullable | boolean|  If true then allow the null value. Default is false. |
