@@ -126,12 +126,12 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 	e10 := permissible("items", td.Type, pf, td.Items != nil, scope)
 	e11 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
 	e12 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
-	errs = multierror.AppendNonNil(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12)
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
 	e4 = validateArrayTypeDecl(td, structure, scope)
-	errs = multierror.AppendNonNil(errs, e1, e2, e3, e4)
+	errs = multierror.Append(errs, e1, e2, e3, e4)
 	return errs
 }
 
@@ -172,12 +172,12 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	if td.Minimum != nil && td.ExclusiveMinimum != nil {
 		err := errors.New("'minimum' and 'exclusiveMinimum' are both defined")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.Maximum != nil && td.ExclusiveMaximum != nil {
 		err := errors.New("'maximum' and 'exclusiveMaximum' are both defined")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	var min, max *decimal.Decimal
 	if td.Minimum != nil {
@@ -193,12 +193,12 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	if min != nil && max != nil && min.Cmp(*max) > 0 {
 		err := errors.New("maximum is less than minimum")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MultipleOf != nil && td.MultipleOf.Cmp(decimal.Zero) < 0 {
 		err := errors.New("'multipleOf' must be a non-negative number")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -211,17 +211,17 @@ func validateStringTypeDecl(td *TypeDecl, scope []string) error {
 	if td.MinLength != nil && *td.MinLength < 0 {
 		err := errors.New("'minLength' must be a non-negative integer")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MaxLength != nil && *td.MaxLength < 0 {
 		err := errors.New("'maxLength' must be a non-negative integer")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MinLength != nil && td.MaxLength != nil && *td.MinLength > *td.MaxLength {
 		err := errors.New("'maxLength' is less than 'minLength'")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -239,7 +239,7 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	for k, v := range td.Fields {
 		newscope := append(scope, "fields", k)
 		err := v.ValidateDecl(structure, newscope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -256,21 +256,21 @@ func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 	}
 	newscope := append(scope, "items")
 	err := td.Items.ValidateDecl(structure, newscope)
-	errs = multierror.AppendNonNil(errs, err)
+	errs = multierror.Append(errs, err)
 	if td.MinItems != nil && *td.MinItems < 0 {
 		err := errors.New("'minItems' must be a non-negative integer")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MaxItems != nil && *td.MaxItems < 0 {
 		err := errors.New("'maxItems' must be a non-negative integer")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MinItems != nil && td.MaxItems != nil && *td.MinItems > *td.MaxItems {
 		err := errors.New("'maxItems' is less than 'minItems'")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }

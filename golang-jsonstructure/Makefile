@@ -72,16 +72,6 @@ format: bin/goimports .GOPATH/.ok
 
 ##### =====> Internals <===== #####
 
-.PHONY: setup
-setup: clean .GOPATH/.ok
-	@if ! grep "/.GOPATH" .gitignore > /dev/null 2>&1; then \
-	    echo "/.GOPATH" >> .gitignore; \
-	    echo "/bin" >> .gitignore; \
-	fi
-	go get -u github.com/FiloSottile/gvt
-	- ./bin/gvt fetch golang.org/x/tools/cmd/goimports
-	- ./bin/gvt fetch github.com/wadey/gocovmerge
-
 VERSION          := $(shell git describe --tags --always --dirty="-dev")
 DATE             := $(shell date -u '+%Y-%m-%d-%H%M UTC')
 VERSION_FLAGS    := -ldflags='-X "main.Version=$(VERSION)" -X "main.BuildTime=$(DATE)"'

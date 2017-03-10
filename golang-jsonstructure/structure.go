@@ -23,20 +23,20 @@ func (structure *JSONStructure) ValidateStructure() error {
 		if v == nil {
 			err := errors.New("type declaration must be non-nil")
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		} else {
 			err := v.ValidateDecl(structure, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	scope := []string{"main"}
 	if structure.Main == nil {
 		err := errors.New("type declaration must be non-nil")
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	} else {
 		err := structure.Main.ValidateDecl(structure, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }

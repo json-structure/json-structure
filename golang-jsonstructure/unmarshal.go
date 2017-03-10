@@ -62,10 +62,10 @@ func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope []st
 			if (srcOK && !dstOK) || (!srcOK && dstOK) {
 				err := errors.New("Attempted merge between map and non-map types")
 				err = errorAt(err, newscope)
-				errs = multierror.AppendNonNil(errs, err)
+				errs = multierror.Append(errs, err)
 			} else if srcOK && dstOK {
 				err := mapMerge(dstMap, srcMap, newscope)
-				errs = multierror.AppendNonNil(errs, err)
+				errs = multierror.Append(errs, err)
 			} else {
 				dst[k] = v
 			}
@@ -92,7 +92,7 @@ func compose(target interface{},
 		if obj, ok2 := v.(map[string]interface{}); ok2 {
 			newscope := append(scope, k)
 			err = compose(obj, types, fragments, prev, newscope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 		}
 	}
 	if errs != nil {
@@ -121,7 +121,7 @@ func compose(target interface{},
 		if elementOf(prev, defName) {
 			err = fmt.Errorf("cycle detected with definitions %v", prev)
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 			continue
 		}
 		tDef := types[defName]
@@ -129,14 +129,14 @@ func compose(target interface{},
 		if (tDef == nil) && (fDef == nil) {
 			err = fmt.Errorf("Unknown definition %s", defName)
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 			continue
 		}
 		if (tDef != nil) && (fDef != nil) {
 			// this should have been previously detected
 			err = fmt.Errorf("Internal error duplicate definition %s", defName)
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 			continue
 		}
 		var def map[string]interface{}
@@ -144,7 +144,7 @@ func compose(target interface{},
 			next := append(prev, defName)
 			newscope := []string{"types", defName}
 			err = compose(tDef, types, fragments, next, newscope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 			if err != nil {
 				continue
 			}
@@ -153,14 +153,14 @@ func compose(target interface{},
 			next := append(prev, defName)
 			newscope := []string{"fragments", defName}
 			err = compose(fDef, types, fragments, next, newscope)
-			errs = multierror.AppendNonNil(err, errs)
+			errs = multierror.Append(err, errs)
 			if err != nil {
 				continue
 			}
 			def = fDef.(map[string]interface{})
 		}
 		err = mapMerge(object, def, scope)
-		errs = multierror.AppendNonNil(err, errs)
+		errs = multierror.Append(err, errs)
 	}
 	if errs != nil {
 		return errs
@@ -194,13 +194,13 @@ func transformCompose(shell map[string]interface{}) error {
 	if !ok {
 		err = errors.New("'types' property must be a JSON object")
 		err = errorAt(err, nil)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	frag, ok = f.(map[string]interface{})
 	if !ok {
 		err = errors.New("'fragments' property must be a JSON object")
 		err = errorAt(err, nil)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if errs != nil {
 		return errs
@@ -217,10 +217,10 @@ func transformCompose(shell map[string]interface{}) error {
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare fragment with primitive type name")
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		} else {
 			err = compose(v, typ, frag, prev, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	for k, v := range typ {
@@ -229,16 +229,16 @@ func transformCompose(shell map[string]interface{}) error {
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare type with primitive type name")
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		} else {
 			err = compose(v, typ, frag, prev, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	prev := []string{}
 	scope := []string{"main"}
 	err = compose(m, typ, frag, prev, scope)
-	errs = multierror.AppendNonNil(errs, err)
+	errs = multierror.Append(errs, err)
 	return errs
 }
 

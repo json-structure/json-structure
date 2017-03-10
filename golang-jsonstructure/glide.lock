@@ -1,10 +1,16 @@
-hash: 8a43e73b38dffa2db60f6d7f61878d2f17f8990af1481e8c30f3f5e9f8809c9b
-updated: 2017-03-09T13:44:50.113471735-05:00
+hash: f1d5394cbc62918bf13fda7a322f0f242772c61ec30ecc188f702fc40d853eac
+updated: 2017-03-09T19:11:06.28722582-05:00
 imports:
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/mspiegel/go-multierror
-  version: 47ac1e68327fe4112f7831bc917cf16294e4f7e2
+  version: 065aa648c994f1f905c52e38e9bb23f4c7848737
 - name: github.com/shopspring/decimal
   version: 3526cd0bdb7f64e1178943b7dee81a0cc3d86a69
+- name: github.com/wadey/gocovmerge
+  version: b5bfa59ec0adc420475f97f89b58045c721d761c
+- name: golang.org/x/tools
+  version: f60b69ed8cd7a29e91f87050ae23a29581a0f367
+  subpackages:
+  - cmd/goimports
 testImports: []

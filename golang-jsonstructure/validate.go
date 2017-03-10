@@ -79,27 +79,27 @@ func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	if td.Minimum != nil && td.Minimum.Cmp(dec) > 0 {
 		err := fmt.Errorf("%s is less than minimum %s", dec, td.Minimum)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.ExclusiveMinimum != nil && td.ExclusiveMinimum.Cmp(dec) >= 0 {
 		err := fmt.Errorf("%s is less than or equal to exclusive minimum %s", dec, td.ExclusiveMinimum)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.Maximum != nil && td.Maximum.Cmp(dec) < 0 {
 		err := fmt.Errorf("%s is greater than maximum %s", dec, td.Maximum)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.ExclusiveMaximum != nil && td.ExclusiveMaximum.Cmp(dec) <= 0 {
 		err := fmt.Errorf("%s is greater than or equal to exclusive maximum %s", dec, td.ExclusiveMaximum)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MultipleOf != nil && dec.Mod(*td.MultipleOf).Cmp(decimal.Zero) != 0 {
 		err := fmt.Errorf("%s is not a multiple of %s", dec, td.MultipleOf)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -128,12 +128,12 @@ func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	if td.MinLength != nil && len(str) < *td.MinLength {
 		err := fmt.Errorf(`length of string "%s" is less than minimum length %d`, str, *td.MinLength)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MaxLength != nil && len(str) > *td.MaxLength {
 		err := fmt.Errorf(`length of string "%s" is greater than maximum length %d`, str, *td.MaxLength)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -150,18 +150,18 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		if ok2 {
 			newscope := append(scope, name)
 			err := decl.Validate(child, structure, newscope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		} else if len(decl.DefaultRaw) == 0 {
 			err := fmt.Errorf(`missing required field "%s"`, name)
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	for name := range obj {
 		if td.Fields[name] == nil {
 			err := fmt.Errorf(`unrecognized field "%s"`, name)
 			err = errorAt(err, scope)
-			errs = multierror.AppendNonNil(errs, err)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	return errs
@@ -177,17 +177,17 @@ func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 	if td.MinItems != nil && len(arr) < *td.MinItems {
 		err := fmt.Errorf("length of array %d is less than minimum items %d", len(arr), *td.MinItems)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	if td.MaxItems != nil && len(arr) > *td.MaxItems {
 		err := fmt.Errorf("length of array %d is greater than maximum items %d", len(arr), *td.MaxItems)
 		err = errorAt(err, scope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	for i, val := range arr {
 		newscope := append(scope, strconv.Itoa(i))
 		err := td.Items.Validate(val, structure, newscope)
-		errs = multierror.AppendNonNil(errs, err)
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
