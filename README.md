@@ -91,7 +91,7 @@ be specified using JSON Structures.
 The following JSON object validates against the previous structure.
 
 ```
-{ "data": 0, "next": { "data": 2, "next": { "data": 4, "next": null }}}
+{ "data": 2, "next": { "data": 4, "next": { "data": 6, "next": null }}}
 ```
 
 ## Composition
