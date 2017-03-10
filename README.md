@@ -43,7 +43,7 @@ if you won't tell.
     // main is the type declaration that is used
     // for validation against JSON values.
 
-    "main": { ... },
+    "main": { ... }
 }
 ```
 
@@ -76,7 +76,7 @@ be specified using JSON Structures.
                 },
                 "next": {
                     "type": "node",
-                    "nullable": true,
+                    "nullable": true
                 }
             }
         }
