@@ -1,13 +1,13 @@
 package jsonstructure
 
-import (
-	"encoding/json"
-	"errors"
-
-	multierror "github.com/mspiegel/go-multierror"
-)
+import "encoding/json"
 
 type JSONStructure struct {
+	Definition *JSONStructureDefinition
+	Options    *JSONStructureOptions
+}
+
+type JSONStructureDefinition struct {
 	Title       string                     `json:"title"`
 	Description string                     `json:"description"`
 	Imports     map[string]string          `json:"imports"`
@@ -16,52 +16,34 @@ type JSONStructure struct {
 	Main        *TypeDecl                  `json:"main"`
 }
 
-func (structure *JSONStructure) ValidateStructure() error {
-	err := validateStructureDecls(structure)
-	if err != nil {
-		return err
-	}
-	err = validateStructureDefaults(structure)
-	if err != nil {
-		return err
-	}
-	return nil
+type JSONStructureOptions struct {
 }
 
-func validateStructureDecls(structure *JSONStructure) error {
-	var errs error
-	for k, v := range structure.Types {
-		scope := []string{"types", k}
-		if v == nil {
-			err := errors.New("type declaration must be non-nil")
-			err = errorAt(err, scope)
-			errs = multierror.Append(errs, err)
-		} else {
-			err := v.ValidateDecl(structure, scope)
-			errs = multierror.Append(errs, err)
-		}
+var defaultOptions = JSONStructureOptions{}
+
+func EmptyJSONStructure() JSONStructure {
+	return JSONStructure{
+		Definition: &JSONStructureDefinition{},
+		Options:    &JSONStructureOptions{},
 	}
-	scope := []string{"main"}
-	if structure.Main == nil {
-		err := errors.New("type declaration must be non-nil")
-		err = errorAt(err, scope)
-		errs = multierror.Append(errs, err)
-	} else {
-		err := structure.Main.ValidateDecl(structure, scope)
-		errs = multierror.Append(errs, err)
-	}
-	return errs
 }
 
-func validateStructureDefaults(structure *JSONStructure) error {
-	var errs error
-	for k, v := range structure.Types {
-		scope := []string{"types", k}
-		err := v.ValidateDefault(structure, scope)
-		errs = multierror.Append(errs, err)
+func CreateJSONStructure(data []byte, options *JSONStructureOptions) (JSONStructure, error) {
+	var definition JSONStructureDefinition
+	err := json.Unmarshal(data, &definition)
+	if err != nil {
+		return JSONStructure{}, err
 	}
-	scope := []string{"main"}
-	err := structure.Main.ValidateDefault(structure, scope)
-	errs = multierror.Append(errs, err)
-	return errs
+	if options == nil {
+		options = &defaultOptions
+	}
+	result := JSONStructure{
+		Definition: &definition,
+		Options:    options,
+	}
+	err = result.ValidateStructure()
+	if err != nil {
+		return JSONStructure{}, err
+	}
+	return result, nil
 }

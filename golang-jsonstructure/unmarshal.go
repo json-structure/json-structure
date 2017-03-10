@@ -9,9 +9,9 @@ import (
 	multierror "github.com/mspiegel/go-multierror"
 )
 
-type shadowStructure JSONStructure
+type shadowStructure JSONStructureDefinition
 
-func (structure *JSONStructure) UnmarshalJSON(data []byte) error {
+func (structure *JSONStructureDefinition) UnmarshalJSON(data []byte) error {
 	var shell map[string]interface{}
 	var shadow shadowStructure
 
@@ -34,11 +34,7 @@ func (structure *JSONStructure) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	*structure = JSONStructure(shadow)
-	err = structure.ValidateStructure()
-	if err != nil {
-		return err
-	}
+	*structure = JSONStructureDefinition(shadow)
 	return nil
 }
 

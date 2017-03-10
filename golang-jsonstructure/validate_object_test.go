@@ -16,16 +16,16 @@ func TestValidateSuccess(t *testing.T) {
 		"e": [1, 2, 3],
 		"f": null
 	}`
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "struct"
-	structure.Main.Fields = make(map[string]*TypeDecl)
-	structure.Main.Fields["a"] = &TypeDecl{Type: "integer"}
-	structure.Main.Fields["b"] = &TypeDecl{Type: "number"}
-	structure.Main.Fields["c"] = &TypeDecl{Type: "string"}
-	structure.Main.Fields["d"] = &TypeDecl{Type: "boolean"}
-	structure.Main.Fields["e"] = &TypeDecl{Type: "array", Items: &TypeDecl{Type: "integer"}}
-	structure.Main.Fields["f"] = &TypeDecl{Type: "boolean", Nullable: &affirmative}
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "struct"
+	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
+	structure.Definition.Main.Fields["a"] = &TypeDecl{Type: "integer"}
+	structure.Definition.Main.Fields["b"] = &TypeDecl{Type: "number"}
+	structure.Definition.Main.Fields["c"] = &TypeDecl{Type: "string"}
+	structure.Definition.Main.Fields["d"] = &TypeDecl{Type: "boolean"}
+	structure.Definition.Main.Fields["e"] = &TypeDecl{Type: "array", Items: &TypeDecl{Type: "integer"}}
+	structure.Definition.Main.Fields["f"] = &TypeDecl{Type: "boolean", Nullable: &affirmative}
 	err := structure.Validate([]byte(text))
 	if err != nil {
 		t.Error("JSON object validation error ", err)
@@ -33,9 +33,9 @@ func TestValidateSuccess(t *testing.T) {
 }
 
 func TestValidateFailureBoolean(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "boolean"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "boolean"
 	text := `"hello"`
 	err := structure.Validate([]byte(text))
 	if err == nil {
@@ -45,45 +45,45 @@ func TestValidateFailureBoolean(t *testing.T) {
 }
 
 func TestValidateFailureNumber(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "number"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
 	text := `"hello"`
 	err := structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.Minimum = nil
-	structure.Main.Maximum = &decimal.Zero
+	structure.Definition.Main.Minimum = nil
+	structure.Definition.Main.Maximum = &decimal.Zero
 	text = `1`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.Minimum = &decimal.Zero
-	structure.Main.Maximum = nil
+	structure.Definition.Main.Minimum = &decimal.Zero
+	structure.Definition.Main.Maximum = nil
 	text = `-1`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.Minimum = nil
-	structure.Main.Maximum = nil
-	structure.Main.ExclusiveMinimum = &decimal.Zero
-	structure.Main.ExclusiveMaximum = &decimal.Zero
+	structure.Definition.Main.Minimum = nil
+	structure.Definition.Main.Maximum = nil
+	structure.Definition.Main.ExclusiveMinimum = &decimal.Zero
+	structure.Definition.Main.ExclusiveMaximum = &decimal.Zero
 	text = `0`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.ExclusiveMinimum = nil
-	structure.Main.ExclusiveMaximum = nil
+	structure.Definition.Main.ExclusiveMinimum = nil
+	structure.Definition.Main.ExclusiveMaximum = nil
 	hundredths, _ := decimal.NewFromString("0.01")
-	structure.Main.MultipleOf = &hundredths
+	structure.Definition.Main.MultipleOf = &hundredths
 	text = `0.001`
 	err = structure.Validate([]byte(text))
 	if err == nil {
@@ -93,9 +93,9 @@ func TestValidateFailureNumber(t *testing.T) {
 }
 
 func TestValidateFailureInteger(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "integer"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "integer"
 	text := `"hello"`
 	err := structure.Validate([]byte(text))
 	if err == nil {
@@ -112,23 +112,23 @@ func TestValidateFailureInteger(t *testing.T) {
 
 func TestValidateFailureString(t *testing.T) {
 	one := 1
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "string"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
 	text := `1.5`
 	err := structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.MinLength = &one
+	structure.Definition.Main.MinLength = &one
 	text = `""`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.MaxLength = &one
+	structure.Definition.Main.MaxLength = &one
 	text = `"foo"`
 	err = structure.Validate([]byte(text))
 	if err == nil {
@@ -138,12 +138,12 @@ func TestValidateFailureString(t *testing.T) {
 }
 
 func TestValidateFailureStruct(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "struct"
-	structure.Main.Fields = make(map[string]*TypeDecl)
-	structure.Main.Fields["a"] = &TypeDecl{Type: "integer"}
-	structure.Main.Fields["b"] = &TypeDecl{Type: "string", DefaultRaw: []byte(`"foo"`)}
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "struct"
+	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
+	structure.Definition.Main.Fields["a"] = &TypeDecl{Type: "integer"}
+	structure.Definition.Main.Fields["b"] = &TypeDecl{Type: "string", DefaultRaw: []byte(`"foo"`)}
 	text := `1.5`
 	err := structure.Validate([]byte(text))
 	if err == nil {
@@ -172,10 +172,10 @@ func TestValidateFailureStruct(t *testing.T) {
 
 func TestValidateFailureArray(t *testing.T) {
 	one := 1
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "array"
-	structure.Main.Items = &TypeDecl{Type: "integer"}
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
+	structure.Definition.Main.Items = &TypeDecl{Type: "integer"}
 	text := `1.5`
 	err := structure.Validate([]byte(text))
 	if err == nil {
@@ -188,14 +188,14 @@ func TestValidateFailureArray(t *testing.T) {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.MinItems = &one
+	structure.Definition.Main.MinItems = &one
 	text = `[]`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.MaxItems = &one
+	structure.Definition.Main.MaxItems = &one
 	text = `[1, 2, 3]`
 	err = structure.Validate([]byte(text))
 	if err == nil {
@@ -206,11 +206,11 @@ func TestValidateFailureArray(t *testing.T) {
 }
 
 func TestValidateFailureAlias(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "foo"
-	structure.Types = make(map[string]*TypeDecl)
-	structure.Types["foo"] = &TypeDecl{Type: "string"}
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "foo"
+	structure.Definition.Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["foo"] = &TypeDecl{Type: "string"}
 	text := `1.5`
 	err := structure.Validate([]byte(text))
 	if err == nil {
@@ -223,7 +223,7 @@ func TestValidateFailureAlias(t *testing.T) {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Main.Type = "bar"
+	structure.Definition.Main.Type = "bar"
 	text = `"foo"`
 	err = structure.Validate([]byte(text))
 	if err == nil {

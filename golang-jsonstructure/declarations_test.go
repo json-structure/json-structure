@@ -31,12 +31,12 @@ func TestUnmarshalJSON(t *testing.T) {
 }
 
 func TestValidateStructureSuccess(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "struct"
-	structure.Main.Fields = make(map[string]*TypeDecl)
-	structure.Main.Fields["foo"] = &TypeDecl{}
-	structure.Main.Fields["foo"].Type = "boolean"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "struct"
+	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
+	structure.Definition.Main.Fields["foo"] = &TypeDecl{}
+	structure.Definition.Main.Fields["foo"].Type = "boolean"
 	err := structure.ValidateStructure()
 	if err != nil {
 		t.Error("Validation failure", err)
@@ -44,58 +44,58 @@ func TestValidateStructureSuccess(t *testing.T) {
 }
 
 func TestValidateStructureFailure(t *testing.T) {
-	structure := JSONStructure{}
-	structure.Types = make(map[string]*TypeDecl)
-	structure.Types["foo"] = nil
-	structure.Types["bar"] = nil
+	structure := EmptyJSONStructure()
+	structure.Definition.Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["foo"] = nil
+	structure.Definition.Types["bar"] = nil
 	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure when 'type' is empty")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "foo"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "foo"
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure when 'type' is foo")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "foo"
-	structure.Main.Minimum = &decimal.Zero
-	structure.Main.Nullable = &affirmative
-	structure.Types = make(map[string]*TypeDecl)
-	structure.Types["foo"] = &TypeDecl{}
-	structure.Types["foo"].Type = "integer"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "foo"
+	structure.Definition.Main.Minimum = &decimal.Zero
+	structure.Definition.Main.Nullable = &affirmative
+	structure.Definition.Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["foo"] = &TypeDecl{}
+	structure.Definition.Types["foo"].Type = "integer"
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure when 'type' is foo")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "boolean"
-	structure.Main.MultipleOf = &decimal.Zero
-	structure.Main.Minimum = &decimal.Zero
-	structure.Main.Maximum = &decimal.Zero
-	structure.Main.ExclusiveMinimum = &decimal.Zero
-	structure.Main.ExclusiveMaximum = &decimal.Zero
-	structure.Main.Pattern = &foobar
-	structure.Main.MinLength = &zero
-	structure.Main.MaxLength = &zero
-	structure.Main.Fields = make(map[string]*TypeDecl)
-	structure.Main.Items = &TypeDecl{}
-	structure.Main.MinItems = &zero
-	structure.Main.MaxItems = &zero
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "boolean"
+	structure.Definition.Main.MultipleOf = &decimal.Zero
+	structure.Definition.Main.Minimum = &decimal.Zero
+	structure.Definition.Main.Maximum = &decimal.Zero
+	structure.Definition.Main.ExclusiveMinimum = &decimal.Zero
+	structure.Definition.Main.ExclusiveMaximum = &decimal.Zero
+	structure.Definition.Main.Pattern = &foobar
+	structure.Definition.Main.MinLength = &zero
+	structure.Definition.Main.MaxLength = &zero
+	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
+	structure.Definition.Main.Items = &TypeDecl{}
+	structure.Definition.Main.MinItems = &zero
+	structure.Definition.Main.MaxItems = &zero
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
@@ -104,107 +104,107 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected 12 errors")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "number"
-	structure.Main.MultipleOf = &negOneDec
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.MultipleOf = &negOneDec
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "number"
-	structure.Main.Minimum = &decimal.Zero
-	structure.Main.Maximum = &decimal.Zero
-	structure.Main.ExclusiveMinimum = &decimal.Zero
-	structure.Main.ExclusiveMaximum = &decimal.Zero
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.Minimum = &decimal.Zero
+	structure.Definition.Main.Maximum = &decimal.Zero
+	structure.Definition.Main.ExclusiveMinimum = &decimal.Zero
+	structure.Definition.Main.ExclusiveMaximum = &decimal.Zero
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "number"
-	structure.Main.Minimum = &decimal.Zero
-	structure.Main.Maximum = &negOneDec
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.Minimum = &decimal.Zero
+	structure.Definition.Main.Maximum = &negOneDec
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "string"
-	structure.Main.MinLength = &negOneInt
-	structure.Main.MaxLength = &negOneInt
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.MinLength = &negOneInt
+	structure.Definition.Main.MaxLength = &negOneInt
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "string"
-	structure.Main.MinLength = &posOneInt
-	structure.Main.MaxLength = &zero
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.MinLength = &posOneInt
+	structure.Definition.Main.MaxLength = &zero
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "struct"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "struct"
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "array"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "array"
-	structure.Main.Items = &TypeDecl{}
-	structure.Main.Items.Type = "boolean"
-	structure.Main.MinItems = &negOneInt
-	structure.Main.MaxItems = &negOneInt
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
+	structure.Definition.Main.Items = &TypeDecl{}
+	structure.Definition.Main.Items.Type = "boolean"
+	structure.Definition.Main.MinItems = &negOneInt
+	structure.Definition.Main.MaxItems = &negOneInt
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "array"
-	structure.Main.Items = &TypeDecl{}
-	structure.Main.Items.Type = "boolean"
-	structure.Main.MinItems = &posOneInt
-	structure.Main.MaxItems = &zero
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
+	structure.Definition.Main.Items = &TypeDecl{}
+	structure.Definition.Main.Items.Type = "boolean"
+	structure.Definition.Main.MinItems = &posOneInt
+	structure.Definition.Main.MaxItems = &zero
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = JSONStructure{}
-	structure.Types = make(map[string]*TypeDecl)
-	structure.Types["a"] = &TypeDecl{}
-	structure.Types["b"] = &TypeDecl{}
-	structure.Types["c"] = &TypeDecl{}
-	structure.Types["a"].Type = "b"
-	structure.Types["b"].Type = "a"
-	structure.Types["c"].Type = "c"
-	structure.Main = &TypeDecl{}
-	structure.Main.Type = "boolean"
+	structure = EmptyJSONStructure()
+	structure.Definition.Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["a"] = &TypeDecl{}
+	structure.Definition.Types["b"] = &TypeDecl{}
+	structure.Definition.Types["c"] = &TypeDecl{}
+	structure.Definition.Types["a"].Type = "b"
+	structure.Definition.Types["b"].Type = "a"
+	structure.Definition.Types["c"].Type = "c"
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "boolean"
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")

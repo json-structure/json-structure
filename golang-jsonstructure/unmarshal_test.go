@@ -1,7 +1,6 @@
 package jsonstructure
 
 import (
-	"encoding/json"
 	"reflect"
 	"testing"
 
@@ -107,11 +106,10 @@ func TestIntersection(t *testing.T) {
 }
 
 func TestUnmarshalStructureSuccess(t *testing.T) {
-	var structure JSONStructure
 	text := `{
 		"main": {"type": "number"}
 	}`
-	err := json.Unmarshal([]byte(text), &structure)
+	structure, err := CreateJSONStructure([]byte(text), nil)
 	if err != nil {
 		t.Error("Unmarshal error", err)
 	}
@@ -135,37 +133,36 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	err = json.Unmarshal([]byte(text), &structure)
+	structure, err = CreateJSONStructure([]byte(text), nil)
 	if err != nil {
 		t.Error("Unmarshal error", err)
 	}
-	if structure.Types["foo"].MultipleOf == nil {
+	if structure.Definition.Types["foo"].MultipleOf == nil {
 		t.Error("Composition failure")
 	}
-	if !structure.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
+	if !structure.Definition.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
 		t.Error("Composition failure")
 	}
-	if structure.Types["foo"].Type != "integer" {
+	if structure.Definition.Types["foo"].Type != "integer" {
 		t.Error("Composition failure")
 	}
 }
 
 func TestUnmarshalStructureFailure(t *testing.T) {
-	var structure JSONStructure
 	text := `{}`
-	err := json.Unmarshal([]byte(text), &structure)
+	_, err := CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
 	text = `{"fragments": "foo", "types": "bar", "main": {}}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
 	text = `{"fragments": "foo", "types": "bar", "main": {}}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -174,7 +171,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 		"fragments": {"a": true, "b":true},
 	 	"types": {"a": true, "b":true}, 
 		"main": {}}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -182,7 +179,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	text = `{
 	 	"types": {"a": true, "b":true}, 
 		"main": {}}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -198,7 +195,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "boolean"
 		}
 	}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -213,7 +210,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -228,7 +225,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -246,7 +243,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	err = json.Unmarshal([]byte(text), &structure)
+	_, err = CreateJSONStructure([]byte(text), nil)
 	if err == nil {
 		t.Error("Expected error")
 	}

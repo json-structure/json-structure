@@ -11,7 +11,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (structure *JSONStructure) Validate(text []byte) error {
+func (structure JSONStructure) Validate(text []byte) error {
 	var value interface{}
 
 	reader := bytes.NewReader(text)
@@ -21,14 +21,14 @@ func (structure *JSONStructure) Validate(text []byte) error {
 	if err != nil {
 		return err
 	}
-	return structure.Main.Validate(value, structure, nil)
+	return structure.Definition.Main.Validate(value, structure, nil)
 }
 
-func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope []string) error {
 	name := td.Type
 
 	if !PrimitiveTypes[name] {
-		td = structure.Types[name]
+		td = structure.Definition.Types[name]
 		if td == nil {
 			err := fmt.Errorf("Unknown type '%s'", name)
 			return errorAt(err, scope)
@@ -63,7 +63,7 @@ func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope 
 	}
 }
 
-func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateBoolean(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	_, ok := value.(bool)
 	if !ok {
 		err := errors.New("JSON value is not a boolean")
@@ -72,7 +72,7 @@ func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, 
 	return nil
 }
 
-func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateNumber(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	var errs error
 	num, ok := value.(json.Number)
 	if !ok {
@@ -111,7 +111,7 @@ func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateInteger(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	err := validateNumber(td, value, structure, scope)
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, 
 	return nil
 }
 
-func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateString(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	var errs error
 	str, ok := value.(string)
 	if !ok {
@@ -145,7 +145,7 @@ func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateStruct(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	var errs error
 	obj, ok := value.(map[string]interface{})
 	if !ok {
@@ -174,7 +174,7 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
+func validateArray(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
 	var errs error
 	arr, ok := value.([]interface{})
 	if !ok {

@@ -111,14 +111,14 @@ func (td *TypeDecl) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error {
 	var errs error
 	if len(td.Type) == 0 {
 		err := errors.New("missing required property 'type'")
 		return errorAt(err, scope)
 	}
 	pf := PermissibleFields[td.Type]
-	decl := structure.Types[td.Type]
+	decl := structure.Definition.Types[td.Type]
 	if pf == nil && decl == nil {
 		err := fmt.Errorf("Unknown type '%s'", td.Type)
 		return errorAt(err, scope)
@@ -160,9 +160,9 @@ func permissible(name string, typ string, fields map[string]bool, observed bool,
 	return nil
 }
 
-func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[string]bool) error {
+func detectTypeAliasCycle(structure JSONStructure, td *TypeDecl, prev map[string]bool) error {
 	name := td.Type
-	decl := structure.Types[td.Type]
+	decl := structure.Definition.Types[td.Type]
 	if prev[name] {
 		keys := make([]string, 0, len(prev))
 		for k := range prev {
@@ -242,7 +242,7 @@ func validateStringTypeDecl(td *TypeDecl, scope []string) error {
 	return errs
 }
 
-func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateStructTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "struct" {
 		return nil
@@ -260,7 +260,7 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	return errs
 }
 
-func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateArrayTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "array" {
 		return nil
@@ -291,7 +291,7 @@ func validateArrayTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 	return errs
 }
 
-func (td *TypeDecl) ValidateDefault(structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateDefault(structure JSONStructure, scope []string) error {
 	var errs error
 	if len(td.DefaultRaw) > 0 {
 		err := td.Validate(td.Default, structure, scope)
