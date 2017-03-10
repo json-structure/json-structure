@@ -112,12 +112,14 @@ operation to all children of the JSON object. Next, look to
 see whether the 'compose' property is defined. If it is not
 defined then terminate.
 
-If 'compose' is defined, then begin the composition
-with a destination JSON object that is initialized to
-an empty object. Traverse in order through the names
-in the 'compose' array. Each name must be a valid fragment or
-type. Recursively merge the JSON object into the destination
-JSON object.
+If 'compose' is defined, the composition will be recursively
+merging a series of JSON objects. Begin the composition
+with a destination JSON object that is an empty object. 
+Traverse in order through the names in the 'compose' array.
+Each name must correspond to a defined fragment or type.
+After locating the fragment or type, apply the 'compose'
+operation on that JSON object. Then merge that object
+into the destination object.
 
 A recursive merge writes all the properties of
 the source object into the destination object. If the child
