@@ -1,6 +1,10 @@
-hash: f1d5394cbc62918bf13fda7a322f0f242772c61ec30ecc188f702fc40d853eac
-updated: 2017-03-09T19:11:06.28722582-05:00
+hash: a1a50af94c9cffb1446dd79dcdcc1d081173690af74f5f5d2ac4cba1512ff99f
+updated: 2017-03-11T11:50:06.376112834-05:00
 imports:
+- name: github.com/antlr/antlr4
+  version: aacd2a2c95816d8dc1c05814051d631bfec4cf3e
+  subpackages:
+  - runtime/Go/antlr
 - name: github.com/hashicorp/errwrap
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/mspiegel/go-multierror

@@ -154,6 +154,14 @@ func validateString(td *TypeDecl, value interface{}, structure JSONStructure, sc
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
+	if td.Pattern != nil {
+		idx := td.Pattern.FindStringIndex(str)
+		if idx == nil {
+			err := errors.New("'pattern' regular expression is not a match")
+			err = errorAt(err, scope)
+			errs = multierror.Append(errs, err)
+		}
+	}
 	return errs
 }
 

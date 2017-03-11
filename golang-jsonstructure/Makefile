@@ -8,6 +8,8 @@ IMPORT_PATH := github.com/json-structure/json-structure/golang-jsonstructure
 # Space separated patterns of packages to skip in list, test, format.
 IGNORED_PACKAGES := /vendor/
 
+NOCOVER_PACKAGES := /vendor/ /simpleregexp
+
 NOVENDOR_FILES := $(shell find . -name "*.go" | grep -v /\.GOPATH/ | grep -v /vendor/ )
 
 .PHONY: all
@@ -15,7 +17,7 @@ all: build
 
 .PHONY: build
 build: .GOPATH/.ok
-	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(IMPORT_PATH)
+	$Q go install $(if $V,-v) $(VERSION_FLAGS) $(allpackages)
 
 ### Code not in the repository root? Another binary? Add to the path like this.
 # .PHONY: otherbin
@@ -50,8 +52,8 @@ cover: bin/gocovmerge .GOPATH/.ok
 	@echo "NOTE: make cover does not exit 1 on failure, don't use it to check for tests success!"
 	$Q rm -f .GOPATH/cover/*.out .GOPATH/cover/all.merged
 	$(if $V,@echo "-- go test -coverpkg=./... -coverprofile=.GOPATH/cover/... ./...")
-	@for MOD in $(allpackages); do \
-		go test -coverpkg=`echo $(allpackages)|tr " " ","` \
+	@for MOD in $(coverpackages); do \
+		go test -coverpkg=`echo $(coverpackages)|tr " " ","` \
 			-coverprofile=.GOPATH/cover/unit-`echo $$MOD|tr "/" "_"`.out \
 			$$MOD 2>&1 | grep -v "no packages being tested depend on"; \
 	done
@@ -82,8 +84,15 @@ _allpackages = $(shell ( cd $(CURDIR)/.GOPATH/src/$(IMPORT_PATH) && \
     grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)) 1>&2 ) 3>&1 | \
     grep -v -e "^$$" $(addprefix -e ,$(IGNORED_PACKAGES)))
 
+_coverpackages = $(shell ( cd $(CURDIR)/.GOPATH/src/$(IMPORT_PATH) && \
+    GOPATH=$(CURDIR)/.GOPATH go list ./... 2>&1 1>&3 | \
+    grep -v -e "^$$" $(addprefix -e ,$(NOCOVER_PACKAGES)) 1>&2 ) 3>&1 | \
+    grep -v -e "^$$" $(addprefix -e ,$(NOCOVER_PACKAGES)))
+
 # memoize allpackages, so that it's executed only once and only if used
 allpackages = $(if $(__allpackages),,$(eval __allpackages := $$(_allpackages)))$(__allpackages)
+
+coverpackages = $(if $(__coverpackages),,$(eval __coverpackages := $$(_coverpackages)))$(__coverpackages)
 
 export GOPATH := $(CURDIR)/.GOPATH
 unexport GOBIN

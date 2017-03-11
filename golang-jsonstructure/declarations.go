@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 
+	"github.com/json-structure/json-structure/golang-jsonstructure/simpleregexp"
 	multierror "github.com/mspiegel/go-multierror"
 	"github.com/shopspring/decimal"
 )
@@ -35,9 +37,10 @@ type TypeDecl struct {
 	ExclusiveMinimum *decimal.Decimal `json:"exclusiveMinimum,omitempty"`
 	ExclusiveMaximum *decimal.Decimal `json:"exclusiveMaximum,omitempty"`
 	// string
-	Pattern   *string `json:"pattern,omitempty"`
-	MinLength *int    `json:"minLength,omitempty"`
-	MaxLength *int    `json:"maxLength,omitempty"`
+	PatternRaw *string        `json:"pattern,omitempty"`
+	Pattern    *regexp.Regexp `json:"-"`
+	MinLength  *int           `json:"minLength,omitempty"`
+	MaxLength  *int           `json:"maxLength,omitempty"`
 	// struct
 	Fields map[string]*TypeDecl `json:"fields,omitempty"`
 	// array
@@ -136,7 +139,7 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	e5 := permissible("maximum", td.Type, pf, td.Maximum != nil, scope)
 	e6 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimum != nil, scope)
 	e7 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximum != nil, scope)
-	e8 := permissible("pattern", td.Type, pf, td.Pattern != nil, scope)
+	e8 := permissible("pattern", td.Type, pf, td.PatternRaw != nil, scope)
 	e9 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
 	e10 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
 	e11 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
@@ -145,7 +148,7 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	e14 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
 	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14)
 	e1 = validateNumberTypeDecl(td, scope)
-	e2 = validateStringTypeDecl(td, scope)
+	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
 	e4 = validateArrayTypeDecl(td, structure, scope)
 	e5 = validateFormatTypeDecl(td, structure, scope)
@@ -221,7 +224,7 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	return errs
 }
 
-func validateStringTypeDecl(td *TypeDecl, scope []string) error {
+func validateStringTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "string" {
 		return nil
@@ -241,6 +244,24 @@ func validateStringTypeDecl(td *TypeDecl, scope []string) error {
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
+	if td.PatternRaw != nil {
+		var err error
+		td.Pattern, err = regexp.Compile(*td.PatternRaw)
+		if err != nil {
+			err = errorAt(err, scope)
+			errs = multierror.Append(errs, err)
+		} else if structure.Options.Regex == StrictRegex {
+			err = simpleregexp.Accept(*td.PatternRaw)
+			if err != nil {
+				err = fmt.Errorf("regular expression is not cross-platform. "+
+					"Consider the NativeRegex option. %s",
+					err.Error())
+				err = errorAt(err, scope)
+				errs = multierror.Append(errs, err)
+			}
+		}
+	}
+
 	return errs
 }
 
@@ -316,7 +337,10 @@ func (td *TypeDecl) ValidateDefault(structure JSONStructure, scope []string) err
 	var errs error
 	if len(td.DefaultRaw) > 0 {
 		err := td.Validate(td.Default, structure, scope)
-		errs = multierror.Append(errs, err)
+		if err != nil {
+			err = fmt.Errorf("Unable to validate default value. %s", err.Error())
+			errs = multierror.Append(errs, err)
+		}
 	}
 	for k, v := range td.Fields {
 		newscope := append(scope, k)

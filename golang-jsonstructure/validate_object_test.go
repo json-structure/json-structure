@@ -1,6 +1,7 @@
 package jsonstructure
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/shopspring/decimal"
@@ -130,6 +131,16 @@ func TestValidateFailureString(t *testing.T) {
 	t.Log(err)
 	structure.Definition.Main.MaxLength = &one
 	text = `"foo"`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.Pattern = regexp.MustCompile("[0-9]+")
+	text = `"foobar"`
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")

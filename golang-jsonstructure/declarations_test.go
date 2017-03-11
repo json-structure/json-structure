@@ -41,6 +41,51 @@ func TestValidateStructureSuccess(t *testing.T) {
 	if err != nil {
 		t.Error("Validation failure", err)
 	}
+	pattern := "[0-9]+"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "struct"
+	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
+	structure.Definition.Main.Fields["foo"] = &TypeDecl{}
+	structure.Definition.Main.Fields["foo"].Type = "string"
+	structure.Definition.Main.Fields["foo"].PatternRaw = &pattern
+	err = structure.ValidateStructure()
+	if err != nil {
+		t.Error("Validation failure", err)
+	}
+}
+
+func TestValidateDefaultSuccess(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
+	structure.Definition.Main.DefaultRaw = []byte("[]")
+	structure.Definition.Main.Default = []interface{}{}
+	structure.Definition.Main.Items = &TypeDecl{}
+	structure.Definition.Main.Items.Type = "integer"
+	structure.Definition.Main.Items.DefaultRaw = []byte("1")
+	structure.Definition.Main.Items.Default = json.Number("1")
+	err := structure.ValidateStructure()
+	if err != nil {
+		t.Error("Validation failure", err)
+	}
+}
+
+func TestValidateDefaultFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "array"
+	structure.Definition.Main.DefaultRaw = []byte("[]")
+	structure.Definition.Main.Default = []interface{}{}
+	structure.Definition.Main.Items = &TypeDecl{}
+	structure.Definition.Main.Items.Type = "integer"
+	structure.Definition.Main.Items.DefaultRaw = []byte(`"hello world"`)
+	structure.Definition.Main.Items.Default = "hello world"
+	err := structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
 }
 
 func TestValidateStructureFailure(t *testing.T) {
@@ -89,7 +134,7 @@ func TestValidateStructureFailure(t *testing.T) {
 	structure.Definition.Main.Maximum = &decimal.Zero
 	structure.Definition.Main.ExclusiveMinimum = &decimal.Zero
 	structure.Definition.Main.ExclusiveMaximum = &decimal.Zero
-	structure.Definition.Main.Pattern = &foobar
+	structure.Definition.Main.PatternRaw = &foobar
 	structure.Definition.Main.MinLength = &zero
 	structure.Definition.Main.MaxLength = &zero
 	structure.Definition.Main.Fields = make(map[string]*TypeDecl)
@@ -150,6 +195,16 @@ func TestValidateStructureFailure(t *testing.T) {
 	structure.Definition.Main.Type = "string"
 	structure.Definition.Main.MinLength = &posOneInt
 	structure.Definition.Main.MaxLength = &zero
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
+	badRegex := "(()"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.PatternRaw = &badRegex
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
@@ -228,6 +283,16 @@ func TestValidateStructureFailure(t *testing.T) {
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
+	}
+	t.Log(err)
+	pattern := "\\d+"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.PatternRaw = &pattern
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Validation failure", err)
 	}
 	t.Log(err)
 }
