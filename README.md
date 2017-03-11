@@ -152,7 +152,7 @@ JSON Structure supports the following primitive types.
 | struct  | structure or record |
 | array   | sequence of values of the same type |
 | json    | Raw json values. Coming soon |
-| union   | Tagged union. Coming soon |
+| union   | unions. Coming soon |
 | set     | Collection type. Coming soon |
 | map     | Collection type. Coming soon |
 
@@ -234,7 +234,6 @@ The remaining properties are optional.
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
 | types | map | Required. Mapping of tag names to type declaration. |
-| tag | string | Required. Name of property that stores the tag name. |
 
 ## Pattern Property
 
