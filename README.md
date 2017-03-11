@@ -179,18 +179,20 @@ an error when cycles are detected.
 
 JSON Structures are composed primarily of type declarations.
 Here is a description of the properties that define a
-type declaration.
-
+type declaration. "type" is the only property that is
+required for all type declarations. Some primitive types
+("struct", "array", "union") have required properties.
+The remaining properties are optional.
 
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
-| type     | string |  Required. Must be either the name of a primitive type or a name defined in the "types" map. |
+| type     | string | Required. Must be either the name of a primitive type or a name defined in the "types" map. |
+| default  | JSON value | Use this value when none is provided |
 
 **Properties Shared By All Primitive Types**
 
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
-| default  | JSON value |  Use this value when none is provided |
 | format   | string |  Defines additional semantic validation |
 | nullable | boolean|  If true then allow the null value. Default is false. |
 
@@ -212,7 +214,6 @@ type declaration.
 | pattern | string | See JSON Schema |
 | minLength | integer | See JSON Schema |
 | maxLength | integer | See JSON Schema |
-
 
 **Struct Properties**
 
