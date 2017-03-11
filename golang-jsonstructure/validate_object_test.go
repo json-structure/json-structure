@@ -231,3 +231,27 @@ func TestValidateFailureAlias(t *testing.T) {
 	}
 	t.Log(err)
 }
+
+func TestValidateFailureFormat(t *testing.T) {
+	text := `"hello@world@com"`
+	format := "email"
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.Format = &format
+	err := structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	format = "foobar"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "string"
+	structure.Definition.Main.Format = &format
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+}

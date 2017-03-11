@@ -210,4 +210,24 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
+	format := "foobar"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.Format = &format
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
+	format = "hostname"
+	structure = EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.Format = &format
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
 }

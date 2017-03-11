@@ -238,3 +238,12 @@ field is optional. Otherwise the field is required.
 2\. How do I specify a type declaration for extra fields in a struct?
 
 You can't.
+
+3\. Why are you throwing shade on JSON Schema?
+
+We aren't. There are many good use cases for JSON Schema. And there
+probably a few things you can do using JSON Schema that you can't
+do using JSON Structure. The JSON Structure project started as
+an exercise in quickly generating property-based generators for
+JSON objects. Along the way we found that we could simplify the
+design if we started from scratch.

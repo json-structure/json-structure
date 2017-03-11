@@ -25,6 +25,7 @@ func (structure JSONStructure) Validate(text []byte) error {
 }
 
 func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope []string) error {
+	var errs error
 	name := td.Type
 
 	if !PrimitiveTypes[name] {
@@ -44,23 +45,34 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 		return errorAt(err, scope)
 	}
 
+	err := validateFormat(td, value, structure, scope)
+	errs = multierror.Append(errs, err)
+
 	switch name {
 	case "boolean":
-		return validateBoolean(td, value, structure, scope)
+		err := validateBoolean(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "integer":
-		return validateInteger(td, value, structure, scope)
+		err := validateInteger(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "number":
-		return validateNumber(td, value, structure, scope)
+		err := validateNumber(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "string":
-		return validateString(td, value, structure, scope)
+		err := validateString(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "struct":
-		return validateStruct(td, value, structure, scope)
+		err := validateStruct(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "array":
-		return validateArray(td, value, structure, scope)
+		err := validateArray(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	default:
 		err := fmt.Errorf("Internal error. Unhandled primitive type '%s'", name)
-		return errorAt(err, scope)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
 	}
+	return errs
 }
 
 func validateBoolean(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
@@ -197,4 +209,21 @@ func validateArray(td *TypeDecl, value interface{}, structure JSONStructure, sco
 		errs = multierror.Append(errs, err)
 	}
 	return errs
+}
+
+func validateFormat(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+	if td.Format == nil {
+		return nil
+	}
+	name := *td.Format
+	format := structure.Options.Formats[name]
+	if format == nil {
+		err := fmt.Errorf(`unknown format "%s"`, name)
+		err = errorAt(err, scope)
+		return err
+	}
+	err := format.Apply(value, td.Type)
+	err = fmt.Errorf(`Validation error on format "%s": %s`, name, err.Error())
+	err = errorAt(err, scope)
+	return err
 }

@@ -16,15 +16,10 @@ type JSONStructureDefinition struct {
 	Main        *TypeDecl                  `json:"main"`
 }
 
-type JSONStructureOptions struct {
-}
-
-var defaultOptions = JSONStructureOptions{}
-
 func EmptyJSONStructure() JSONStructure {
 	return JSONStructure{
 		Definition: &JSONStructureDefinition{},
-		Options:    &JSONStructureOptions{},
+		Options:    DefaultOptions(),
 	}
 }
 
@@ -35,7 +30,7 @@ func CreateJSONStructure(data []byte, options *JSONStructureOptions) (JSONStruct
 		return JSONStructure{}, err
 	}
 	if options == nil {
-		options = &defaultOptions
+		options = DefaultOptions()
 	}
 	result := JSONStructure{
 		Definition: &definition,

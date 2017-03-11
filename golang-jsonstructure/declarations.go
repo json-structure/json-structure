@@ -20,29 +20,30 @@ var PrimitiveTypes = map[string]bool{
 }
 
 type TypeDecl struct {
-	// common
-	Type     string  `json:"type"`
-	Format   *string `json:"format"`
-	Nullable *bool   `json:"nullable"`
+	// required
+	Type string `json:"type"`
+	// common to primitive types
+	Format   *string `json:"format,omitempty"`
+	Nullable *bool   `json:"nullable,omitempty"`
 	// store RawMessage to distinguish between "nil" and "null"
-	DefaultRaw json.RawMessage `json:"default"`
+	DefaultRaw json.RawMessage `json:"default,omitempty"`
 	Default    interface{}     `json:"-"`
 	// number
-	MultipleOf       *decimal.Decimal `json:"multipleOf"`
-	Minimum          *decimal.Decimal `json:"minimum"`
-	Maximum          *decimal.Decimal `json:"maximum"`
-	ExclusiveMinimum *decimal.Decimal `json:"exclusiveMinimum"`
-	ExclusiveMaximum *decimal.Decimal `json:"exclusiveMaximum"`
+	MultipleOf       *decimal.Decimal `json:"multipleOf,omitempty"`
+	Minimum          *decimal.Decimal `json:"minimum,omitempty"`
+	Maximum          *decimal.Decimal `json:"maximum,omitempty"`
+	ExclusiveMinimum *decimal.Decimal `json:"exclusiveMinimum,omitempty"`
+	ExclusiveMaximum *decimal.Decimal `json:"exclusiveMaximum,omitempty"`
 	// string
-	Pattern   *string `json:"pattern"`
-	MinLength *int    `json:"minLength"`
-	MaxLength *int    `json:"maxLength"`
+	Pattern   *string `json:"pattern,omitempty"`
+	MinLength *int    `json:"minLength,omitempty"`
+	MaxLength *int    `json:"maxLength,omitempty"`
 	// struct
-	Fields map[string]*TypeDecl `json:"fields"`
+	Fields map[string]*TypeDecl `json:"fields,omitempty"`
 	// array
-	Items    *TypeDecl `json:"items"`
-	MinItems *int      `json:"minItems"`
-	MaxItems *int      `json:"maxItems"`
+	Items    *TypeDecl `json:"items,omitempty"`
+	MinItems *int      `json:"minItems,omitempty"`
+	MaxItems *int      `json:"maxItems,omitempty"`
 }
 
 var PermissibleFields = map[string]map[string]bool{
@@ -147,7 +148,8 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	e2 = validateStringTypeDecl(td, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
 	e4 = validateArrayTypeDecl(td, structure, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4)
+	e5 = validateFormatTypeDecl(td, structure, scope)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5)
 	return errs
 }
 
@@ -289,6 +291,25 @@ func validateArrayTypeDecl(td *TypeDecl, structure JSONStructure, scope []string
 		errs = multierror.Append(errs, err)
 	}
 	return errs
+}
+
+func validateFormatTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+	if td.Format == nil {
+		return nil
+	}
+	name := *td.Format
+	format := structure.Options.Formats[name]
+	if format == nil {
+		err := fmt.Errorf(`unknown format "%s"`, name)
+		err = errorAt(err, scope)
+		return err
+	}
+	if !format.Accept(td.Type) {
+		err := fmt.Errorf(`format "%s" does not accept type "%s"`, name, td.Type)
+		err = errorAt(err, scope)
+		return err
+	}
+	return nil
 }
 
 func (td *TypeDecl) ValidateDefault(structure JSONStructure, scope []string) error {
