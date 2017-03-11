@@ -175,7 +175,7 @@ func transformCompose(shell map[string]interface{}) error {
 	f := shell["fragments"]
 	m := shell["main"]
 	if m == nil {
-		err = errors.New("JSON structure missing required 'main' property")
+		err = errors.New("JSON Structure missing required 'main' property")
 		err = errorAt(err, nil)
 		return err
 	}

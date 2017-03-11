@@ -19,17 +19,19 @@ var PrimitiveTypes = map[string]bool{
 	"string":  true,
 	"struct":  true,
 	"array":   true,
+	"union":   true,
 }
 
 type TypeDecl struct {
 	// required
 	Type string `json:"type"`
+	// store RawMessage to distinguish between "nil" and "null"
+	// property 'default' is available to all type declarations
+	DefaultRaw json.RawMessage `json:"default,omitempty"`
+	Default    interface{}     `json:"-"`
 	// common to primitive types
 	Format   *string `json:"format,omitempty"`
 	Nullable *bool   `json:"nullable,omitempty"`
-	// store RawMessage to distinguish between "nil" and "null"
-	DefaultRaw json.RawMessage `json:"default,omitempty"`
-	Default    interface{}     `json:"-"`
 	// number
 	MultipleOf       *decimal.Decimal `json:"multipleOf,omitempty"`
 	Minimum          *decimal.Decimal `json:"minimum,omitempty"`
@@ -47,6 +49,8 @@ type TypeDecl struct {
 	Items    *TypeDecl `json:"items,omitempty"`
 	MinItems *int      `json:"minItems,omitempty"`
 	MaxItems *int      `json:"maxItems,omitempty"`
+	// union
+	Types map[string]*TypeDecl `json:"types,omitempty"`
 }
 
 var PermissibleFields = map[string]map[string]bool{
@@ -90,6 +94,10 @@ var PermissibleFields = map[string]map[string]bool{
 		"items":    true,
 		"minItems": true,
 		"maxItems": true,
+	},
+	"union": map[string]bool{
+		"format":   true,
+		"nullable": true,
 	},
 }
 
@@ -151,8 +159,9 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
 	e4 = validateArrayTypeDecl(td, structure, scope)
-	e5 = validateFormatTypeDecl(td, structure, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4, e5)
+	e5 = validateUnionTypeDecl(td, structure, scope)
+	e6 = validateFormatTypeDecl(td, structure, scope)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6)
 	return errs
 }
 
@@ -309,6 +318,24 @@ func validateArrayTypeDecl(td *TypeDecl, structure JSONStructure, scope []string
 	if td.MinItems != nil && td.MaxItems != nil && *td.MinItems > *td.MaxItems {
 		err := errors.New("'maxItems' is less than 'minItems'")
 		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	return errs
+}
+
+func validateUnionTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+	var errs error
+	if td.Type != "union" {
+		return nil
+	}
+	if td.Types == nil {
+		err := errors.New("missing required property 'types'")
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	for k, v := range td.Types {
+		newscope := append(scope, "types", k)
+		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs

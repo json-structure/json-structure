@@ -30,7 +30,7 @@ func TestUnmarshalJSON(t *testing.T) {
 	}
 }
 
-func TestValidateStructureSuccess(t *testing.T) {
+func TestValidateJSONStructureSuccess(t *testing.T) {
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "struct"
@@ -88,7 +88,7 @@ func TestValidateDefaultFailure(t *testing.T) {
 	t.Log(err)
 }
 
-func TestValidateStructureFailure(t *testing.T) {
+func TestValidateJSONStructureFailure(t *testing.T) {
 	structure := EmptyJSONStructure()
 	structure.Definition.Types = make(map[string]*TypeDecl)
 	structure.Definition.Types["foo"] = nil
@@ -158,14 +158,17 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = EmptyJSONStructure()
+}
+
+func TestValidateNumberFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "number"
 	structure.Definition.Main.Minimum = &decimal.Zero
 	structure.Definition.Main.Maximum = &decimal.Zero
 	structure.Definition.Main.ExclusiveMinimum = &decimal.Zero
 	structure.Definition.Main.ExclusiveMaximum = &decimal.Zero
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
@@ -180,12 +183,15 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = EmptyJSONStructure()
+}
+
+func TestValidateStringFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "string"
 	structure.Definition.Main.MinLength = &negOneInt
 	structure.Definition.Main.MaxLength = &negOneInt
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
@@ -210,18 +216,35 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = EmptyJSONStructure()
+}
+
+func TestValidateStructFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "struct"
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = EmptyJSONStructure()
+}
+
+func TestValidateUnionFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "union"
+	err := structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
+}
+
+func TestValidateArrayFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "array"
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
@@ -250,7 +273,10 @@ func TestValidateStructureFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
-	structure = EmptyJSONStructure()
+}
+
+func TestValidateCycleFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
 	structure.Definition.Types = make(map[string]*TypeDecl)
 	structure.Definition.Types["a"] = &TypeDecl{}
 	structure.Definition.Types["b"] = &TypeDecl{}
@@ -260,17 +286,20 @@ func TestValidateStructureFailure(t *testing.T) {
 	structure.Definition.Types["c"].Type = "c"
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "boolean"
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
+}
+
+func TestValidateFormatFailure(t *testing.T) {
 	format := "foobar"
-	structure = EmptyJSONStructure()
+	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "number"
 	structure.Definition.Main.Format = &format
-	err = structure.ValidateStructure()
+	err := structure.ValidateStructure()
 	if err == nil {
 		t.Error("Expected validation failure")
 	}

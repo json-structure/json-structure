@@ -67,6 +67,9 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 	case "array":
 		err := validateArray(td, value, structure, scope)
 		errs = multierror.Append(errs, err)
+	case "union":
+		err := validateUnion(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	default:
 		err := fmt.Errorf("Internal error. Unhandled primitive type '%s'", name)
 		err = errorAt(err, scope)
@@ -161,6 +164,23 @@ func validateString(td *TypeDecl, value interface{}, structure JSONStructure, sc
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
 		}
+	}
+	return errs
+}
+
+func validateUnion(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+	var err, errs error
+	for k, decl := range td.Types {
+		err = decl.Validate(value, structure, scope)
+		if err == nil {
+			return nil
+		}
+		err = fmt.Errorf(`%s for tag "%s"`, err.Error(), k)
+		errs = multierror.Append(errs, err)
+	}
+	if errs == nil {
+		errs = errors.New("no matching union type")
+		errs = errorAt(errs, scope)
 	}
 	return errs
 }

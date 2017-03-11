@@ -32,7 +32,7 @@ if you won't tell.
 
     // types is a mapping of type names to
     // type declarations. Type declarations are
-    // the primary components of JSON structures.
+    // the primary components of JSON Structures.
 
     "types": {
        "a": { ... },
@@ -228,6 +228,13 @@ The remaining properties are optional.
 | item | map | Required. Type declaration applied to each item. |
 | minItems | integer | See JSON Schema |
 | maxItems | integer | See JSON Schema |
+
+**Union Properties**
+
+| Property      | JSON |  Description |
+| ------------- | ---- |  ----------- |
+| types | map | Required. Mapping of tag names to type declaration. |
+| tag | string | Required. Name of property that stores the tag name. |
 
 ## Pattern Property
 

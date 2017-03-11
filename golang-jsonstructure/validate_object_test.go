@@ -181,6 +181,28 @@ func TestValidateFailureStruct(t *testing.T) {
 	t.Log(err)
 }
 
+func TestValidateFailureUnion(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "union"
+	structure.Definition.Main.Types = make(map[string]*TypeDecl)
+	text := `{}`
+	err := structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Definition.Main.Types["foo"] = &TypeDecl{}
+	structure.Definition.Main.Types["foo"].Type = "integer"
+	structure.Definition.Main.Types["bar"] = &TypeDecl{}
+	structure.Definition.Main.Types["bar"].Type = "string"
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+}
+
 func TestValidateFailureArray(t *testing.T) {
 	one := 1
 	structure := EmptyJSONStructure()
