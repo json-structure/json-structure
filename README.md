@@ -228,6 +228,16 @@ type declaration.
 | minItems | integer | See JSON Schema |
 | maxItems | integer | See JSON Schema |
 
+## Pattern Property
+
+A JSON Structure validator must be able to test whether
+all 'pattern' properties fall into the restricted regular
+expression grammar from JSON Schema section 3.3. We
+provide an [ANTLRv4 Grammar](simpleregexp/SimpleRegexp.g4)
+to implement this requirement. A JSON Structure validator
+may provide an option to parse the JSON Structure with
+the host language's native regular expression dialect.
+
 ## FAQ
 
 1\. How do I specify a struct field as optional or required?
