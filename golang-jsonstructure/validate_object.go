@@ -61,6 +61,8 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 	case "string":
 		err := validateString(td, value, structure, scope)
 		errs = multierror.Append(errs, err)
+	case "json":
+		// no validation
 	case "struct":
 		err := validateStruct(td, value, structure, scope)
 		errs = multierror.Append(errs, err)

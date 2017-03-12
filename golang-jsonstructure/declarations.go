@@ -17,6 +17,7 @@ var PrimitiveTypes = map[string]bool{
 	"integer": true,
 	"number":  true,
 	"string":  true,
+	"json":    true,
 	"struct":  true,
 	"array":   true,
 	"union":   true,
@@ -82,6 +83,10 @@ var PermissibleFields = map[string]map[string]bool{
 		"pattern":   true,
 		"minLength": true,
 		"maxLength": true,
+	},
+	"json": map[string]bool{
+		"format":   true,
+		"nullable": true,
 	},
 	"struct": map[string]bool{
 		"format":   true,

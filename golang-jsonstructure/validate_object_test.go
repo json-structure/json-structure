@@ -33,6 +33,24 @@ func TestValidateSuccess(t *testing.T) {
 	}
 }
 
+func TestValidateTypeJSON(t *testing.T) {
+	text := `{
+		"a": 1,
+		"b": 1.5,
+		"c": "c",
+		"d": true,
+		"e": [1, 2, 3],
+		"f": null
+	}`
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "json"
+	err := structure.Validate([]byte(text))
+	if err != nil {
+		t.Error("JSON object validation error ", err)
+	}
+}
+
 func TestValidateFailureBoolean(t *testing.T) {
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
