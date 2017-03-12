@@ -131,13 +131,15 @@ the compose operation by recursively merging the remaining
 properties of the original JSON object into the destination
 object. Replace the original object with the destination object.
 
+Here is the same algorithm described in pseudocode rather
+than prose:
+
+![compose algorithm](pseudocode.png)
+
 Fragments exist solely for the purpose of composition. Fragments
 are not required to be valid type definitions so they cannot be
-used in the types section. Fragments can be composed with
-other fragments or with types. Types can be composed with
-other types.
-
-**TODO:** show psuedocode that implements what was described
+used in the types section unless they are used in a compose
+property.
 
 ## Primitive Types
 

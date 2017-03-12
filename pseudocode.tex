@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage[noend]{algpseudocode}
+
+\begin{document}
+\Function{Compose}{$input$}
+\If{$input$ is not json object}
+\State \Return
+\EndIf
+\ForAll{$child$ of $input$}
+\State \Call{Compose}{$child$}
+\EndFor
+\State $result \gets \{\}$
+\ForAll{$name$ in $input["compose"]$}
+\State $target \gets $lookup object by $name$
+\State \Call{Merge}{$result, target$}
+\EndFor
+\State \Call{Merge}{$result, input$}
+\State $result["compose"] \gets nil$
+\State $input \gets result$
+\EndFunction
+
+\Function{Merge}{$dst,src$}
+\ForAll{$(key,val_1)$ of $src$}
+\State $val_2 \gets dst[key]$
+\If{$val_1$ is json object $and$ $val_2$ is json object}
+\State \Call{Merge}{$val_2, val_1$}
+\Else
+\State $dst[key] \gets val_1$
+\EndIf
+\EndFor
+\EndFunction
+
+\end{document}
