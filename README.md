@@ -131,8 +131,8 @@ the compose operation by recursively merging the remaining
 properties of the original JSON object into the destination
 object. Replace the original object with the destination object.
 
-Here is the same algorithm described in pseudocode rather
-than prose:
+Below is the same algorithm described in pseudocode rather
+than prose. For simplicitly the error paths have been omitted.
 
 ![compose algorithm](pseudocode.png#cache-buster)
 
@@ -153,8 +153,8 @@ JSON Structure supports the following primitive types.
 | string  | JSON string |
 | struct  | structure or record |
 | array   | sequence of values of the same type |
+| union   | union over types |
 | json    | Raw json values. Coming soon |
-| union   | unions. Coming soon |
 | set     | Collection type. Coming soon |
 | map     | Collection type. Coming soon |
 
@@ -233,9 +233,12 @@ The remaining properties are optional.
 
 **Union Properties**
 
+The union names are not using during object validation.
+The names are used when applying the compose operation.
+
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
-| types | map | Required. Mapping of tag names to type declaration. |
+| types | map | Required. Mapping of names to type declaration. |
 
 ## Pattern Property
 
