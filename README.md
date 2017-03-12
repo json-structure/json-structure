@@ -134,7 +134,7 @@ object. Replace the original object with the destination object.
 Here is the same algorithm described in pseudocode rather
 than prose:
 
-![compose algorithm](pseudocode.png)
+![compose algorithm](pseudocode.png#cache-buster)
 
 Fragments exist solely for the purpose of composition. Fragments
 are not required to be valid type definitions so they cannot be
