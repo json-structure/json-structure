@@ -47,6 +47,8 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 
 	err := validateFormat(td, value, structure, scope)
 	errs = multierror.Append(errs, err)
+	err = validateEnum(td, value, structure, scope)
+	errs = multierror.Append(errs, err)
 
 	switch name {
 	case "boolean":
@@ -256,4 +258,21 @@ func validateFormat(td *TypeDecl, value interface{}, structure JSONStructure, sc
 	err = fmt.Errorf(`Validation error on format "%s": %s`, name, err.Error())
 	err = errorAt(err, scope)
 	return err
+}
+
+func validateEnum(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+	if td.EnumRaw == nil {
+		return nil
+	}
+	found, err := td.Enum.Has(value)
+	if err != nil {
+		err = errorAt(err, scope)
+		return err
+	}
+	if !found {
+		err = errors.New("value not found in 'enum' set")
+		err = errorAt(err, scope)
+		return err
+	}
+	return nil
 }

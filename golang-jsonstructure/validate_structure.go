@@ -11,7 +11,7 @@ func (structure JSONStructure) ValidateStructure() error {
 	if err != nil {
 		return err
 	}
-	err = validateStructureDefaults(structure)
+	err = validateEmbeddedObjects(structure)
 	if err != nil {
 		return err
 	}
@@ -44,16 +44,16 @@ func validateStructureDecls(structure JSONStructure) error {
 	return errs
 }
 
-func validateStructureDefaults(structure JSONStructure) error {
+func validateEmbeddedObjects(structure JSONStructure) error {
 	var errs error
 	definition := structure.Definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
-		err := v.ValidateDefault(structure, scope)
+		err := v.ValidateEmbedded(structure, scope)
 		errs = multierror.Append(errs, err)
 	}
 	scope := []string{"main"}
-	err := definition.Main.ValidateDefault(structure, scope)
+	err := definition.Main.ValidateEmbedded(structure, scope)
 	errs = multierror.Append(errs, err)
 	return errs
 }

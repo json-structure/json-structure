@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 
 	"github.com/json-structure/json-structure/golang-jsonstructure/simpleregexp"
 	multierror "github.com/mspiegel/go-multierror"
@@ -27,9 +28,11 @@ type TypeDecl struct {
 	// required
 	Type string `json:"type"`
 	// store RawMessage to distinguish between "nil" and "null"
-	// property 'default' is available to all type declarations
-	DefaultRaw json.RawMessage `json:"default,omitempty"`
-	Default    interface{}     `json:"-"`
+	// properties available to all type declarations
+	DefaultRaw json.RawMessage   `json:"default,omitempty"`
+	EnumRaw    []json.RawMessage `json:"enum,omitempty"`
+	Default    interface{}       `json:"-"`
+	Enum       sethash           `json:"-"`
 	// common to primitive types
 	Format   *string `json:"format,omitempty"`
 	Nullable *bool   `json:"nullable,omitempty"`
@@ -104,28 +107,6 @@ var PermissibleFields = map[string]map[string]bool{
 		"format":   true,
 		"nullable": true,
 	},
-}
-
-type shadowDecl TypeDecl
-
-func (td *TypeDecl) UnmarshalJSON(data []byte) error {
-	var shadow shadowDecl
-
-	err := json.Unmarshal(data, &shadow)
-	if err != nil {
-		return err
-	}
-	if len(shadow.DefaultRaw) > 0 {
-		reader := bytes.NewReader(shadow.DefaultRaw)
-		decoder := json.NewDecoder(reader)
-		decoder.UseNumber()
-		err := decoder.Decode(&shadow.Default)
-		if err != nil {
-			return err
-		}
-	}
-	*td = TypeDecl(shadow)
-	return nil
 }
 
 func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error {
@@ -365,23 +346,75 @@ func validateFormatTypeDecl(td *TypeDecl, structure JSONStructure, scope []strin
 	return nil
 }
 
-func (td *TypeDecl) ValidateDefault(structure JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateEmbedded(structure JSONStructure, scope []string) error {
 	var errs error
-	if len(td.DefaultRaw) > 0 {
-		err := td.Validate(td.Default, structure, scope)
+	// enums must be populated before default is validated
+	if td.EnumRaw != nil {
+		td.Enum = createSet()
+		for i, raw := range td.EnumRaw {
+			iScope := append(scope, "enum", strconv.Itoa(i))
+			var insert bool
+			var value interface{}
+			reader := bytes.NewReader(raw)
+			decoder := json.NewDecoder(reader)
+			decoder.UseNumber()
+			err := decoder.Decode(&value)
+			if err != nil {
+				err = errorAt(err, iScope)
+				errs = multierror.Append(errs, err)
+				continue
+			}
+			if value == nil {
+				err = errors.New("null enum value is not permitted")
+				err = errorAt(err, iScope)
+				errs = multierror.Append(errs, err)
+				continue
+			}
+			insert, err = td.Enum.PutIfAbsent(value)
+			if err != nil {
+				err = errorAt(err, iScope)
+				errs = multierror.Append(errs, err)
+			} else if !insert {
+				err = errors.New("duplicate enum value")
+				err = errorAt(err, iScope)
+				errs = multierror.Append(errs, err)
+			} else {
+				err = td.Validate(value, structure, iScope)
+				if err != nil {
+					errs = multierror.Append(errs, err)
+				}
+			}
+		}
+	}
+	if td.DefaultRaw != nil {
+		newscope := append(scope, "default")
+		reader := bytes.NewReader(td.DefaultRaw)
+		decoder := json.NewDecoder(reader)
+		decoder.UseNumber()
+		err := decoder.Decode(&td.Default)
 		if err != nil {
-			err = fmt.Errorf("Unable to validate default value. %s", err.Error())
+			err = errorAt(err, newscope)
 			errs = multierror.Append(errs, err)
+		} else {
+			err = td.Validate(td.Default, structure, newscope)
+			if err != nil {
+				errs = multierror.Append(errs, err)
+			}
 		}
 	}
 	for k, v := range td.Fields {
-		newscope := append(scope, k)
-		err := v.ValidateDefault(structure, newscope)
+		newscope := append(scope, "fields", k)
+		err := v.ValidateEmbedded(structure, newscope)
+		errs = multierror.Append(errs, err)
+	}
+	for k, v := range td.Types {
+		newscope := append(scope, "types", k)
+		err := v.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.Items != nil {
 		newscope := append(scope, "items")
-		err := td.Items.ValidateDefault(structure, newscope)
+		err := td.Items.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs

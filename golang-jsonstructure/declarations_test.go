@@ -8,28 +8,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-var negOneInt = -1
-var negOneDec = decimal.NewFromFloat(-1.0)
-var zero = 0
-var posOneInt = 1
-var affirmative = true
-var foobar = "foobar"
-
-func TestUnmarshalJSON(t *testing.T) {
-	var td TypeDecl
-	text := `{
-		"type": "number",
-		"default": 0
-	}`
-	err := json.Unmarshal([]byte(text), &td)
-	if err != nil {
-		t.Error("Unmarshal error", err)
-	}
-	if td.Default != json.Number("0") {
-		t.Error("Default value unmarshal error", td.Default)
-	}
-}
-
 func TestValidateJSONStructureSuccess(t *testing.T) {
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
@@ -89,6 +67,10 @@ func TestValidateDefaultFailure(t *testing.T) {
 }
 
 func TestValidateJSONStructureFailure(t *testing.T) {
+	var negOneDec = decimal.NewFromFloat(-1.0)
+	var zero = 0
+	var affirmative = true
+	var foobar = "foobar"
 	structure := EmptyJSONStructure()
 	structure.Definition.Types = make(map[string]*TypeDecl)
 	structure.Definition.Types["foo"] = nil
@@ -161,6 +143,7 @@ func TestValidateJSONStructureFailure(t *testing.T) {
 }
 
 func TestValidateNumberFailure(t *testing.T) {
+	var negOneDec = decimal.NewFromFloat(-1.0)
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "number"
@@ -186,6 +169,9 @@ func TestValidateNumberFailure(t *testing.T) {
 }
 
 func TestValidateStringFailure(t *testing.T) {
+	var negOneInt = -1
+	var zero = 0
+	var posOneInt = 1
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "string"
@@ -241,6 +227,9 @@ func TestValidateUnionFailure(t *testing.T) {
 }
 
 func TestValidateArrayFailure(t *testing.T) {
+	var negOneInt = -1
+	var zero = 0
+	var posOneInt = 1
 	structure := EmptyJSONStructure()
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "array"
@@ -322,6 +311,75 @@ func TestValidateFormatFailure(t *testing.T) {
 	err = structure.ValidateStructure()
 	if err == nil {
 		t.Error("Validation failure", err)
+	}
+	t.Log(err)
+}
+
+func TestValidateEmbeddedSuccess(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.DefaultRaw = []byte("0")
+	structure.Definition.Main.EnumRaw = []json.RawMessage{[]byte("0"), []byte("1"), []byte("2")}
+	structure.Definition.Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["foo"] = &TypeDecl{}
+	structure.Definition.Types["foo"].Type = "union"
+	structure.Definition.Types["foo"].Types = make(map[string]*TypeDecl)
+	structure.Definition.Types["foo"].Types["bar"] = &TypeDecl{}
+	structure.Definition.Types["foo"].Types["bar"].Type = "string"
+	structure.Definition.Types["foo"].Types["bar"].DefaultRaw = []byte(`"foo"`)
+	structure.Definition.Types["foo"].Types["bar"].EnumRaw = []json.RawMessage{[]byte(`"foo"`), []byte(`"bar"`), []byte(`"baz"`)}
+	err := structure.ValidateStructure()
+	if err != nil {
+		t.Error("Validation error", err)
+	}
+	if structure.Definition.Main.Default != json.Number("0") {
+		t.Error("Default value creation error", structure.Definition.Main.Default)
+	}
+}
+
+func TestValidateEmbeddedFailure(t *testing.T) {
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "number"
+	structure.Definition.Main.DefaultRaw = []byte(`"hello`)
+	err := structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+	t.Log(err)
+	structure.Definition.Main.DefaultRaw = []byte(`"hello"`)
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+	t.Log(err)
+	structure.Definition.Main.DefaultRaw = nil
+	structure.Definition.Main.EnumRaw = []json.RawMessage{[]byte("1"), []byte("1"), []byte("1")}
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+	t.Log(err)
+	structure.Definition.Main.DefaultRaw = nil
+	structure.Definition.Main.EnumRaw = []json.RawMessage{[]byte("0"), []byte(`"bar`), []byte(`"baz"`)}
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+	t.Log(err)
+	structure.Definition.Main.DefaultRaw = nil
+	structure.Definition.Main.EnumRaw = []json.RawMessage{[]byte("null")}
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
+	}
+	t.Log(err)
+	structure.Definition.Main.DefaultRaw = []byte(`0`)
+	structure.Definition.Main.EnumRaw = []json.RawMessage{[]byte("1"), []byte("2"), []byte("3")}
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation error")
 	}
 	t.Log(err)
 }
