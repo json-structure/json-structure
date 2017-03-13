@@ -21,6 +21,8 @@ var PrimitiveTypes = map[string]bool{
 	"json":    true,
 	"struct":  true,
 	"array":   true,
+	"set":     true,
+	"map":     true,
 	"union":   true,
 }
 
@@ -49,7 +51,7 @@ type TypeDecl struct {
 	MaxLength  *int           `json:"maxLength,omitempty"`
 	// struct
 	Fields map[string]*TypeDecl `json:"fields,omitempty"`
-	// array
+	// array, set, and map types
 	Items    *TypeDecl `json:"items,omitempty"`
 	MinItems *int      `json:"minItems,omitempty"`
 	MaxItems *int      `json:"maxItems,omitempty"`
@@ -103,6 +105,20 @@ var PermissibleFields = map[string]map[string]bool{
 		"minItems": true,
 		"maxItems": true,
 	},
+	"set": map[string]bool{
+		"format":   true,
+		"nullable": true,
+		"items":    true,
+		"minItems": true,
+		"maxItems": true,
+	},
+	"map": map[string]bool{
+		"format":   true,
+		"nullable": true,
+		"items":    true,
+		"minItems": true,
+		"maxItems": true,
+	},
 	"union": map[string]bool{
 		"format":   true,
 		"nullable": true,
@@ -144,7 +160,7 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
-	e4 = validateArrayTypeDecl(td, structure, scope)
+	e4 = validateCollectionTypeDecl(td, structure, scope)
 	e5 = validateUnionTypeDecl(td, structure, scope)
 	e6 = validateFormatTypeDecl(td, structure, scope)
 	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6)
@@ -278,9 +294,9 @@ func validateStructTypeDecl(td *TypeDecl, structure JSONStructure, scope []strin
 	return errs
 }
 
-func validateArrayTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateCollectionTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
 	var errs error
-	if td.Type != "array" {
+	if td.Type != "array" && td.Type != "set" && td.Type != "map" {
 		return nil
 	}
 	if td.Items == nil {

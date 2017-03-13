@@ -253,7 +253,80 @@ func TestValidateFailureArray(t *testing.T) {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
+}
 
+func TestValidateFailureSet(t *testing.T) {
+	one := 1
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "set"
+	structure.Definition.Main.Items = &TypeDecl{Type: "integer"}
+	text := `1.5`
+	err := structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	text = `["a", true, null]`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	text = `[1, 1, 1]`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Definition.Main.MinItems = &one
+	text = `[]`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Definition.Main.MaxItems = &one
+	text = `[1, 2, 3]`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+}
+
+func TestValidateFailureMap(t *testing.T) {
+	one := 1
+	structure := EmptyJSONStructure()
+	structure.Definition.Main = &TypeDecl{}
+	structure.Definition.Main.Type = "map"
+	structure.Definition.Main.Items = &TypeDecl{Type: "integer"}
+	text := `1.5`
+	err := structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	text = `{"foo": "a", "bar": true, "baz": null}`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Definition.Main.MinItems = &one
+	text = `{}`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Definition.Main.MaxItems = &one
+	text = `{"foo": 1, "bar": 2, "baz": 3}`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
 }
 
 func TestValidateFailureAlias(t *testing.T) {

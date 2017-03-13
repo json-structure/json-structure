@@ -71,6 +71,12 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 	case "array":
 		err := validateArray(td, value, structure, scope)
 		errs = multierror.Append(errs, err)
+	case "set":
+		err := validateSet(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
+	case "map":
+		err := validateMap(td, value, structure, scope)
+		errs = multierror.Append(errs, err)
 	case "union":
 		err := validateUnion(td, value, structure, scope)
 		errs = multierror.Append(errs, err)
@@ -238,6 +244,67 @@ func validateArray(td *TypeDecl, value interface{}, structure JSONStructure, sco
 	for i, val := range arr {
 		newscope := append(scope, strconv.Itoa(i))
 		err := td.Items.Validate(val, structure, newscope)
+		errs = multierror.Append(errs, err)
+	}
+	return errs
+}
+
+func validateSet(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+	var errs error
+	arr, ok := value.([]interface{})
+	if !ok {
+		err := errors.New("JSON value is not a set")
+		return errorAt(err, scope)
+	}
+	if td.MinItems != nil && len(arr) < *td.MinItems {
+		err := fmt.Errorf("size of set %d is less than minimum items %d", len(arr), *td.MinItems)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	if td.MaxItems != nil && len(arr) > *td.MaxItems {
+		err := fmt.Errorf("size of set %d is greater than maximum items %d", len(arr), *td.MaxItems)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	uniq := createSet()
+	for i, val := range arr {
+		newscope := append(scope, strconv.Itoa(i))
+		insert, err := uniq.PutIfAbsent(val)
+		if err != nil {
+			err = errorAt(err, newscope)
+			errs = multierror.Append(errs, err)
+		} else if !insert {
+			err = errors.New("set has duplicate value")
+			err = errorAt(err, newscope)
+			errs = multierror.Append(errs, err)
+		} else {
+			err = td.Items.Validate(val, structure, newscope)
+			errs = multierror.Append(errs, err)
+		}
+	}
+	return errs
+}
+
+func validateMap(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+	var errs error
+	obj, ok := value.(map[string]interface{})
+	if !ok {
+		err := errors.New("JSON value is not a map")
+		return errorAt(err, scope)
+	}
+	if td.MinItems != nil && len(obj) < *td.MinItems {
+		err := fmt.Errorf("size of map %d is less than minimum items %d", len(obj), *td.MinItems)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	if td.MaxItems != nil && len(obj) > *td.MaxItems {
+		err := fmt.Errorf("size of map %d is greater than maximum items %d", len(obj), *td.MaxItems)
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
+	}
+	for k, v := range obj {
+		newscope := append(scope, k)
+		err := td.Items.Validate(v, structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
