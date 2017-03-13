@@ -26,7 +26,7 @@ func cleanJSON(val interface{}) interface{} {
 		}
 		return res
 	case []interface{}:
-		res := make([]interface{}, 0, len(tval))
+		res := make([]interface{}, len(tval))
 		for i, v := range tval {
 			res[i] = cleanJSON(v)
 		}
