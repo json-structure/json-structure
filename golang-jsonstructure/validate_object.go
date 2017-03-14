@@ -328,7 +328,7 @@ func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, s
 }
 
 func validateEnum(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
-	if td.EnumRaw == nil {
+	if td.Enum == nil {
 		return nil
 	}
 	found, err := td.Enum.Has(value)

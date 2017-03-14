@@ -19,7 +19,7 @@ func filterPriority(errs []error, scope []string) error {
 	for _, err := range errs {
 		switch e := err.(type) {
 		case *EnumError:
-			if len(e.Scope) == len(scope)+1 {
+			if len(e.Scope)-len(scope) <= 1 {
 				result = multierror.Append(result, err)
 			}
 		}

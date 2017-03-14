@@ -376,6 +376,10 @@ func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 		err := errors.New("missing required property 'types'")
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
+	} else if len(td.Types) == 0 {
+		err := errors.New("'types' must have at least one entry")
+		err = errorAt(err, scope)
+		errs = multierror.Append(errs, err)
 	}
 	for k, v := range td.Types {
 		newscope := append(scope, "types", k)

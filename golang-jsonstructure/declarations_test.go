@@ -224,6 +224,12 @@ func TestValidateUnionFailure(t *testing.T) {
 		t.Error("Expected validation failure")
 	}
 	t.Log(err)
+	structure.Definition.Main.Types = make(map[string]*TypeDecl)
+	err = structure.ValidateStructure()
+	if err == nil {
+		t.Error("Expected validation failure")
+	}
+	t.Log(err)
 }
 
 func TestValidateArrayFailure(t *testing.T) {

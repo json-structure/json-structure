@@ -204,16 +204,25 @@ func TestValidateFailureUnion(t *testing.T) {
 	structure.Definition.Main = &TypeDecl{}
 	structure.Definition.Main.Type = "union"
 	structure.Definition.Main.Types = make(map[string]*TypeDecl)
+	structure.Definition.Main.Types["foo"] = &TypeDecl{}
+	structure.Definition.Main.Types["foo"].Type = "integer"
+	structure.Definition.Main.Types["bar"] = &TypeDecl{}
+	structure.Definition.Main.Types["bar"].Type = "string"
+	structure.Definition.Main.Types["bar"].Enum = createSet()
+	structure.Definition.Main.Types["bar"].Enum.PutIfAbsent("bar")
 	text := `{}`
 	err := structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Definition.Main.Types["foo"] = &TypeDecl{}
-	structure.Definition.Main.Types["foo"].Type = "integer"
-	structure.Definition.Main.Types["bar"] = &TypeDecl{}
-	structure.Definition.Main.Types["bar"].Type = "string"
+	text = `"baz"`
+	err = structure.Validate([]byte(text))
+	if err == nil {
+		t.Error("JSON object validation did not fail")
+	}
+	t.Log(err)
+	structure.Options.UnionError = AllUnionReport
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")
