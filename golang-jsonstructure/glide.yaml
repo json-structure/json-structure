@@ -4,5 +4,6 @@ import:
 - package: github.com/wadey/gocovmerge
 - package: github.com/shopspring/decimal
 - package: github.com/mitchellh/hashstructure
+- package: github.com/mohae/deepcopy
 - package: github.com/mspiegel/go-multierror
 - package: github.com/antlr/antlr4/runtime/Go/antlr

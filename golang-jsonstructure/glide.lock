@@ -1,5 +1,5 @@
-hash: 575cae118bbe3881f768548f16a15f1b4fed654c03f64c4c8c7e23fd6c93d461
-updated: 2017-03-13T08:31:58.989994237-04:00
+hash: a4c0dd9316aab8d8e140b830a3fc7100894de1cc560c4598b346105a94f4f3d9
+updated: 2017-03-13T20:34:20.985465767-04:00
 imports:
 - name: github.com/antlr/antlr4
   version: aacd2a2c95816d8dc1c05814051d631bfec4cf3e
@@ -9,6 +9,8 @@ imports:
   version: 7554cd9344cec97297fa6649b055a8c98c2a1e55
 - name: github.com/mitchellh/hashstructure
   version: ab25296c0f51f1022f01cd99dfb45f1775de8799
+- name: github.com/mohae/deepcopy
+  version: bb9b5e7adda9eda54cc5491fb05d833c2e4a6648
 - name: github.com/mspiegel/go-multierror
   version: 065aa648c994f1f905c52e38e9bb23f4c7848737
 - name: github.com/shopspring/decimal
@@ -16,7 +18,7 @@ imports:
 - name: github.com/wadey/gocovmerge
   version: b5bfa59ec0adc420475f97f89b58045c721d761c
 - name: golang.org/x/tools
-  version: f60b69ed8cd7a29e91f87050ae23a29581a0f367
+  version: 381149a2d6e5d8f319ccf04bfefc71e03a78b868
   subpackages:
   - cmd/goimports
 testImports: []

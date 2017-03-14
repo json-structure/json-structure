@@ -29,12 +29,12 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 	name := td.Type
 
 	if !PrimitiveTypes[name] {
-		td = structure.Definition.Types[name]
-		if td == nil {
+		def := structure.Definition.Types[name]
+		if def == nil {
 			err := fmt.Errorf("Unknown type '%s'", name)
 			return errorAt(err, scope)
 		}
-		return td.Validate(value, structure, scope)
+		return def.Validate(value, structure, scope)
 	}
 
 	if value == nil {
@@ -185,11 +185,12 @@ func validateUnion(td *TypeDecl, value interface{}, structure JSONStructure, sco
 		if err == nil {
 			return nil
 		}
-		err = fmt.Errorf(`%s for tag "%s"`, err.Error(), k)
+		err = fmt.Errorf("Attempted to validate against %s: %s\n", k, err.Error())
+		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
 	if errs == nil {
-		errs = errors.New("no matching union type")
+		errs = errors.New("no union type declared")
 		errs = errorAt(errs, scope)
 	}
 	return errs

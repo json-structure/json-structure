@@ -8,7 +8,7 @@ IMPORT_PATH := github.com/json-structure/json-structure/golang-jsonstructure
 # Space separated patterns of packages to skip in list, test, format.
 IGNORED_PACKAGES := /vendor/
 
-NOCOVER_PACKAGES := /vendor/ /simpleregexp
+NOCOVER_PACKAGES := /vendor/ /simpleregexp /bootstrap
 
 NOVENDOR_FILES := $(shell find . -name "*.go" | grep -v /\.GOPATH/ | grep -v /vendor/ )
 
@@ -35,15 +35,8 @@ clean:
 
 test: .GOPATH/.ok
 	$Q go test $(if $V,-v) -i -race $(allpackages) # install -race libs to speed up next run
-ifndef CI
 	for FILE in $(NOVENDOR_FILES); do go tool vet -shadow $$FILE; done;
 	$Q GODEBUG=cgocheck=2 go test -race $(allpackages)
-else
-	$Q ( go vet $(allpackages); echo $$? ) | \
-	    tee .GOPATH/test/vet.txt | sed '$$ d'; exit $$(tail -1 .GOPATH/test/vet.txt)
-	$Q ( GODEBUG=cgocheck=2 go test -v -race $(allpackages); echo $$? ) | \
-	    tee .GOPATH/test/output.txt | sed '$$ d'; exit $$(tail -1 .GOPATH/test/output.txt)
-endif
 
 list: .GOPATH/.ok
 	@echo $(allpackages)
@@ -58,11 +51,7 @@ cover: bin/gocovmerge .GOPATH/.ok
 			$$MOD 2>&1 | grep -v "no packages being tested depend on"; \
 	done
 	$Q ./bin/gocovmerge .GOPATH/cover/*.out > .GOPATH/cover/all.merged
-ifndef CI
 	$Q go tool cover -html .GOPATH/cover/all.merged
-else
-	$Q go tool cover -html .GOPATH/cover/all.merged -o .GOPATH/cover/all.html
-endif
 	@echo ""
 	@echo "=====> Total test coverage: <====="
 	@echo ""

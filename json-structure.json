@@ -1,0 +1,252 @@
+{
+  "title": "JSON Structure meta-structure",
+  "fragments": {
+    "nonnegative": {
+      "minimum": 0
+    },
+    "optional": {
+      "nullable": true,
+      "default": null
+    },
+    "common": {
+      "default": {
+        "type": "json",
+        "compose": [ "optional" ]
+      },
+      "enum": {
+        "type": "set",
+        "compose": [ "optional" ],
+        "items": {
+          "type": "json"
+        }
+      }
+    },
+    "primitives": {
+      "compose": [ "common" ],
+      "format": {
+        "compose": [ "optional" ],
+        "type": "string"
+      },
+      "nullable": {
+        "type": "boolean",
+        "default": false
+      }
+    }
+  },
+  "types": {
+    "Boolean": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "boolean" ]
+        }
+      }
+    },
+    "String": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "string" ]
+        },
+        "pattern": {
+          "type": "string",
+          "compose": [ "optional" ]
+        },
+        "minLength": {
+          "type": "integer",
+          "compose": [ "optional", "nonnegative" ]
+        },
+        "maxLength": {
+          "type": "integer",
+          "compose": [ "optional", "nonnegative" ]
+        }
+      }
+    },
+    "Json": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "json" ]
+        }
+      }
+    },
+    "Number": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "number" ]
+        },
+        "multipleOf": {
+          "type": "number",
+          "compose": [ "optional", "nonnegative" ]
+        },
+        "minimum": {
+          "type": "number",
+          "compose": [ "optional" ]
+        },
+        "maximum": {
+          "type": "number",
+          "compose": [ "optional" ]
+        },
+        "exclusiveMinimum": {
+          "type": "number",
+          "compose": [ "optional" ]
+        },
+        "exclusiveMaximum": {
+          "type": "number",
+          "compose": [ "optional" ]
+        }
+      }
+    },
+    "Integer": {
+      "compose": [ "Number" ],
+      "fields": {
+        "type": {
+          "type": "string",
+          "enum": [ "integer" ]
+        }
+      }
+    },
+    "Struct": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "struct" ]
+        },
+        "fields": {
+          "type": "map",
+          "items": {
+            "type": "TypeDecl"
+          }
+        }
+      }
+    },
+    "Array": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "array" ]
+        },
+        "items": {
+          "type": "TypeDecl"
+        },
+        "minItems": {
+          "type": "integer",
+          "compose": [ "optional", "nonnegative" ]
+        },
+        "maxItems": {
+          "type": "integer",
+          "compose": [ "optional", "nonnegative" ]
+        }
+      }
+    },
+    "Map": {
+      "compose": [ "Array" ],
+      "fields": {
+        "type": {
+          "type": "string",
+          "enum": [ "map" ]
+        }
+      }
+    },
+    "Set": {
+      "compose": [ "Array" ],
+      "fields": {
+        "type": {
+          "type": "string",
+          "enum": [ "set" ]
+        }
+      }
+    },
+    "Union": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "primitives" ],
+        "type": {
+          "type": "string",
+          "enum": [ "union" ]
+        },
+        "types": {
+          "type": "map",
+          "items": {
+            "type": "TypeDecl"
+          }
+        }
+      }
+    },
+    "UserType": {
+      "type": "struct",
+      "fields": {
+        "compose": [ "common" ],
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "TypeDecl": {
+      "type": "union",
+      "types": {
+        "boolean":  { "type": "Boolean" },
+        "integer":  { "type": "Integer" },
+        "number":   { "type": "Number" },
+        "string":   { "type": "String" },
+        "json":     { "type": "Json" },
+        "struct":   { "type": "Struct" },
+        "array":    { "type": "Array" },
+        "set":      { "type": "Set" },
+        "map":      { "type": "Map" },
+        "union":    { "type": "Union" },
+        "user":     { "type": "UserType" }
+      }
+    }
+  },
+  "main": {
+    "type": "struct",
+    "fields": {
+      "title": {
+        "compose": [ "optional" ],
+        "type": "string"
+      },
+      "imports": {
+        "compose": [ "optional" ],
+        "type": "map",
+        "items": {
+          "type": "string"
+        }
+      },
+      "description": {
+        "compose": [ "optional" ],
+        "type": "string"
+      },
+      "fragments": {
+        "compose": [ "optional" ],
+        "type": "map",
+        "items": {
+          "type": "json"
+        }
+      },
+      "types": {
+        "compose": [ "optional" ],
+        "type": "map",
+        "items": {
+          "type": "TypeDecl"
+        }
+      },
+      "main": {
+        "type": "TypeDecl"
+      }
+    }
+  }
+}
