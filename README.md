@@ -72,8 +72,8 @@ be specified using JSON Structures.
             "nullable": true,
             "fields": {
                 "data": {
-                    "compose": ["positive", "even"],
-                    "type": "integer"
+                    "type": "integer",
+                    "\u2384": ["positive", "even"]
                 },
                 "next": {
                     "type": "node"
