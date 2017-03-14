@@ -285,7 +285,7 @@ example of this design is the "default" property. Not only
 does it provide a value when none is provided. It is
 also used to indicate that a value is optional.
 
-Another source of concern is the interaction features.
+Another source of concern is feature interaction.
 In general there should only be one way to do a thing.
 
 ## FAQ
