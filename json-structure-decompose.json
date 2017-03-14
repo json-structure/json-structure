@@ -1,0 +1,610 @@
+{
+  "title": "JSON Structure meta-structure",
+  "fragments": {
+    "common": {
+      "default": {
+        "default": null,
+        "nullable": true,
+        "type": "json"
+      },
+      "enum": {
+        "default": null,
+        "items": {
+          "type": "json"
+        },
+        "nullable": true,
+        "type": "set"
+      }
+    },
+    "nonnegative": {
+      "minimum": 0
+    },
+    "optional": {
+      "default": null,
+      "nullable": true
+    },
+    "primitives": {
+      "default": {
+        "default": null,
+        "nullable": true,
+        "type": "json"
+      },
+      "enum": {
+        "default": null,
+        "items": {
+          "type": "json"
+        },
+        "nullable": true,
+        "type": "set"
+      },
+      "format": {
+        "default": null,
+        "nullable": true,
+        "type": "string"
+      },
+      "nullable": {
+        "default": false,
+        "type": "boolean"
+      }
+    }
+  },
+  "types": {
+    "Array": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "items": {
+          "type": "TypeDecl"
+        },
+        "maxItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "minItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "array"
+          ]
+        }
+      }
+    },
+    "Boolean": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "boolean"
+          ]
+        }
+      }
+    },
+    "Integer": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "exclusiveMaximum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "exclusiveMinimum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "maximum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "minimum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "multipleOf": {
+          "type": "number",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "integer"
+          ]
+        }
+      }
+    },
+    "Json": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "json"
+          ]
+        }
+      }
+    },
+    "Map": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "items": {
+          "type": "TypeDecl"
+        },
+        "maxItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "minItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "map"
+          ]
+        }
+      }
+    },
+    "Number": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "exclusiveMaximum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "exclusiveMinimum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "maximum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "minimum": {
+          "type": "number",
+          "default": null,
+          "nullable": true
+        },
+        "multipleOf": {
+          "type": "number",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "number"
+          ]
+        }
+      }
+    },
+    "Set": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "items": {
+          "type": "TypeDecl"
+        },
+        "maxItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "minItems": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "set"
+          ]
+        }
+      }
+    },
+    "String": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "maxLength": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "minLength": {
+          "type": "integer",
+          "default": null,
+          "nullable": true,
+          "minimum": 0
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "pattern": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string"
+          ]
+        }
+      }
+    },
+    "Struct": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "fields": {
+          "type": "map",
+          "items": {
+            "type": "TypeDecl"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "struct"
+          ]
+        }
+      }
+    },
+    "TypeDecl": {
+      "type": "union",
+      "types": {
+        "array": {
+          "type": "Array"
+        },
+        "boolean": {
+          "type": "Boolean"
+        },
+        "integer": {
+          "type": "Integer"
+        },
+        "json": {
+          "type": "Json"
+        },
+        "map": {
+          "type": "Map"
+        },
+        "number": {
+          "type": "Number"
+        },
+        "set": {
+          "type": "Set"
+        },
+        "string": {
+          "type": "String"
+        },
+        "struct": {
+          "type": "Struct"
+        },
+        "union": {
+          "type": "Union"
+        },
+        "user": {
+          "type": "UserType"
+        }
+      }
+    },
+    "Union": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "format": {
+          "type": "string",
+          "default": null,
+          "nullable": true
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "union"
+          ]
+        },
+        "types": {
+          "type": "map",
+          "items": {
+            "type": "TypeDecl"
+          }
+        }
+      }
+    },
+    "UserType": {
+      "type": "struct",
+      "fields": {
+        "default": {
+          "type": "json",
+          "default": null,
+          "nullable": true
+        },
+        "enum": {
+          "type": "set",
+          "default": null,
+          "nullable": true,
+          "items": {
+            "type": "json"
+          }
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "main": {
+    "type": "struct",
+    "fields": {
+      "description": {
+        "type": "string",
+        "default": null,
+        "nullable": true
+      },
+      "fragments": {
+        "type": "map",
+        "default": null,
+        "nullable": true,
+        "items": {
+          "type": "json"
+        }
+      },
+      "imports": {
+        "type": "map",
+        "default": null,
+        "nullable": true,
+        "items": {
+          "type": "string"
+        }
+      },
+      "main": {
+        "type": "TypeDecl"
+      },
+      "title": {
+        "type": "string",
+        "default": null,
+        "nullable": true
+      },
+      "types": {
+        "type": "map",
+        "default": null,
+        "nullable": true,
+        "items": {
+          "type": "TypeDecl"
+        }
+      }
+    }
+  }
+}

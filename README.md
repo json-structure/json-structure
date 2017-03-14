@@ -102,31 +102,32 @@ in behavior to macro expansion than it is to object inheritance.
 But composition has been designed to easily model object
 inheritance.
 
-The 'compose' property can be declared in any JSON object in
+The compose property can be declared in any JSON object in
 a JSON Structure. Composition is applied to transform the JSON
-Structure based on the 'compose' properties.
+Structure based on the compose properties. The compose
+property is written as '&#9092;' or '\u2384'
 
 Composition is applied to all JSON objects in a JSON Structure.
 To compose a JSON object, first recursively apply the compose
 operation to all children of the JSON object. Next, look to
-see whether the 'compose' property is defined. If it is not
-defined then terminate.
+see whether the &#9092; property is defined. If it is not
+defined then terminate the composition.
 
-If 'compose' is defined, the composition will be recursively
+If &#9092; is defined, the composition will be recursively
 merging a series of JSON objects. Begin the composition
 with a destination JSON object that is an empty object. 
-Traverse in order through the names in the 'compose' array.
+Traverse in order through the names in the &#9092; array.
 Each name must correspond to a defined fragment or type.
-After locating the fragment or type, apply the 'compose'
-operation on that JSON object. Then merge that object
-into the destination object.
+After locating the fragment or type, apply the composition
+operation on that JSON object. Then recursively merge that
+object into the destination object.
 
 A recursive merge writes all the properties of
 the source object into the destination object. If the child
 property is itself a JSON object then apply the recursive
 merge to the child property.
 
-After the traversal of the 'compose' array then complete
+After the traversal of the &#9092; array then complete
 the compose operation by recursively merging the remaining
 properties of the original JSON object into the destination
 object. Replace the original object with the destination object.
@@ -151,12 +152,12 @@ JSON Structure supports the following primitive types.
 | integer | mathematical integer  |
 | number  | JSON number (rational number) |
 | string  | JSON string |
+| json    | Raw json values. |
 | struct  | structure or record |
 | array   | sequence of values of the same type |
+| set     | Collection type. |
+| map     | Collection type. |
 | union   | union over types |
-| json    | Raw json values. Coming soon |
-| set     | Collection type. Coming soon |
-| map     | Collection type. Coming soon |
 
 ## Declaration Names
 
@@ -231,10 +232,27 @@ The remaining properties are optional.
 | minItems | integer | See JSON Schema |
 | maxItems | integer | See JSON Schema |
 
+**Set Properties**
+
+| Property      | JSON |  Description |
+| ------------- | ---- |  ----------- |
+| item | map | Required. Type declaration applied to each item. |
+| minItems | integer | See JSON Schema |
+| maxItems | integer | See JSON Schema |
+
+**Map Properties**
+
+| Property      | JSON |  Description |
+| ------------- | ---- |  ----------- |
+| item | map | Required. Type declaration applied to each item. |
+| minItems | integer | See JSON Schema |
+| maxItems | integer | See JSON Schema |
+
 **Union Properties**
 
-The union names are not using during object validation.
-The names are used when applying the compose operation.
+The keys of the types map are not using during object validation.
+Types is a JSON object and therefore recursively composed
+when composition is applied.
 
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
@@ -259,7 +277,7 @@ field is optional. Otherwise the field is required.
 
 2\. How do I specify a type declaration for extra fields in a struct?
 
-You can't.
+You can't. Consider using the 'map' type instead of the 'struct' type.
 
 3\. Why are you throwing shade on JSON Schema?
 

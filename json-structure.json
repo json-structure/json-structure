@@ -11,20 +11,20 @@
     "common": {
       "default": {
         "type": "json",
-        "compose": [ "optional" ]
+        "\u2384": [ "optional" ]
       },
       "enum": {
         "type": "set",
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "items": {
           "type": "json"
         }
       }
     },
     "primitives": {
-      "compose": [ "common" ],
+      "\u2384": [ "common" ],
       "format": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "string"
       },
       "nullable": {
@@ -37,7 +37,7 @@
     "Boolean": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "boolean" ]
@@ -47,29 +47,29 @@
     "String": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "string" ]
         },
         "pattern": {
           "type": "string",
-          "compose": [ "optional" ]
+          "\u2384": [ "optional" ]
         },
         "minLength": {
           "type": "integer",
-          "compose": [ "optional", "nonnegative" ]
+          "\u2384": [ "optional", "nonnegative" ]
         },
         "maxLength": {
           "type": "integer",
-          "compose": [ "optional", "nonnegative" ]
+          "\u2384": [ "optional", "nonnegative" ]
         }
       }
     },
     "Json": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "json" ]
@@ -79,35 +79,35 @@
     "Number": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "number" ]
         },
         "multipleOf": {
           "type": "number",
-          "compose": [ "optional", "nonnegative" ]
+          "\u2384": [ "optional", "nonnegative" ]
         },
         "minimum": {
           "type": "number",
-          "compose": [ "optional" ]
+          "\u2384": [ "optional" ]
         },
         "maximum": {
           "type": "number",
-          "compose": [ "optional" ]
+          "\u2384": [ "optional" ]
         },
         "exclusiveMinimum": {
           "type": "number",
-          "compose": [ "optional" ]
+          "\u2384": [ "optional" ]
         },
         "exclusiveMaximum": {
           "type": "number",
-          "compose": [ "optional" ]
+          "\u2384": [ "optional" ]
         }
       }
     },
     "Integer": {
-      "compose": [ "Number" ],
+      "\u2384": [ "Number" ],
       "fields": {
         "type": {
           "type": "string",
@@ -118,7 +118,7 @@
     "Struct": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "struct" ]
@@ -134,7 +134,7 @@
     "Array": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "array" ]
@@ -144,16 +144,16 @@
         },
         "minItems": {
           "type": "integer",
-          "compose": [ "optional", "nonnegative" ]
+          "\u2384": [ "optional", "nonnegative" ]
         },
         "maxItems": {
           "type": "integer",
-          "compose": [ "optional", "nonnegative" ]
+          "\u2384": [ "optional", "nonnegative" ]
         }
       }
     },
     "Map": {
-      "compose": [ "Array" ],
+      "\u2384": [ "Array" ],
       "fields": {
         "type": {
           "type": "string",
@@ -162,7 +162,7 @@
       }
     },
     "Set": {
-      "compose": [ "Array" ],
+      "\u2384": [ "Array" ],
       "fields": {
         "type": {
           "type": "string",
@@ -173,7 +173,7 @@
     "Union": {
       "type": "struct",
       "fields": {
-        "compose": [ "primitives" ],
+        "\u2384": [ "primitives" ],
         "type": {
           "type": "string",
           "enum": [ "union" ]
@@ -189,7 +189,7 @@
     "UserType": {
       "type": "struct",
       "fields": {
-        "compose": [ "common" ],
+        "\u2384": [ "common" ],
         "type": {
           "type": "string"
         }
@@ -216,29 +216,29 @@
     "type": "struct",
     "fields": {
       "title": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "string"
       },
       "imports": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "map",
         "items": {
           "type": "string"
         }
       },
       "description": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "string"
       },
       "fragments": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "map",
         "items": {
           "type": "json"
         }
       },
       "types": {
-        "compose": [ "optional" ],
+        "\u2384": [ "optional" ],
         "type": "map",
         "items": {
           "type": "TypeDecl"

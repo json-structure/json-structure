@@ -8,6 +8,8 @@ import (
 	multierror "github.com/mspiegel/go-multierror"
 )
 
+var ComposeSymbol = "\u2384"
+
 func elementOf(elem []string, candidate string) bool {
 	for _, e := range elem {
 		if e == candidate {
@@ -64,7 +66,7 @@ func compose(target interface{},
 	if errs != nil {
 		return errs
 	}
-	c := object["compose"]
+	c := object[ComposeSymbol]
 	if c == nil {
 		return nil
 	}
@@ -133,7 +135,7 @@ func compose(target interface{},
 	if errs != nil {
 		return errs
 	}
-	delete(object, "compose")
+	delete(object, ComposeSymbol)
 	return nil
 }
 

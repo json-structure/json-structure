@@ -125,7 +125,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 				"multipleOf": 4
 			},
 			"foo": {
-				"compose": [ "req", "bar" ],
+				"\u2384": [ "req", "bar" ],
 				"type": "integer"
 			}
 		},
@@ -203,7 +203,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	text = `{
 		"fragments": {
 			"a": {
-				"compose": [ "a" ]
+				"\u2384": [ "a" ]
 			}
 		},
 		"main": {
@@ -218,7 +218,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	text = `{
 		"fragments": {
 			"a": {
-				"compose": [ "b" ]
+				"\u2384": [ "b" ]
 			}
 		},
 		"main": {
@@ -233,10 +233,10 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	text = `{
 		"fragments": {
 			"a": {
-				"compose": [ true ]
+				"\u2384": [ true ]
 			},
 			"b": {
-				"compose": 5
+				"\u2384": 5
 			}
 		},
 		"main": {
