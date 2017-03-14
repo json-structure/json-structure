@@ -7,7 +7,7 @@ import (
 	multierror "github.com/mspiegel/go-multierror"
 )
 
-func unionFilterErrors(errs map[string]error, structure JSONStructure, scope []string) error {
+func unionFilterErrors(errs map[string]error, structure *JSONStructure, scope []string) error {
 	if structure.Options.UnionError == AllUnionReport {
 		return unionAllErrors(errs)
 	}
@@ -27,7 +27,7 @@ func filterPriority(errs []error, scope []string) error {
 	return result
 }
 
-func unionPriorityErrors(errs map[string]error, structure JSONStructure, scope []string) error {
+func unionPriorityErrors(errs map[string]error, structure *JSONStructure, scope []string) error {
 	result := errors.New("union validation failure. Reporting a subset of errors for each type")
 	lowPriority := make(map[string]error)
 	hasPriority := false

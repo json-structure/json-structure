@@ -11,20 +11,24 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (structure JSONStructure) Validate(text []byte) error {
+func (structure *JSONStructure) Validate(text []byte) error {
 	var value interface{}
-
+	structure.InitOnce.Do(structure.doValidation)
+	err := structure.InitError
+	if err != nil {
+		return err
+	}
 	reader := bytes.NewReader(text)
 	decoder := json.NewDecoder(reader)
 	decoder.UseNumber()
-	err := decoder.Decode(&value)
+	err = decoder.Decode(&value)
 	if err != nil {
 		return err
 	}
 	return structure.Definition.Main.Validate(value, structure, nil)
 }
 
-func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope []string) error {
+func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	name := td.Type
 
@@ -88,7 +92,7 @@ func (td *TypeDecl) Validate(value interface{}, structure JSONStructure, scope [
 	return errs
 }
 
-func validateBoolean(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	_, ok := value.(bool)
 	if !ok {
 		err := errors.New("JSON value is not a boolean")
@@ -97,7 +101,7 @@ func validateBoolean(td *TypeDecl, value interface{}, structure JSONStructure, s
 	return nil
 }
 
-func validateNumber(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	num, ok := value.(json.Number)
 	if !ok {
@@ -136,7 +140,7 @@ func validateNumber(td *TypeDecl, value interface{}, structure JSONStructure, sc
 	return errs
 }
 
-func validateInteger(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	err := validateNumber(td, value, structure, scope)
 	if err != nil {
 		return err
@@ -150,7 +154,7 @@ func validateInteger(td *TypeDecl, value interface{}, structure JSONStructure, s
 	return nil
 }
 
-func validateString(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	str, ok := value.(string)
 	if !ok {
@@ -178,7 +182,7 @@ func validateString(td *TypeDecl, value interface{}, structure JSONStructure, sc
 	return errs
 }
 
-func validateUnion(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var err error
 	errs := make(map[string]error)
 	for k, decl := range td.Types {
@@ -191,7 +195,7 @@ func validateUnion(td *TypeDecl, value interface{}, structure JSONStructure, sco
 	return unionFilterErrors(errs, structure, scope)
 }
 
-func validateStruct(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	obj, ok := value.(map[string]interface{})
 	if !ok {
@@ -220,7 +224,7 @@ func validateStruct(td *TypeDecl, value interface{}, structure JSONStructure, sc
 	return errs
 }
 
-func validateArray(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	arr, ok := value.([]interface{})
 	if !ok {
@@ -245,7 +249,7 @@ func validateArray(td *TypeDecl, value interface{}, structure JSONStructure, sco
 	return errs
 }
 
-func validateSet(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	arr, ok := value.([]interface{})
 	if !ok {
@@ -281,7 +285,7 @@ func validateSet(td *TypeDecl, value interface{}, structure JSONStructure, scope
 	return errs
 }
 
-func validateMap(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	obj, ok := value.(map[string]interface{})
 	if !ok {
@@ -306,7 +310,7 @@ func validateMap(td *TypeDecl, value interface{}, structure JSONStructure, scope
 	return errs
 }
 
-func validateFormat(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	if td.Format == nil {
 		return nil
 	}
@@ -323,7 +327,7 @@ func validateFormat(td *TypeDecl, value interface{}, structure JSONStructure, sc
 	return err
 }
 
-func validateEnum(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
+func validateEnum(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	if td.EnumRaw == nil {
 		return nil
 	}

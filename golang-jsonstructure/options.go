@@ -20,13 +20,13 @@ type JSONStructureOptions struct {
 	UnionError UnionErrorReport
 }
 
-func DefaultOptions() *JSONStructureOptions {
+func DefaultOptions() JSONStructureOptions {
 	formats := make(map[string]*Format)
 	for k, v := range defaultFormats {
 		formats[k] = v
 	}
 	flavor := StrictRegex
-	return &JSONStructureOptions{
+	return JSONStructureOptions{
 		Formats: formats,
 		Regex:   flavor,
 	}

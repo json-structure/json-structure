@@ -39,11 +39,20 @@ type TypeDecl struct {
 	Format   *string `json:"format,omitempty"`
 	Nullable *bool   `json:"nullable,omitempty"`
 	// number
-	MultipleOf       *decimal.Decimal `json:"multipleOf,omitempty"`
-	Minimum          *decimal.Decimal `json:"minimum,omitempty"`
-	Maximum          *decimal.Decimal `json:"maximum,omitempty"`
-	ExclusiveMinimum *decimal.Decimal `json:"exclusiveMinimum,omitempty"`
-	ExclusiveMaximum *decimal.Decimal `json:"exclusiveMaximum,omitempty"`
+	// decimal library marshals JSON with quotes
+	// (unless terrible hack flag is used)
+	// preserving raw JSON numbers for marshaling
+	MultipleOfRaw       *json.Number `json:"multipleOf,omitempty"`
+	MinimumRaw          *json.Number `json:"minimum,omitempty"`
+	MaximumRaw          *json.Number `json:"maximum,omitempty"`
+	ExclusiveMinimumRaw *json.Number `json:"exclusiveMinimum,omitempty"`
+	ExclusiveMaximumRaw *json.Number `json:"exclusiveMaximum,omitempty"`
+	// number (parsed)
+	MultipleOf       *decimal.Decimal `json:"-"`
+	Minimum          *decimal.Decimal `json:"-"`
+	Maximum          *decimal.Decimal `json:"-"`
+	ExclusiveMinimum *decimal.Decimal `json:"-"`
+	ExclusiveMaximum *decimal.Decimal `json:"-"`
 	// string
 	PatternRaw *string        `json:"pattern,omitempty"`
 	Pattern    *regexp.Regexp `json:"-"`
@@ -125,7 +134,7 @@ var PermissibleFields = map[string]map[string]bool{
 	},
 }
 
-func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error {
 	var errs error
 	if len(td.Type) == 0 {
 		err := errors.New("missing required property 'type'")
@@ -144,12 +153,12 @@ func (td *TypeDecl) ValidateDecl(structure JSONStructure, scope []string) error 
 	}
 	e1 := permissible("format", td.Type, pf, td.Format != nil, scope)
 	e2 := permissible("nullable", td.Type, pf, td.Nullable != nil, scope)
-	e3 := permissible("multipleOf", td.Type, pf, td.MultipleOf != nil, scope)
-	e4 := permissible("minimum", td.Type, pf, td.Minimum != nil, scope)
-	e5 := permissible("maximum", td.Type, pf, td.Maximum != nil, scope)
-	e6 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimum != nil, scope)
-	e7 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximum != nil, scope)
-	e8 := permissible("pattern", td.Type, pf, td.PatternRaw != nil, scope)
+	e3 := permissible("multipleOf", td.Type, pf, td.MultipleOfRaw != nil || td.MultipleOf != nil, scope)
+	e4 := permissible("minimum", td.Type, pf, td.MinimumRaw != nil || td.Minimum != nil, scope)
+	e5 := permissible("maximum", td.Type, pf, td.MaximumRaw != nil || td.Maximum != nil, scope)
+	e6 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimumRaw != nil || td.ExclusiveMinimum != nil, scope)
+	e7 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximumRaw != nil || td.ExclusiveMaximum != nil, scope)
+	e8 := permissible("pattern", td.Type, pf, td.PatternRaw != nil || td.Pattern != nil, scope)
 	e9 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
 	e10 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
 	e11 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
@@ -176,7 +185,7 @@ func permissible(name string, typ string, fields map[string]bool, observed bool,
 	return nil
 }
 
-func detectTypeAliasCycle(structure JSONStructure, td *TypeDecl, prev map[string]bool) error {
+func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[string]bool) error {
 	name := td.Type
 	decl := structure.Definition.Types[td.Type]
 	if prev[name] {
@@ -196,10 +205,43 @@ func detectTypeAliasCycle(structure JSONStructure, td *TypeDecl, prev map[string
 	return detectTypeAliasCycle(structure, decl, prev)
 }
 
+func convertNumber(num *json.Number, scope []string, name string) (*decimal.Decimal, error) {
+	dec, err := decimal.NewFromString(num.String())
+	if err != nil {
+		err = errorAt(err, append(scope, name))
+		return nil, err
+	}
+	return &dec, nil
+}
+
+func convertNumbers(td *TypeDecl, scope []string) error {
+	var e1, e2, e3, e4, e5 error
+	if td.MinimumRaw != nil {
+		td.Minimum, e1 = convertNumber(td.MinimumRaw, scope, "minimum")
+	}
+	if td.MaximumRaw != nil {
+		td.Maximum, e2 = convertNumber(td.MaximumRaw, scope, "maximum")
+	}
+	if td.ExclusiveMinimumRaw != nil {
+		td.ExclusiveMinimum, e3 = convertNumber(td.ExclusiveMinimumRaw, scope, "exclusiveMinimum")
+	}
+	if td.ExclusiveMaximumRaw != nil {
+		td.ExclusiveMaximum, e4 = convertNumber(td.ExclusiveMaximumRaw, scope, "exclusiveMaximum")
+	}
+	if td.MultipleOfRaw != nil {
+		td.MultipleOf, e5 = convertNumber(td.MultipleOfRaw, scope, "multipleOf")
+	}
+	return multierror.Append(nil, e1, e2, e3, e4, e5)
+}
+
 func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	var errs error
 	if td.Type != "integer" && td.Type != "number" {
 		return nil
+	}
+	errs = convertNumbers(td, scope)
+	if errs != nil {
+		return errs
 	}
 	if td.Minimum != nil && td.ExclusiveMinimum != nil {
 		err := errors.New("'minimum' and 'exclusiveMinimum' are both defined")
@@ -235,7 +277,7 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	return errs
 }
 
-func validateStringTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "string" {
 		return nil
@@ -276,7 +318,7 @@ func validateStringTypeDecl(td *TypeDecl, structure JSONStructure, scope []strin
 	return errs
 }
 
-func validateStructTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "struct" {
 		return nil
@@ -294,7 +336,7 @@ func validateStructTypeDecl(td *TypeDecl, structure JSONStructure, scope []strin
 	return errs
 }
 
-func validateCollectionTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateCollectionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "array" && td.Type != "set" && td.Type != "map" {
 		return nil
@@ -325,7 +367,7 @@ func validateCollectionTypeDecl(td *TypeDecl, structure JSONStructure, scope []s
 	return errs
 }
 
-func validateUnionTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
 	var errs error
 	if td.Type != "union" {
 		return nil
@@ -343,7 +385,7 @@ func validateUnionTypeDecl(td *TypeDecl, structure JSONStructure, scope []string
 	return errs
 }
 
-func validateFormatTypeDecl(td *TypeDecl, structure JSONStructure, scope []string) error {
+func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
 	if td.Format == nil {
 		return nil
 	}
@@ -362,7 +404,7 @@ func validateFormatTypeDecl(td *TypeDecl, structure JSONStructure, scope []strin
 	return nil
 }
 
-func (td *TypeDecl) ValidateEmbedded(structure JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) error {
 	var errs error
 	// enums must be populated before default is validated
 	if td.EnumRaw != nil {

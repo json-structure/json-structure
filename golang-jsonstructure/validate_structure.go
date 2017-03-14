@@ -6,7 +6,7 @@ import (
 	multierror "github.com/mspiegel/go-multierror"
 )
 
-func (structure JSONStructure) ValidateStructure() error {
+func (structure *JSONStructure) ValidateStructure() error {
 	err := validateStructureDecls(structure)
 	if err != nil {
 		return err
@@ -18,7 +18,11 @@ func (structure JSONStructure) ValidateStructure() error {
 	return nil
 }
 
-func validateStructureDecls(structure JSONStructure) error {
+func (structure *JSONStructure) doValidation() {
+	structure.InitError = structure.ValidateStructure()
+}
+
+func validateStructureDecls(structure *JSONStructure) error {
 	var errs error
 	definition := structure.Definition
 	for k, v := range definition.Types {
@@ -44,7 +48,7 @@ func validateStructureDecls(structure JSONStructure) error {
 	return errs
 }
 
-func validateEmbeddedObjects(structure JSONStructure) error {
+func validateEmbeddedObjects(structure *JSONStructure) error {
 	var errs error
 	definition := structure.Definition
 	for k, v := range definition.Types {

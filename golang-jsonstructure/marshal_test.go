@@ -1,6 +1,7 @@
 package jsonstructure
 
 import (
+	"encoding/json"
 	"reflect"
 	"testing"
 
@@ -109,7 +110,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 	text := `{
 		"main": {"type": "number"}
 	}`
-	structure, err := CreateJSONStructure([]byte(text), nil)
+	structure, err := CreateJSONStructure([]byte(text), DefaultOptions())
 	if err != nil {
 		t.Error("Unmarshal error", err)
 	}
@@ -133,7 +134,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	structure, err = CreateJSONStructure([]byte(text), nil)
+	structure, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err != nil {
 		t.Error("Unmarshal error", err)
 	}
@@ -150,19 +151,19 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 
 func TestUnmarshalStructureFailure(t *testing.T) {
 	text := `{}`
-	_, err := CreateJSONStructure([]byte(text), nil)
+	_, err := CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
 	text = `{"fragments": "foo", "types": "bar", "main": {}}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
 	text = `{"fragments": "foo", "types": "bar", "main": {}}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -171,7 +172,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 		"fragments": {"a": true, "b":true},
 	 	"types": {"a": true, "b":true}, 
 		"main": {}}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -179,7 +180,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	text = `{
 	 	"types": {"a": true, "b":true}, 
 		"main": {}}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -195,7 +196,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "boolean"
 		}
 	}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -210,7 +211,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -225,7 +226,7 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
@@ -243,9 +244,65 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 			"type": "foo"
 		}
 	}`
-	_, err = CreateJSONStructure([]byte(text), nil)
+	_, err = CreateJSONStructure([]byte(text), DefaultOptions())
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
+}
+
+func TestMarshalStructure(t *testing.T) {
+	var result JSONStructureDefinition
+	var data []byte
+	dec, _ := decimal.NewFromString("2")
+	s1 := EmptyJSONStructure()
+	s1.Definition.Main = &TypeDecl{}
+	s1.Definition.Main.Type = "integer"
+	s1.Definition.Main.MultipleOf = &dec
+	s1.Definition.Main.Minimum = &dec
+	s1.Definition.Main.Maximum = &dec
+	err := s1.ValidateStructure()
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	data, err = json.MarshalIndent(s1.Definition, "", "  ")
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	if result.Main.MultipleOfRaw == nil {
+		t.Error("Marshal failure")
+	}
+	if result.Main.MinimumRaw == nil {
+		t.Error("Marshal failure")
+	}
+	if result.Main.MaximumRaw == nil {
+		t.Error("Marshal failure")
+	}
+	s2 := EmptyJSONStructure()
+	s2.Definition.Main = &TypeDecl{}
+	s2.Definition.Main.Type = "integer"
+	s2.Definition.Main.ExclusiveMinimum = &dec
+	s2.Definition.Main.ExclusiveMaximum = &dec
+	err = s2.ValidateStructure()
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	data, err = json.MarshalIndent(s2.Definition, "", "  ")
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	if result.Main.ExclusiveMinimumRaw == nil {
+		t.Error("Marshal failure")
+	}
+	if result.Main.ExclusiveMaximumRaw == nil {
+		t.Error("Marshal failure")
+	}
 }

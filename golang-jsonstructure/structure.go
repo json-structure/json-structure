@@ -1,10 +1,15 @@
 package jsonstructure
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"sync"
+)
 
 type JSONStructure struct {
-	Definition *JSONStructureDefinition
-	Options    *JSONStructureOptions
+	Definition JSONStructureDefinition
+	Options    JSONStructureOptions
+	InitOnce   sync.Once
+	InitError  error
 }
 
 type JSONStructureDefinition struct {
@@ -16,29 +21,29 @@ type JSONStructureDefinition struct {
 	Main        *TypeDecl                  `json:"main"`
 }
 
-func EmptyJSONStructure() JSONStructure {
-	return JSONStructure{
-		Definition: &JSONStructureDefinition{},
+func EmptyJSONStructure() *JSONStructure {
+	return &JSONStructure{
+		Definition: JSONStructureDefinition{},
 		Options:    DefaultOptions(),
+		InitOnce:   sync.Once{},
 	}
 }
 
-func CreateJSONStructure(data []byte, options *JSONStructureOptions) (JSONStructure, error) {
+func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStructure, error) {
 	var definition JSONStructureDefinition
 	err := json.Unmarshal(data, &definition)
 	if err != nil {
-		return JSONStructure{}, err
-	}
-	if options == nil {
-		options = DefaultOptions()
+		return nil, err
 	}
 	result := JSONStructure{
-		Definition: &definition,
+		Definition: definition,
 		Options:    options,
+		InitOnce:   sync.Once{},
 	}
-	err = result.ValidateStructure()
+	result.InitOnce.Do(result.doValidation)
+	err = result.InitError
 	if err != nil {
-		return JSONStructure{}, err
+		return nil, err
 	}
-	return result, nil
+	return &result, nil
 }
