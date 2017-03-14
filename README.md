@@ -105,7 +105,8 @@ inheritance.
 The compose property can be declared in any JSON object in
 a JSON Structure. Composition is applied to transform the JSON
 Structure based on the compose properties. The compose
-property is written as '&#9092;' or '\u2384'
+property is written using the [Composition Symbol](http://www.fileformat.info/info/unicode/char/2384/index.htm)
+'&#9092;' or '\u2384'
 
 Composition is applied to all JSON objects in a JSON Structure.
 To compose a JSON object, first recursively apply the compose
