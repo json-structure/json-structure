@@ -179,21 +179,16 @@ func validateString(td *TypeDecl, value interface{}, structure JSONStructure, sc
 }
 
 func validateUnion(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
-	var err, errs error
+	var err error
+	errs := make(map[string]error)
 	for k, decl := range td.Types {
 		err = decl.Validate(value, structure, scope)
 		if err == nil {
 			return nil
 		}
-		err = fmt.Errorf("Attempted to validate against %s: %s\n", k, err.Error())
-		err = errorAt(err, scope)
-		errs = multierror.Append(errs, err)
+		errs[k] = err
 	}
-	if errs == nil {
-		errs = errors.New("no union type declared")
-		errs = errorAt(errs, scope)
-	}
-	return errs
+	return unionFilterErrors(errs, structure, scope)
 }
 
 func validateStruct(td *TypeDecl, value interface{}, structure JSONStructure, scope []string) error {
@@ -339,7 +334,7 @@ func validateEnum(td *TypeDecl, value interface{}, structure JSONStructure, scop
 	}
 	if !found {
 		err = errors.New("value not found in 'enum' set")
-		err = errorAt(err, scope)
+		err = enumError(err, scope)
 		return err
 	}
 	return nil

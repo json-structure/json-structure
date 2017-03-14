@@ -2,14 +2,22 @@ package jsonstructure
 
 type RegexFlavor int
 
+type UnionErrorReport int
+
 const (
 	StrictRegex RegexFlavor = iota
 	NativeRegex
 )
 
+const (
+	PriorityUnionReport UnionErrorReport = iota
+	AllUnionReport
+)
+
 type JSONStructureOptions struct {
-	Formats map[string]*Format
-	Regex   RegexFlavor
+	Formats    map[string]*Format
+	Regex      RegexFlavor
+	UnionError UnionErrorReport
 }
 
 func DefaultOptions() *JSONStructureOptions {
