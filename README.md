@@ -135,7 +135,9 @@ object. Replace the original object with the destination object.
 Below is the same algorithm described in pseudocode rather
 than prose. For simplicitly the error paths have been omitted.
 
-![compose algorithm](pseudocode.png#cachebuster)
+![compose algorithm](compose-scaled.png#cachebuster)
+
+![merge algorithm](merge-scaled.png#cachebuster)
 
 Fragments exist solely for the purpose of composition. Fragments
 are not required to be valid type definitions so they cannot be
