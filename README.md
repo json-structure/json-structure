@@ -270,6 +270,24 @@ to implement this requirement. A JSON Structure validator
 may provide an option to parse the JSON Structure with
 the host language's native regular expression dialect.
 
+## Contributing
+
+JSON Structure is licensed under the Apache Public License
+Version 2. Please open an issue before submitting a pull
+request. We tend to be conservative with new feature requests,
+so opening an issue lets us talk about the proposal before
+you spend the effort writing code.
+
+In general we aren't looking for features that solve one-off
+problems. We prefer a new feature that can solve an entire
+class of problems or multiple classes of problems. An
+example of this design is the "default" property. Not only
+does it provide a value when none is provided. It is
+also used to indicate that a value is optional.
+
+Another source of concern is the interaction features.
+In general there should only be one way to do a thing.
+
 ## FAQ
 
 1\. How do I specify a struct field as optional or required?
