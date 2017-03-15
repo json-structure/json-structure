@@ -3,6 +3,7 @@ package jsonstructure
 import (
 	"encoding/json"
 	"reflect"
+	"regexp"
 	"testing"
 
 	"github.com/shopspring/decimal"
@@ -251,7 +252,31 @@ func TestUnmarshalStructureFailure(t *testing.T) {
 	t.Log(err)
 }
 
-func TestMarshalStructure(t *testing.T) {
+func TestMarshalStructureString(t *testing.T) {
+	var result JSONStructureDefinition
+	var data []byte
+	s1 := EmptyJSONStructure()
+	s1.Definition.Main = &TypeDecl{}
+	s1.Definition.Main.Type = "string"
+	s1.Definition.Main.Pattern = regexp.MustCompile("[0-9]+")
+	err := s1.ValidateStructure()
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	data, err = json.MarshalIndent(s1.Definition, "", "  ")
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		t.Error("Unexpected error ", err)
+	}
+	if result.Main.PatternRaw == nil {
+		t.Error("Marshal failure")
+	}
+}
+
+func TestMarshalStructureInteger(t *testing.T) {
 	var result JSONStructureDefinition
 	var data []byte
 	dec, _ := decimal.NewFromString("2")

@@ -1,0 +1,21 @@
+[
+  {
+    "description": "json type declaration",
+    "structure": {
+      "main": { "type": "json" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "any type",
+        "data": "hello world",
+        "valid": true
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      }
+    ]
+  }
+]

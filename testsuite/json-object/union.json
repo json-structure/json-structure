@@ -1,0 +1,78 @@
+[
+  {
+    "description": "union type declaration",
+    "structure": {
+      "main": {
+        "type": "union",
+        "types": {
+          "foo": { "type": "integer" },
+          "bar": { "type": "string" }
+        }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "foo type",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "bar type",
+        "data": "foobar",
+        "valid": true
+      },
+      {
+        "description": "incorrect type",
+        "data": true,
+        "valid": false
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "inner nullable clause",
+    "structure": {
+      "main": {
+        "type": "union",
+        "types": {
+          "foo": { "type": "integer", "nullable": true },
+          "bar": { "type": "string" }
+        }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "outer nullable clause",
+    "structure": {
+      "main": {
+        "type": "union",
+        "types": {
+          "foo": { "type": "integer"},
+          "bar": { "type": "string" }
+        },
+        "nullable": true
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "null value",
+        "data": null,
+        "valid": true
+      }
+    ]
+  }
+]

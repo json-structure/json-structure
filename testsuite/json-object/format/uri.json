@@ -1,0 +1,21 @@
+[
+  {
+    "description": "uri format",
+    "structure": {
+      "main": { "type": "string", "format": "uri" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "correct uri",
+        "data": "http://www.example.com",
+        "valid": true
+      },
+      {
+        "description": "incorrect uri",
+        "data": "://foobar",
+        "valid": false
+      }
+    ]
+  }
+]

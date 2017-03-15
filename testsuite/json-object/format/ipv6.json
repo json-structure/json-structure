@@ -1,0 +1,26 @@
+[
+  {
+    "description": "ipv6 format",
+    "structure": {
+      "main": { "type": "string", "format": "ipv6" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "correct ipv6",
+        "data": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+        "valid": true
+      },
+      {
+        "description": "correct ipv4",
+        "data": "1.2.3.4",
+        "valid": true
+      },
+      {
+        "description": "incorrect ipv6",
+        "data": "!",
+        "valid": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "description": "email format",
+    "structure": {
+      "main": { "type": "string", "format": "email" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "correct email",
+        "data": "user@example.com",
+        "valid": true
+      },
+      {
+        "description": "incorrect email",
+        "data": "user@example@com",
+        "valid": false
+      }
+    ]
+  }
+]

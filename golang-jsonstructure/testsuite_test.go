@@ -7,7 +7,7 @@ import (
 	"github.com/json-structure/json-structure/golang-jsonstructure/testsuite"
 )
 
-type TestSuite struct {
+type TestDeclaration struct {
 	Description string          `json:"description"`
 	Structure   json.RawMessage `json:"structure"`
 	Valid       bool            `json:"valid"`
@@ -20,9 +20,9 @@ type TestCase struct {
 	Valid       bool            `json:"valid"`
 }
 
-func TestTestSuite(t *testing.T) {
+func TestSuite(t *testing.T) {
 	for _, name := range testsuite.AssetNames() {
-		var suites []TestSuite
+		var suites []TestDeclaration
 		data, err := testsuite.Asset(name)
 		if err != nil {
 			t.Errorf("Unable to read %s: %s", name, err)

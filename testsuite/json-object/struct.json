@@ -1,0 +1,66 @@
+[
+  {
+    "description": "struct type declaration",
+    "structure": {
+      "main": {
+        "type": "struct",
+        "fields": {
+          "foo": { "type": "integer" },
+          "bar": { "type": "string", "nullable": true, "default": null }
+        }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": "hello world",
+        "valid": false
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      },
+      {
+        "description": "valid struct",
+        "data": {
+          "foo": 3,
+          "bar": "hello world"
+        },
+        "valid": true
+      },
+      {
+        "description": "missing optional",
+        "data": {
+          "foo": 3
+        },
+        "valid": true
+      },
+      {
+        "description": "missing required",
+        "data": {
+          "bar": "hello world"
+        },
+        "valid": false
+      },
+      {
+        "description": "field type error",
+        "data": {
+          "foo": "hello world",
+          "bar": 3
+        },
+        "valid": false
+      },
+      {
+        "description": "extra field",
+        "data": {
+          "foo": 3,
+          "bar": "hello world",
+          "baz": null
+        },
+        "valid": false
+      }
+    ]
+  }
+]

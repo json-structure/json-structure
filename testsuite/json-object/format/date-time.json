@@ -1,0 +1,21 @@
+[
+  {
+    "description": "date-time format",
+    "structure": {
+      "main": { "type": "string", "format": "date-time" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "correct date-time",
+        "data": "2000-01-01T00:00:00+00:00",
+        "valid": true
+      },
+      {
+        "description": "incorrect date-time",
+        "data": "2000-01-01",
+        "valid": false
+      }
+    ]
+  }
+]

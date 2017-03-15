@@ -1,0 +1,34 @@
+[
+  {
+    "description": "type alias declaration",
+    "structure": {
+      "types": {
+        "foo": { "type": "boolean" }
+      },
+      "main": { "type": "foo" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": "hello world",
+        "valid": false
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      },
+      {
+        "description": "true value",
+        "data": true,
+        "valid": true
+      },
+      {
+        "description": "false value",
+        "data": false,
+        "valid": true
+      }
+    ]
+  }
+]

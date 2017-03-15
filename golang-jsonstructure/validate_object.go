@@ -322,8 +322,10 @@ func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		return err
 	}
 	err := format.Apply(value, td.Type)
-	err = fmt.Errorf(`Validation error on format "%s": %s`, name, err.Error())
-	err = errorAt(err, scope)
+	if err != nil {
+		err = fmt.Errorf(`Validation error on format "%s": %s`, name, err.Error())
+		err = errorAt(err, scope)
+	}
 	return err
 }
 

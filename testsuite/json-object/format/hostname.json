@@ -1,0 +1,36 @@
+[
+  {
+    "description": "hostname format",
+    "structure": {
+      "main": { "type": "string", "format": "hostname" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "correct hostname",
+        "data": "server.example.com",
+        "valid": true
+      },
+      {
+        "description": "empty hostname",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "bad character",
+        "data": "!",
+        "valid": false
+      },
+      {
+        "description": "long segment",
+        "data": "dnbmzauflihhhinzrxafaztzxrtxzgedaylllrgtyufsictbpcfxnosjczolnnax",
+        "valid": false
+      },
+      {
+        "description": "long hostname",
+        "data": "euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.euftotzxmjsdbbtdqyyhjlbafmfnrxlu.com",
+        "valid": false
+      }
+    ]
+  }
+]

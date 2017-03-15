@@ -1,0 +1,96 @@
+[
+  {
+    "description": "struct type declaration",
+    "structure": {
+      "main": {
+        "type": "map",
+        "items": {
+          "type": "integer"
+        }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": "hello world",
+        "valid": false
+      }, {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      }, {
+        "description": "valid map",
+        "data": {
+          "a": 1,
+          "b": 2,
+          "c": 3
+        },
+        "valid": true
+      }, {
+        "description": "invalid elements",
+        "data": {
+          "a": 1,
+          "b": "foo",
+          "c": "bar",
+          "d": null
+        },
+        "valid": false
+      }
+    ]
+  }, {
+  "description": "minimum items",
+  "structure": {
+    "main": {
+      "type": "map",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 1
+    }
+  },
+  "valid": true,
+  "tests": [
+    {
+      "description": "less than minimum items",
+      "data": {},
+      "valid": false
+    }, {
+      "description": "equal to minimum items",
+      "data": {"a": 1},
+      "valid": true
+    }, {
+      "description": "greater than minimum items",
+      "data": {"a":1, "b":2},
+      "valid": true
+    }
+  ]
+}, {
+  "description": "maximum items",
+  "structure": {
+    "main": {
+      "type": "map",
+      "items": {
+        "type": "integer"
+      },
+      "maxItems": 1
+    }
+  },
+  "valid": true,
+  "tests": [
+    {
+      "description": "less than maximum items",
+      "data": { },
+      "valid": true
+    }, {
+      "description": "equal to maximum items",
+      "data": {"a": 1},
+      "valid": true
+    }, {
+      "description": "greater than maximum items",
+      "data": {"a":1, "b":2},
+      "valid": false
+    }
+  ]
+}
+]
