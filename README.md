@@ -73,7 +73,7 @@ be specified using JSON Structures.
             "fields": {
                 "data": {
                     "type": "integer",
-                    "\u2384": ["positive", "even"]
+                    "\u0ADD": ["positive", "even"]
                 },
                 "next": {
                     "type": "node"
@@ -105,19 +105,18 @@ inheritance.
 The compose property can be declared in any JSON object in
 a JSON Structure. Composition is applied to transform the JSON
 Structure based on the compose properties. The compose
-property is written using the [Composition Symbol](http://www.fileformat.info/info/unicode/char/2384/index.htm)
-'&#9092;' or '\u2384'
+property is written using the Unicode unassigned code point "\u0ADD".
 
 Composition is applied to all JSON objects in a JSON Structure.
 To compose a JSON object, first recursively apply the compose
 operation to all children of the JSON object. Next, look to
-see whether the &#9092; property is defined. If it is not
+see whether the "\u0ADD" property is defined. If it is not
 defined then terminate the composition.
 
-If &#9092; is defined, the composition will be recursively
+If "\u0ADD" is defined, the composition will be recursively
 merging a series of JSON objects. Begin the composition
 with a destination JSON object that is an empty object. 
-Traverse in order through the names in the &#9092; array.
+Traverse in order through the names in the "\u0ADD" array.
 Each name must correspond to a defined fragment or type.
 After locating the fragment or type, apply the composition
 operation on that JSON object. Then recursively merge that
@@ -128,7 +127,7 @@ the source object into the destination object. If the child
 property is itself a JSON object then apply the recursive
 merge to the child property.
 
-After the traversal of the &#9092; array then complete
+After the traversal of the "\u0ADD" array then complete
 the compose operation by recursively merging the remaining
 properties of the original JSON object into the destination
 object. Replace the original object with the destination object.

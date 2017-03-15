@@ -10,13 +10,13 @@
 \State \Call{Compose}{$value$}
 \EndFor
 \State $result \gets \{\}$
-\ForAll{$name$ in $input["\backslash u2384"]$}
+\ForAll{$name$ in $input[$"\textbackslash u0ADD"$]$}
 \State $target \gets $lookup object by $name$
 \State \Call{Compose}{$target$}
 \State \Call{Merge}{$target, result$}
 \EndFor
 \State \Call{Merge}{$input, result$}
-\State $result["\backslash u2384"] \gets nil$
+\State $result[$"\textbackslash u0ADD"$] \gets nil$
 \State $input \gets result$
 \EndFunction
 

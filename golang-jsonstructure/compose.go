@@ -8,7 +8,7 @@ import (
 	multierror "github.com/mspiegel/go-multierror"
 )
 
-var ComposeSymbol = "\u2384"
+var ComposeSymbol = "\u0ADD"
 
 func elementOf(elem []string, candidate string) bool {
 	for _, e := range elem {
