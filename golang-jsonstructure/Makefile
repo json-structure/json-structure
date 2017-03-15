@@ -12,9 +12,6 @@ NOCOVER_PACKAGES := /vendor/ /simpleregexp /bootstrap /testsuite
 
 NOVENDOR_FILES := $(shell find . -name "*.go" | grep -v /\.GOPATH/ | grep -v /vendor/ )
 
-MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-MAKEFILE_DIR := $(abspath $(dir $(MAKEFILE_PATH)))
-
 .PHONY: all
 all: build
 
@@ -31,16 +28,16 @@ build: .GOPATH/.ok
 
 ##### =====> Utility targets <===== #####
 
-.PHONY: clean test list cover format
+.PHONY: clean test list cover format testsuite
 
 clean:
 	$Q rm -rf bin .GOPATH
 
-test: .GOPATH/.ok
+testsuite:
 	@echo "Applying go-bindata to test suite"
-	@cd $(MAKEFILE_DIR)/.. && \
-	go-bindata -pkg testsuite -modtime 0 testsuite/... && \
-	mv bindata.go $(MAKEFILE_DIR)/testsuite
+	@cd testsuite && go-bindata -pkg testsuite -modtime 0 testsuite/...
+
+test: .GOPATH/.ok
 	$Q go test $(if $V,-v) -i -race $(allpackages) # install -race libs to speed up next run
 	for FILE in $(NOVENDOR_FILES); do go tool vet -shadow $$FILE; done;
 	$Q GODEBUG=cgocheck=2 go test -race $(allpackages)
