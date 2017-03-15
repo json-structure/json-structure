@@ -1,0 +1,141 @@
+[
+  {
+    "description": "number type declaration",
+    "structure": {
+      "main": { "type": "number" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": "hello world",
+        "valid": false
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      },
+      {
+        "description": "rational number",
+        "data": 1.5,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "minimum value",
+    "structure": {
+      "main": { "type": "number", "minimum": 0 }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "less than minimum",
+        "data": -1,
+        "valid": false
+      },
+      {
+        "description": "equal to minimum",
+        "data": 0,
+        "valid": true
+      },
+      {
+        "description": "greater than minimum",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "exclusive minimum value",
+    "structure": {
+      "main": { "type": "number", "exclusiveMinimum": 0 }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "less than exclusive minimum",
+        "data": -1,
+        "valid": false
+      },
+      {
+        "description": "equal to exclusive minimum",
+        "data": 0,
+        "valid": false
+      },
+      {
+        "description": "greater than exclusive minimum",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "maximum value",
+    "structure": {
+      "main": { "type": "number", "maximum": 0 }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "less than maximum",
+        "data": -1,
+        "valid": true
+      },
+      {
+        "description": "equal to maximum",
+        "data": 0,
+        "valid": true
+      },
+      {
+        "description": "greater than maximum",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "exclusive maximum value",
+    "structure": {
+      "main": { "type": "number", "exclusiveMaximum": 0 }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "less than exclusive maximum",
+        "data": -1,
+        "valid": true
+      },
+      {
+        "description": "equal to exclusive maximum",
+        "data": 0,
+        "valid": false
+      },
+      {
+        "description": "greater than exclusive maximum",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple of",
+    "structure": {
+      "main": { "type": "number", "multipleOf": 2 }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "even number is multiple of two",
+        "data": 2,
+        "valid": true
+      },
+      {
+        "description": "odd number is not multiple of two",
+        "data": 3,
+        "valid": false
+      }
+    ]
+  }
+]

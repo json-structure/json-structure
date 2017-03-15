@@ -21,7 +21,7 @@ func (structure *JSONStructureDefinition) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	err = transformCompose(shell)
+	err = Compose(shell)
 	if err != nil {
 		return err
 	}

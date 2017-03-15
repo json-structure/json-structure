@@ -44,7 +44,7 @@ func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope []st
 	return errs
 }
 
-func compose(target interface{},
+func doCompose(target interface{},
 	types map[string]interface{},
 	fragments map[string]interface{},
 	prev []string,
@@ -59,7 +59,7 @@ func compose(target interface{},
 	for k, v := range object {
 		if obj, ok2 := v.(map[string]interface{}); ok2 {
 			newscope := append(scope, k)
-			err = compose(obj, types, fragments, prev, newscope)
+			err = doCompose(obj, types, fragments, prev, newscope)
 			errs = multierror.Append(err, errs)
 		}
 	}
@@ -111,7 +111,7 @@ func compose(target interface{},
 		if tDef != nil {
 			next := append(prev, defName)
 			newscope := []string{"types", defName}
-			err = compose(tDef, types, fragments, next, newscope)
+			err = doCompose(tDef, types, fragments, next, newscope)
 			errs = multierror.Append(err, errs)
 			if err != nil {
 				continue
@@ -120,7 +120,7 @@ func compose(target interface{},
 		} else if fDef != nil {
 			next := append(prev, defName)
 			newscope := []string{"fragments", defName}
-			err = compose(fDef, types, fragments, next, newscope)
+			err = doCompose(fDef, types, fragments, next, newscope)
 			errs = multierror.Append(err, errs)
 			if err != nil {
 				continue
@@ -139,18 +139,13 @@ func compose(target interface{},
 	return nil
 }
 
-func transformCompose(shell map[string]interface{}) error {
+func Compose(shell map[string]interface{}) error {
 	var typ, frag map[string]interface{}
 	var ok bool
 	var err, errs error
 	t := shell["types"]
 	f := shell["fragments"]
 	m := shell["main"]
-	if m == nil {
-		err = errors.New("JSON Structure missing required 'main' property")
-		err = errorAt(err, nil)
-		return err
-	}
 	if t == nil {
 		t = make(map[string]interface{})
 	}
@@ -185,8 +180,8 @@ func transformCompose(shell map[string]interface{}) error {
 			err = errors.New("Cannot declare fragment with primitive type name")
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
-		} else {
-			err = compose(v, typ, frag, prev, scope)
+		} else if v != nil {
+			err = doCompose(v, typ, frag, prev, scope)
 			errs = multierror.Append(errs, err)
 		}
 	}
@@ -197,15 +192,17 @@ func transformCompose(shell map[string]interface{}) error {
 			err = errors.New("Cannot declare type with primitive type name")
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
-		} else {
-			err = compose(v, typ, frag, prev, scope)
+		} else if v != nil {
+			err = doCompose(v, typ, frag, prev, scope)
 			errs = multierror.Append(errs, err)
 		}
 	}
-	prev := []string{}
-	scope := []string{"main"}
-	err = compose(m, typ, frag, prev, scope)
-	errs = multierror.Append(errs, err)
+	if m != nil {
+		prev := []string{}
+		scope := []string{"main"}
+		err = doCompose(m, typ, frag, prev, scope)
+		errs = multierror.Append(errs, err)
+	}
 	return errs
 }
 

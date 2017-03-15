@@ -1,8 +1,23 @@
 [
   {
-    "description": "missing type declaration",
+    "description": "missing main declaration",
+    "structure": {},
+    "valid": false
+  },
+  {
+    "description": "missing required property 'type'",
     "structure": {
       "main": {}
+    },
+    "valid": false
+  },
+  {
+    "description": "null type declaration",
+    "structure": {
+      "types": {
+        "a": null
+      },
+      "main": { "type": "boolean" }
     },
     "valid": false
   },
@@ -13,6 +28,40 @@
     },
     "valid": false
   },
+  {
+    "description": "duplicate names",
+    "structure": {
+      "fragments": {
+        "a": { "type": "boolean" }
+      },
+      "types": {
+        "a": { "type": "boolean" }
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": false
+  },
+  {
+    "description": "reuse primitive type name",
+    "structure": {
+      "types": {
+        "integer": { "type": "boolean" }
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": false
+  },
+  {
+    "description": "reuse primitive type name",
+    "structure": {
+      "fragments": {
+        "integer": { "type": "boolean" }
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": false
+  },
+
   {
     "description": "type cycle",
     "structure": {

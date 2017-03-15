@@ -1,0 +1,94 @@
+[
+  {
+    "description": "string type declaration",
+    "structure": {
+      "main": {
+        "type": "string"
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": 5,
+        "valid": false
+      }, {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      }, {
+        "description": "string value",
+        "data": "hello world",
+        "valid": true
+      }
+    ]
+  }, {
+  "description": "minimum length",
+  "structure": {
+    "main": {
+      "type": "string",
+      "minLength": 3
+    }
+  },
+  "valid": true,
+  "tests": [
+    {
+      "description": "less than minimum length",
+      "data": "hi",
+      "valid": false
+    }, {
+      "description": "equal to minimum length",
+      "data": "foo",
+      "valid": true
+    }, {
+      "description": "greater than minimum length",
+      "data": "hello world",
+      "valid": true
+    }
+  ]
+}, {
+  "description": "maximum length",
+  "structure": {
+    "main": {
+      "type": "string",
+      "maxLength": 3
+    }
+  },
+  "valid": true,
+  "tests": [
+    {
+      "description": "less than maximum length",
+      "data": "hi",
+      "valid": true
+    }, {
+      "description": "equal to maximum length",
+      "data": "foo",
+      "valid": true
+    }, {
+      "description": "greater than maximum length",
+      "data": "hello world",
+      "valid": false
+    }
+  ]
+  }, {
+  "description": "pattern property",
+  "structure": {
+    "main": {
+      "type": "string",
+      "pattern": "[0-9]+"
+    }
+  },
+  "valid": true,
+  "tests": [
+    {
+      "description": "pattern match",
+      "data": "12345",
+      "valid": true
+    }, {
+      "description": "pattern mismatch",
+      "data": "foo",
+      "valid": false
+    }
+  ]
+}
+]

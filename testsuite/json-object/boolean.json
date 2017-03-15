@@ -1,0 +1,31 @@
+[
+  {
+    "description": "boolean type declaration",
+    "structure": {
+      "main": { "type": "boolean" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "incorrect type",
+        "data": "hello world",
+        "valid": false
+      },
+      {
+        "description": "null value",
+        "data": null,
+        "valid": false
+      },
+      {
+        "description": "true value",
+        "data": true,
+        "valid": true
+      },
+      {
+        "description": "false value",
+        "data": false,
+        "valid": true
+      }
+    ]
+  }
+]
