@@ -1,0 +1,24 @@
+[
+  {
+    "description": "fields is missing",
+    "structure": {
+      "main": {
+        "type": "struct"
+      }
+    },
+    "valid": false
+  }, {
+  "description": "struct field error",
+  "structure": {
+    "main": {
+      "type": "struct",
+      "fields": {
+        "foo": {
+          "type": "foo"
+        }
+      }
+    }
+  },
+  "valid": false
+}
+]

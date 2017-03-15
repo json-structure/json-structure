@@ -1,0 +1,49 @@
+[
+  {
+    "description": "minLength is negative",
+    "structure": {
+      "main": {
+        "type": "string",
+        "minLength": -1
+      }
+    },
+    "valid": false
+  }, {
+  "description": "maxLength is negative",
+  "structure": {
+    "main": {
+      "type": "string",
+      "maxLength": -1
+    }
+  },
+  "valid": false
+}, {
+  "description": "minLength greater than maxLength",
+  "structure": {
+    "main": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "native regular expression pattern",
+  "structure": {
+    "main": {
+      "type": "string",
+      "pattern": "\\d+"
+    }
+  },
+  "valid": false
+}, {
+  "description": "invalid regular expression pattern",
+  "structure": {
+    "main": {
+      "type": "string",
+      "pattern": "((.+)"
+    }
+  },
+  "valid": false
+}
+]

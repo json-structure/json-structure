@@ -1,0 +1,59 @@
+[
+  {
+    "description": "items is missing",
+    "structure": {
+      "main": {
+        "type": "set"
+      }
+    },
+    "valid": false
+  }, {
+  "description": "minItems is negative",
+  "structure": {
+    "main": {
+      "type": "set",
+      "minItems": -1,
+      "items": {
+        "type": "boolean"
+      }
+    }
+  },
+  "valid": false
+}, {
+  "description": "maxItems is negative",
+  "structure": {
+    "main": {
+      "type": "set",
+      "maxItems": -1,
+      "items": {
+        "type": "boolean"
+      }
+    }
+  },
+  "valid": false
+}, {
+  "description": "minItems is greater than maxItems",
+  "structure": {
+    "main": {
+      "type": "set",
+      "minItems": 1,
+      "maxItems": 0,
+      "items": {
+        "type": "boolean"
+      }
+    }
+  },
+  "valid": false
+  }, {
+  "description": "items field error",
+  "structure": {
+    "main": {
+      "type": "set",
+      "items": {
+        "type": "foo"
+      }
+    }
+  },
+  "valid": false
+}
+]

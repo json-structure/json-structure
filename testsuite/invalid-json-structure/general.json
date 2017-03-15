@@ -1,0 +1,54 @@
+[
+  {
+    "description": "missing type declaration",
+    "structure": {
+      "main": {}
+    },
+    "valid": false
+  },
+  {
+    "description": "unknown type",
+    "structure": {
+      "main": { "type": "foo" }
+    },
+    "valid": false
+  },
+  {
+    "description": "type cycle",
+    "structure": {
+      "types": {
+        "a": { "type": "b" },
+        "b": { "type": "a" }
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": false
+  },
+  {
+    "description": "invalid properties",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "multipleOf": 0,
+        "minimum": 0,
+        "exclusiveMinimum": 0,
+        "maximum": 0,
+        "exclusiveMaximum": 0,
+        "pattern": "foo",
+        "minLength": 0,
+        "maxLength": 0,
+        "fields": {
+          "foo": {
+            "type": "boolean"
+          }
+        },
+        "items": {
+          "type": "boolean"
+        },
+        "minItems": 0,
+        "maxItems": 0
+      }
+    },
+    "valid": false
+  }
+]

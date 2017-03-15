@@ -1,0 +1,72 @@
+[
+  {
+    "description": "multipleOf is negative",
+    "structure": {
+      "main": {
+        "type": "integer",
+        "multipleOf": -1
+      }
+    },
+    "valid": false
+  }, {
+  "description": "minimum and exclusiveMinimum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "minimum": 0,
+      "exclusiveMinimum": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "maximum and exclusiveMaximum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "maximum": 0,
+      "exclusiveMaximum": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "minimum greater than maximum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "exclusiveMinimum greater than maximum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "exclusiveMinimum": 1,
+      "maximum": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "minimum greater than exclusiveMaximum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "minimum": 1,
+      "exclusiveMaximum": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "exclusiveMinimum greater than exclusiveMaximum",
+  "structure": {
+    "main": {
+      "type": "integer",
+      "exclusiveMinimum": 1,
+      "exclusiveMaximum": 0
+    }
+  },
+  "valid": false
+}
+]

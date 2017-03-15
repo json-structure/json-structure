@@ -1,0 +1,22 @@
+[
+  {
+    "description": "unknown format",
+    "structure": {
+      "main": {
+        "type": "string",
+        "format": "foobar"
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "format applied to wrong type",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "format": "date-time"
+      }
+    },
+    "valid": false
+  }
+]

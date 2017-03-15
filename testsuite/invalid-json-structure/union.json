@@ -1,0 +1,33 @@
+[
+  {
+    "description": "types is missing",
+    "structure": {
+      "main": {
+        "type": "union"
+      }
+    },
+    "valid": false
+  }, {
+  "description": "types is empty",
+  "structure": {
+    "main": {
+      "type": "union",
+      "types": {}
+    }
+  },
+  "valid": false
+  }, {
+  "description": "types error",
+  "structure": {
+    "main": {
+      "type": "union",
+      "types": {
+        "foo": {
+          "type": "foo"
+        }
+      }
+    }
+  },
+  "valid": false
+}
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "description": "default is wrong type",
+    "structure": {
+      "main": {
+        "type": "number",
+        "default": "hello world"
+      }
+    },
+    "valid": false
+  }, {
+  "description": "enum has duplicate elements",
+  "structure": {
+    "main": {
+      "type": "number",
+      "enum": [ 10, 10.0 ]
+    }
+  },
+  "valid": false
+}, {
+  "description": "enum has duplicate elements",
+  "structure": {
+    "main": {
+      "type": "number",
+      "enum": [ 10.0, 1e1 ]
+    }
+  },
+  "valid": false
+}, {
+  "description": "default is not a member of enum",
+  "structure": {
+    "main": {
+      "type": "number",
+      "enum": [ 1, 2, 3 ],
+      "default": 0
+    }
+  },
+  "valid": false
+}, {
+  "description": "enum has null value",
+  "structure": {
+    "main": {
+      "type": "number",
+      "nullable": true,
+      "enum": [ null ]
+    }
+  },
+  "valid": false
+}
+]

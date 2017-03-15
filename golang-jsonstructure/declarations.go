@@ -301,12 +301,13 @@ func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 		var err error
 		td.Pattern, err = regexp.Compile(*td.PatternRaw)
 		if err != nil {
+			err = fmt.Errorf("'pattern' expression. %s", err)
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
 		} else if structure.Options.Regex == StrictRegex {
 			err = simpleregexp.Accept(*td.PatternRaw)
 			if err != nil {
-				err = fmt.Errorf("regular expression is not cross-platform. "+
+				err = fmt.Errorf("'pattern' expression is not cross-platform. "+
 					"Consider the NativeRegex option. %s",
 					err.Error())
 				err = errorAt(err, scope)
