@@ -1,3 +1,5 @@
 .GOPATH
 gocovmerge
 .idea
+*.iml
+/java/validator-jackson/target
