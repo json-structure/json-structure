@@ -1,0 +1,27 @@
+[
+  {
+    "description": "recursive compose",
+    "structure": {
+      "fragments": {
+        "a": {
+          "\u0ADD": [ "b" ]
+        },
+        "b": {
+          "\u0ADD": [ "a" ]
+        },
+        "c": {
+          "d": {
+            "\u0ADD": [ "c" ]
+          }
+        },
+        "e": {
+          "\u0ADD": [ "e" ]
+        }
+      },
+      "main": {
+        "type": "boolean"
+      }
+    },
+    "valid": false
+  }
+]

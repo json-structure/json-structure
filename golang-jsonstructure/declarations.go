@@ -131,6 +131,7 @@ var PermissibleFields = map[string]map[string]bool{
 	"union": map[string]bool{
 		"format":   true,
 		"nullable": true,
+		"types":    true,
 	},
 }
 
@@ -165,7 +166,8 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 	e12 := permissible("items", td.Type, pf, td.Items != nil, scope)
 	e13 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
 	e14 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14)
+	e15 := permissible("types", td.Type, pf, td.Types != nil, scope)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15)
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
@@ -262,7 +264,7 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 		max = td.ExclusiveMaximum
 	}
 	if min != nil && max != nil && min.Cmp(*max) > 0 {
-		err := errors.New("maximum is less than minimum")
+		err := errors.New("'maximum' is less than 'minimum'")
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
