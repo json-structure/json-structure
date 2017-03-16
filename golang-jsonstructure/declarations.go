@@ -134,7 +134,7 @@ var PermissibleFields = map[string]map[string]bool{
 	},
 }
 
-func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope string) error {
 	var errs error
 	if len(td.Type) == 0 {
 		err := errors.New("missing required property 'type'")
@@ -176,7 +176,7 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 	return errs
 }
 
-func permissible(name string, typ string, fields map[string]bool, observed bool, scope []string) error {
+func permissible(name string, typ string, fields map[string]bool, observed bool, scope string) error {
 	allowed := fields[name]
 	if observed && !allowed {
 		err := fmt.Errorf("Property %s is not allowed with type %s", name, typ)
@@ -205,16 +205,16 @@ func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[strin
 	return detectTypeAliasCycle(structure, decl, prev)
 }
 
-func convertNumber(num *json.Number, scope []string, name string) (*decimal.Decimal, error) {
+func convertNumber(num *json.Number, scope string, name string) (*decimal.Decimal, error) {
 	dec, err := decimal.NewFromString(num.String())
 	if err != nil {
-		err = errorAt(err, append(scope, name))
+		err = errorAt(err, scope+"/"+name)
 		return nil, err
 	}
 	return &dec, nil
 }
 
-func convertNumbers(td *TypeDecl, scope []string) error {
+func convertNumbers(td *TypeDecl, scope string) error {
 	var e1, e2, e3, e4, e5 error
 	if td.MinimumRaw != nil {
 		td.Minimum, e1 = convertNumber(td.MinimumRaw, scope, "minimum")
@@ -234,7 +234,7 @@ func convertNumbers(td *TypeDecl, scope []string) error {
 	return multierror.Append(nil, e1, e2, e3, e4, e5)
 }
 
-func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
+func validateNumberTypeDecl(td *TypeDecl, scope string) error {
 	var errs error
 	if td.Type != "integer" && td.Type != "number" {
 		return nil
@@ -277,7 +277,7 @@ func validateNumberTypeDecl(td *TypeDecl, scope []string) error {
 	return errs
 }
 
-func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope string) error {
 	var errs error
 	if td.Type != "string" {
 		return nil
@@ -319,7 +319,7 @@ func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	return errs
 }
 
-func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope string) error {
 	var errs error
 	if td.Type != "struct" {
 		return nil
@@ -330,14 +330,14 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 		return err
 	}
 	for k, v := range td.Fields {
-		newscope := append(scope, "fields", k)
+		newscope := scope + "/fields/" + k
 		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
 
-func validateCollectionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateCollectionTypeDecl(td *TypeDecl, structure *JSONStructure, scope string) error {
 	var errs error
 	if td.Type != "array" && td.Type != "set" && td.Type != "map" {
 		return nil
@@ -347,7 +347,7 @@ func validateCollectionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []
 		err = errorAt(err, scope)
 		return err
 	}
-	newscope := append(scope, "items")
+	newscope := scope + "/items"
 	err := td.Items.ValidateDecl(structure, newscope)
 	errs = multierror.Append(errs, err)
 	if td.MinItems != nil && *td.MinItems < 0 {
@@ -368,7 +368,7 @@ func validateCollectionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []
 	return errs
 }
 
-func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope string) error {
 	var errs error
 	if td.Type != "union" {
 		return nil
@@ -383,14 +383,14 @@ func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 		errs = multierror.Append(errs, err)
 	}
 	for k, v := range td.Types {
-		newscope := append(scope, "types", k)
+		newscope := scope + "/types/" + k
 		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
 
-func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope []string) error {
+func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope string) error {
 	if td.Format == nil {
 		return nil
 	}
@@ -409,13 +409,13 @@ func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 	return nil
 }
 
-func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope string) error {
 	var errs error
 	// enums must be populated before default is validated
 	if td.EnumRaw != nil {
 		td.Enum = createSet()
 		for i, raw := range td.EnumRaw {
-			iScope := append(scope, "enum", strconv.Itoa(i))
+			iScope := scope + "/enum/" + strconv.Itoa(i)
 			var insert bool
 			var value interface{}
 			reader := bytes.NewReader(raw)
@@ -450,7 +450,7 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 		}
 	}
 	if td.DefaultRaw != nil {
-		newscope := append(scope, "default")
+		newscope := scope + "/default"
 		reader := bytes.NewReader(td.DefaultRaw)
 		decoder := json.NewDecoder(reader)
 		decoder.UseNumber()
@@ -466,17 +466,17 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 		}
 	}
 	for k, v := range td.Fields {
-		newscope := append(scope, "fields", k)
+		newscope := scope + "/fields/" + k
 		err := v.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	for k, v := range td.Types {
-		newscope := append(scope, "types", k)
+		newscope := scope + "/types/" + k
 		err := v.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.Items != nil {
-		newscope := append(scope, "items")
+		newscope := scope + "/items"
 		err := td.Items.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}

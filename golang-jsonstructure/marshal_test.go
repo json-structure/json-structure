@@ -32,7 +32,7 @@ func TestMapMerge(t *testing.T) {
 		"bar": "alice",
 		"baz": "world",
 	}
-	err := mapMerge(dst, src, nil)
+	err := mapMerge(dst, src, "")
 	if err != nil {
 		t.Error("Unexpected error", err)
 	}
@@ -50,13 +50,13 @@ func TestMapMergeRecursive(t *testing.T) {
 	dst := map[string]interface{}{
 		"foo": 3,
 	}
-	err := mapMerge(dst, src, nil)
+	err := mapMerge(dst, src, "")
 	if err == nil {
 		t.Error("Expected error")
 	}
 	t.Log(err)
 	dst = map[string]interface{}{}
-	err = mapMerge(dst, src, nil)
+	err = mapMerge(dst, src, "")
 	if err != nil {
 		t.Error("Unexpected error")
 	}
@@ -68,7 +68,7 @@ func TestMapMergeRecursive(t *testing.T) {
 			"hello": "world",
 		},
 	}
-	err = mapMerge(dst, src, nil)
+	err = mapMerge(dst, src, "")
 	if err != nil {
 		t.Error("Unexpected error")
 	}

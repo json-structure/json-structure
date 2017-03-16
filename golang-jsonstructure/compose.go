@@ -19,10 +19,10 @@ func elementOf(elem []string, candidate string) bool {
 	return false
 }
 
-func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope []string) error {
+func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope string) error {
 	var errs error
 	for k, v := range src {
-		newscope := append(scope, k)
+		newscope := scope + "/" + k
 		srcMap, srcOK := v.(map[string]interface{})
 		dstValue := dst[k]
 		if dstValue != nil {
@@ -48,7 +48,7 @@ func doCompose(target interface{},
 	types map[string]interface{},
 	fragments map[string]interface{},
 	prev []string,
-	scope []string) error {
+	scope string) error {
 	var err, errs error
 	object, ok := target.(map[string]interface{})
 	if !ok {
@@ -58,7 +58,7 @@ func doCompose(target interface{},
 	}
 	for k, v := range object {
 		if obj, ok2 := v.(map[string]interface{}); ok2 {
-			newscope := append(scope, k)
+			newscope := scope + "/" + k
 			err = doCompose(obj, types, fragments, prev, newscope)
 			errs = multierror.Append(err, errs)
 		}
@@ -110,7 +110,7 @@ func doCompose(target interface{},
 		var def map[string]interface{}
 		if tDef != nil {
 			next := append(prev, defName)
-			newscope := []string{"types", defName}
+			newscope := "/types/" + defName
 			err = doCompose(tDef, types, fragments, next, newscope)
 			errs = multierror.Append(err, errs)
 			if err != nil {
@@ -119,7 +119,7 @@ func doCompose(target interface{},
 			def = tDef.(map[string]interface{})
 		} else if fDef != nil {
 			next := append(prev, defName)
-			newscope := []string{"fragments", defName}
+			newscope := "/fragments/" + defName
 			err = doCompose(fDef, types, fragments, next, newscope)
 			errs = multierror.Append(err, errs)
 			if err != nil {
@@ -155,13 +155,13 @@ func Compose(shell map[string]interface{}) error {
 	typ, ok = t.(map[string]interface{})
 	if !ok {
 		err = errors.New("'types' property must be a JSON object")
-		err = errorAt(err, nil)
+		err = errorAt(err, "")
 		errs = multierror.Append(errs, err)
 	}
 	frag, ok = f.(map[string]interface{})
 	if !ok {
 		err = errors.New("'fragments' property must be a JSON object")
-		err = errorAt(err, nil)
+		err = errorAt(err, "")
 		errs = multierror.Append(errs, err)
 	}
 	if errs != nil {
@@ -170,12 +170,12 @@ func Compose(shell map[string]interface{}) error {
 	dupls := intersection(typ, frag)
 	if len(dupls) > 0 {
 		err = fmt.Errorf("Duplicate keys across 'types' and 'fragments': %v", dupls)
-		err = errorAt(err, nil)
+		err = errorAt(err, "")
 		return err
 	}
 	for k, v := range frag {
 		prev := []string{k}
-		scope := []string{"fragments", k}
+		scope := "/fragments/" + k
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare fragment with primitive type name")
 			err = errorAt(err, scope)
@@ -187,7 +187,7 @@ func Compose(shell map[string]interface{}) error {
 	}
 	for k, v := range typ {
 		prev := []string{k}
-		scope := []string{"types", k}
+		scope := "/types/" + k
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare type with primitive type name")
 			err = errorAt(err, scope)
@@ -199,7 +199,7 @@ func Compose(shell map[string]interface{}) error {
 	}
 	if m != nil {
 		prev := []string{}
-		scope := []string{"main"}
+		scope := "/main"
 		err = doCompose(m, typ, frag, prev, scope)
 		errs = multierror.Append(errs, err)
 	}
