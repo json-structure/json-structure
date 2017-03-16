@@ -119,7 +119,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 			},
 			"foo": {
 				"\u0ADD": [ "req", "bar" ],
-				"type": "integer"
+				"type": "number"
 			}
 		},
 		"main": {
@@ -136,7 +136,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 	if !structure.Definition.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
 		t.Error("Composition failure")
 	}
-	if structure.Definition.Types["foo"].Type != "integer" {
+	if structure.Definition.Types["foo"].Type != "number" {
 		t.Error("Composition failure")
 	}
 }
