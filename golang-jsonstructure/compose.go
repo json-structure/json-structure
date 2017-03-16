@@ -10,15 +10,6 @@ import (
 
 var ComposeSymbol = "\u0ADD"
 
-func elementOf(elem []string, candidate string) bool {
-	for _, e := range elem {
-		if e == candidate {
-			return true
-		}
-	}
-	return false
-}
-
 func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope []string) error {
 	var errs error
 	for k, v := range src {
@@ -47,7 +38,7 @@ func mapMerge(dst map[string]interface{}, src map[string]interface{}, scope []st
 func doCompose(target interface{},
 	types map[string]interface{},
 	fragments map[string]interface{},
-	prev []string,
+	prev map[string]bool,
 	scope []string) error {
 	var err, errs error
 	object, ok := target.(map[string]interface{})
@@ -84,8 +75,9 @@ func doCompose(target interface{},
 			errs = multierror.Append(errs, err)
 			continue
 		}
-		if elementOf(prev, defName) {
-			err = fmt.Errorf("cycle detected with definitions %v", prev)
+		if prev[defName] {
+			keys := keysSet(prev)
+			err = fmt.Errorf("cycle detected with definitions %v", keys)
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
 			continue
@@ -107,7 +99,8 @@ func doCompose(target interface{},
 		}
 		var def map[string]interface{}
 		if tDef != nil {
-			next := append(prev, defName)
+			next := cloneSet(prev)
+			next[defName] = true
 			newscope := []string{"types", defName}
 			err = doCompose(tDef, types, fragments, next, newscope)
 			errs = multierror.Append(errs, err)
@@ -116,7 +109,8 @@ func doCompose(target interface{},
 			}
 			def = tDef.(map[string]interface{})
 		} else {
-			next := append(prev, defName)
+			next := cloneSet(prev)
+			next[defName] = true
 			newscope := []string{"fragments", defName}
 			err = doCompose(fDef, types, fragments, next, newscope)
 			errs = multierror.Append(errs, err)
@@ -178,7 +172,7 @@ func Compose(shell map[string]interface{}) error {
 		return err
 	}
 	for k, v := range frag {
-		prev := []string{k}
+		prev := map[string]bool{k: true}
 		scope := []string{"fragments", k}
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare fragment with primitive type name")
@@ -190,7 +184,7 @@ func Compose(shell map[string]interface{}) error {
 		}
 	}
 	for k, v := range typ {
-		prev := []string{k}
+		prev := map[string]bool{k: true}
 		scope := []string{"types", k}
 		if PrimitiveTypes[k] {
 			err = errors.New("Cannot declare type with primitive type name")
@@ -202,7 +196,7 @@ func Compose(shell map[string]interface{}) error {
 		}
 	}
 	if m != nil {
-		prev := []string{}
+		prev := map[string]bool{}
 		scope := []string{"main"}
 		err = doCompose(m, typ, frag, prev, scope)
 		errs = multierror.Append(errs, err)

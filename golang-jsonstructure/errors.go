@@ -26,9 +26,9 @@ func errorAt(err error, scope []string) error {
 	if err == nil {
 		return nil
 	}
-	msg := "/" + strings.Join(scope, "/")
+	scopeStr := "/" + strings.Join(scope, "/")
 	return &SchemaError{
-		Scope: msg,
+		Scope: scopeStr,
 		Err:   err,
 	}
 }
@@ -37,10 +37,10 @@ func enumError(err error, scope []string) error {
 	if err == nil {
 		return nil
 	}
-	msg := "/" + strings.Join(scope, "/")
+	scopeStr := "/" + strings.Join(scope, "/")
 	return &EnumError{
 		SchemaError: SchemaError{
-			Scope: msg,
+			Scope: scopeStr,
 			Err:   err,
 		},
 	}

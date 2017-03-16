@@ -9,15 +9,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func TestElementOf(t *testing.T) {
-	if !elementOf([]string{"a", "b", "c"}, "c") {
-		t.Error("Could not find element")
-	}
-	if elementOf([]string{"a", "b", "c"}, "d") {
-		t.Error("Found unexpected element")
-	}
-}
-
 func TestMapMerge(t *testing.T) {
 	src := map[string]interface{}{
 		"foo": "hello",
@@ -99,10 +90,10 @@ func TestIntersection(t *testing.T) {
 	if len(iSect) != 2 {
 		t.Error("Incorrect intersection ", iSect)
 	}
-	if !elementOf(iSect, "c") {
+	if iSect[0] != "c" && iSect[1] != "c" {
 		t.Error("Missing element c")
 	}
-	if !elementOf(iSect, "d") {
+	if iSect[0] != "d" && iSect[1] != "d" {
 		t.Error("Missing element d")
 	}
 }

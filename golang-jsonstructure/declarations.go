@@ -189,10 +189,7 @@ func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[strin
 	name := td.Type
 	decl := structure.Definition.Types[td.Type]
 	if prev[name] {
-		keys := make([]string, 0, len(prev))
-		for k := range prev {
-			keys = append(keys, k)
-		}
+		keys := keysSet(prev)
 		return fmt.Errorf("Type alias cycle detected %v", keys)
 	}
 	if decl == nil {
