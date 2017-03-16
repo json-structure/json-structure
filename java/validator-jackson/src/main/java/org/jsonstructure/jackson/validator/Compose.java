@@ -135,8 +135,12 @@ public class Compose {
         return null;
     }
 
-    public static JSONStructureError compose(ObjectNode shell) {
+    public static JSONStructureError compose(JsonNode shellNode) {
         CompositeError errors = new CompositeError();
+        if (!(shellNode instanceof ObjectNode)) {
+             return errorAt("root object must be a JSON object", Slice.empty());
+        }
+        ObjectNode shell = (ObjectNode) shellNode;
         JsonNode typesNode = shell.get("types");
         JsonNode fragmentsNode = shell.get("fragments");
         JsonNode mainNode = shell.get("main");
@@ -152,7 +156,7 @@ public class Compose {
         if (!(fragmentsNode instanceof ObjectNode)) {
             errors.add(errorAt("'fragments' property must be a JSON object", Slice.empty()));
         }
-        if (errors.size() > 0) {
+        if (!(typesNode instanceof ObjectNode) || !(fragmentsNode instanceof ObjectNode)) {
             return errors.simplify();
         }
         ObjectNode types = (ObjectNode) typesNode;
@@ -167,7 +171,7 @@ public class Compose {
             Slice<String> scope = Slice.<String>create("fragments", entry.getKey());
             Set<String> prev = new HashSet<>();
             prev.add(entry.getKey());
-            if (TypeDecl.PRIMITIVE_TYPES.contains(entry.getKey())) {
+            if (PrimitiveTypes.PRIMITIVE_TYPES.contains(entry.getKey())) {
                 errors.add(errorAt("Cannot declare fragment with primitive type name", scope));
             } else {
                 errors.add(doCompose(entry.getValue(), types, fragments, prev, scope));
@@ -179,7 +183,7 @@ public class Compose {
             Slice<String> scope = Slice.<String>create("types", entry.getKey());
             Set<String> prev = new HashSet<>();
             prev.add(entry.getKey());
-            if (TypeDecl.PRIMITIVE_TYPES.contains(entry.getKey())) {
+            if (PrimitiveTypes.PRIMITIVE_TYPES.contains(entry.getKey())) {
                 errors.add(errorAt("Cannot declare type with primitive type name", scope));
             } else {
                 errors.add(doCompose(entry.getValue(), types, fragments, prev, scope));
