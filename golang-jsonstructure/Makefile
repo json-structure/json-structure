@@ -35,7 +35,7 @@ clean:
 
 testsuite:
 	@echo "Applying go-bindata to test suite"
-	@cd testsuite && go-bindata -pkg testsuite -modtime 0 testsuite/...
+	@cd testsuite && go-bindata -pkg testsuite -nometadata testsuite/...
 
 test: .GOPATH/.ok
 	$Q go test $(if $V,-v) -i -race $(allpackages) # install -race libs to speed up next run

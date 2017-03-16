@@ -110,7 +110,7 @@ func testsuiteInvalidJsonStructureArrayJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/array.json", size: 953, mode: os.FileMode(420), modTime: time.Unix(1489584303, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/array.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -130,7 +130,7 @@ func testsuiteInvalidJsonStructureComposeJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/compose.json", size: 422, mode: os.FileMode(420), modTime: time.Unix(1489687106, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/compose.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -150,7 +150,7 @@ func testsuiteInvalidJsonStructureEmbeddedJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/embedded.json", size: 871, mode: os.FileMode(420), modTime: time.Unix(1489587611, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/embedded.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -170,12 +170,12 @@ func testsuiteInvalidJsonStructureFormatJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/format.json", size: 356, mode: os.FileMode(420), modTime: time.Unix(1489587978, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/format.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _testsuiteInvalidJsonStructureGeneralJson = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xd4\x54\x4b\x6e\xe3\x30\x0c\xdd\xfb\x14\x84\x36\xd9\xcc\x62\xd6\xbe\xc1\x00\x33\x98\x03\x14\x5d\xa8\x36\xed\x12\x95\x68\x55\x9f\x34\x41\x90\xbb\x17\x96\xed\x44\x76\xec\xfc\x8a\x06\xe8\x2e\x79\x94\xf8\x3e\xa4\xf5\x94\x01\xec\x32\x00\x00\x51\xa2\x2b\x2c\x19\x4f\x0d\x8b\x1c\x84\x26\xe7\x88\x6b\xd0\x92\x18\x4a\x2c\x94\xb4\x32\xd6\x7e\x75\xc7\x9d\xb7\xa1\xf0\xc1\xa2\xc8\x61\xb7\xef\xc1\xb5\x54\x54\x8a\x1c\x2a\xa9\x1c\x66\x00\x11\x3f\xdf\xdf\xe2\x7b\x20\x8b\x25\x18\xdb\x18\xb4\x7e\x0b\x2b\xbf\x35\xb8\x9a\xe5\x89\x10\x80\x68\x45\x45\xde\x08\xdc\xc1\xce\x41\x29\x68\x79\x2e\x5a\x1b\x28\xdb\xc3\x2e\x01\x00\x84\x14\x39\xb4\x8d\x7a\xa4\x97\x91\xc8\xeb\x6e\xb5\x7c\x2f\x4d\xa3\x50\xb2\x80\xbb\x15\x07\x7e\xe3\xe6\x83\xa3\xe8\xab\xb2\x39\x92\x57\x4d\xf3\x05\xe2\x32\x18\x45\x85\xf4\x08\x2c\x35\xba\xb3\xdc\x95\x95\xb5\x46\xf6\x33\x41\x2d\x87\x91\x26\xb7\x90\xf2\x75\x97\xbf\x23\x76\x8b\xc1\x21\x18\x4b\x9a\x3c\xad\xb1\xdb\x99\x36\x88\x5b\x97\x85\xd8\x63\x8d\xf6\x07\x9a\x59\x18\xea\x23\x0d\x2d\x3a\x8a\x0e\x8a\x6d\xa1\x6e\x9e\xc7\x74\xad\xc4\x51\x2a\xb4\x7f\x47\x55\xf9\xa8\x09\x11\xc7\xc3\xc3\x63\x48\x17\xbe\xb7\x41\xc2\x51\xf8\x54\x4a\xe2\x49\x07\xe5\xc9\x28\xfc\x5f\x89\x1c\x7e\xa7\x05\x62\xd2\x41\x4f\x50\xdc\x14\x2a\x38\x5a\xe3\xbf\xd9\xb2\x96\x9b\xb3\x97\x66\xcb\x46\x7a\x8f\x96\x87\x47\x69\xac\xe1\x2f\x72\xed\x5f\x4f\x69\x66\xf1\x8a\x50\x95\xe3\x91\x42\xd7\x74\x0c\xcd\x44\x92\x54\xf7\x87\xdf\xe9\xf0\xc9\xa3\x3e\x69\xbd\xd8\x65\x3f\x76\xf1\xa7\xbf\x3c\x31\x71\x80\xb3\x94\x79\x71\x43\xb2\xe7\xcf\x00\x00\x00\xff\xff\x12\x70\x5b\xa7\x9a\x07\x00\x00")
+var _testsuiteInvalidJsonStructureGeneralJson = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xd4\x54\x4b\x6e\xe3\x30\x0c\xdd\xfb\x14\x84\x36\xd9\xcc\x62\xd6\xbe\xc1\x00\x33\x98\x03\x14\x5d\xa8\x36\xed\x12\x95\x68\x55\x9f\x34\x41\x90\xbb\x17\x96\xed\x46\x76\xec\x7c\xd1\x00\x5d\x25\x79\x94\xf8\x3e\x64\xf4\x94\x01\xec\x32\x00\x00\x51\xa2\x2b\x2c\x19\x4f\x0d\x8b\x1c\x84\x26\xe7\x88\x6b\xd0\x92\x18\x4a\x2c\x94\xb4\x32\xd6\x7e\x75\xc7\x9d\xb7\xa1\xf0\xc1\xa2\xc8\x61\xb7\xef\xc1\xb5\x54\x54\x8a\x1c\x2a\xa9\x1c\x66\x00\x11\x3f\xdd\xdf\xe2\x7b\x20\x8b\x25\x18\xdb\x18\xb4\x7e\x0b\x2b\xbf\x35\xb8\x9a\xe5\x89\x10\x80\x68\x45\x45\xde\x08\xdc\xc0\xce\x41\x29\x68\x79\xce\x5a\x1b\x28\xdb\xc3\x2e\x01\x00\x84\x14\x39\xb4\x8d\x7a\xa4\x97\x91\xc8\xeb\x6e\xb5\x7c\x2f\x4d\xa3\x50\xb2\x80\x9b\x15\x07\x7e\xe3\xe6\x83\xa3\xe8\x8b\xb2\x39\x90\x57\x4d\x73\x07\x71\x19\x8c\xa2\x42\x7a\x04\x96\x1a\xdd\x49\xee\xca\xca\x5a\x23\xfb\x99\xa0\x96\xc3\x48\x93\x5b\x48\xf9\xb2\xcb\xdf\x11\xbb\xc5\xe0\x10\x8c\x25\x4d\x9e\xd6\xd8\xed\x4c\x1b\xc4\xb5\xcb\x42\xec\xb1\x46\xfb\x03\xcd\x2c\x0c\xf5\x91\x86\x16\x1d\x45\x07\xc5\xb6\x50\x57\xcf\x63\xba\x56\xe2\x20\x15\xda\x9f\xa3\xaa\x7c\xd4\x84\x88\xe3\xe1\xe1\x31\xa4\x33\xff\xb7\x41\xc2\x41\xf8\x54\x4a\xe2\x49\x07\xe5\xc9\x28\xfc\x5f\x89\x1c\x7e\xa7\x05\x62\xd2\x41\x4f\x50\xdc\x14\x2a\x38\x5a\xe3\xbf\xd9\xb2\x96\x9b\x93\x97\x66\xcb\x46\x7a\x8f\x96\x87\x47\x69\xac\xe1\x2f\x72\xed\x5f\x8f\x69\x66\xf1\x8a\x50\x95\xe3\x91\x42\xd7\x74\x0c\xcd\x44\x92\x54\xf7\x5f\xdf\xd3\xe1\x93\x47\x7d\xd4\x7a\xb1\xcb\x7e\xec\xe2\x4f\x7f\x79\x62\x62\x0e\x3e\xde\xca\xfb\x2c\x64\xe9\xe7\xe2\xf2\x65\xcf\x9f\x01\x00\x00\xff\xff\x4c\x18\x16\xeb\xf5\x07\x00\x00")
 
 func testsuiteInvalidJsonStructureGeneralJsonBytes() ([]byte, error) {
 	return bindataRead(
@@ -190,7 +190,7 @@ func testsuiteInvalidJsonStructureGeneralJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/general.json", size: 1946, mode: os.FileMode(420), modTime: time.Unix(1489590658, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/general.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -210,7 +210,7 @@ func testsuiteInvalidJsonStructureIntegerJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/integer.json", size: 1329, mode: os.FileMode(420), modTime: time.Unix(1489583344, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/integer.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -230,7 +230,7 @@ func testsuiteInvalidJsonStructureMapJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/map.json", size: 943, mode: os.FileMode(420), modTime: time.Unix(1489584611, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/map.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -250,7 +250,7 @@ func testsuiteInvalidJsonStructureSetJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/set.json", size: 943, mode: os.FileMode(420), modTime: time.Unix(1489584611, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/set.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -270,7 +270,7 @@ func testsuiteInvalidJsonStructureStringJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/string.json", size: 844, mode: os.FileMode(420), modTime: time.Unix(1489588454, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/string.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -290,7 +290,7 @@ func testsuiteInvalidJsonStructureStructJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/struct.json", size: 349, mode: os.FileMode(420), modTime: time.Unix(1489584044, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/struct.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -310,7 +310,7 @@ func testsuiteInvalidJsonStructureUnionJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/invalid-json-structure/union.json", size: 480, mode: os.FileMode(420), modTime: time.Unix(1489585735, 0)}
+	info := bindataFileInfo{name: "testsuite/invalid-json-structure/union.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -330,7 +330,7 @@ func testsuiteJsonObjectAliasJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/alias.json", size: 625, mode: os.FileMode(420), modTime: time.Unix(1489598458, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/alias.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -350,7 +350,7 @@ func testsuiteJsonObjectArrayJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/array.json", size: 1710, mode: os.FileMode(420), modTime: time.Unix(1489597501, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/array.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -370,7 +370,7 @@ func testsuiteJsonObjectBooleanJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/boolean.json", size: 568, mode: os.FileMode(420), modTime: time.Unix(1489594250, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/boolean.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -390,7 +390,7 @@ func testsuiteJsonObjectFormatDateTimeJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/date-time.json", size: 417, mode: os.FileMode(420), modTime: time.Unix(1489600613, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/date-time.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -410,7 +410,7 @@ func testsuiteJsonObjectFormatEmailJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/email.json", size: 398, mode: os.FileMode(420), modTime: time.Unix(1489600683, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/email.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -430,7 +430,7 @@ func testsuiteJsonObjectFormatHostnameJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/hostname.json", size: 1023, mode: os.FileMode(420), modTime: time.Unix(1489600940, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/hostname.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -450,7 +450,7 @@ func testsuiteJsonObjectFormatIpv4Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/ipv4.json", size: 510, mode: os.FileMode(420), modTime: time.Unix(1489601142, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/ipv4.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -470,7 +470,7 @@ func testsuiteJsonObjectFormatIpv6Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/ipv6.json", size: 507, mode: os.FileMode(420), modTime: time.Unix(1489601177, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/ipv6.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -490,7 +490,7 @@ func testsuiteJsonObjectFormatUriJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/format/uri.json", size: 389, mode: os.FileMode(420), modTime: time.Unix(1489601390, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/format/uri.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -510,7 +510,7 @@ func testsuiteJsonObjectIntegerJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/integer.json", size: 2948, mode: os.FileMode(420), modTime: time.Unix(1489594341, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/integer.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -530,7 +530,7 @@ func testsuiteJsonObjectJsonJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/json.json", size: 357, mode: os.FileMode(420), modTime: time.Unix(1489597757, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/json.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -550,7 +550,7 @@ func testsuiteJsonObjectMapJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/map.json", size: 1805, mode: os.FileMode(420), modTime: time.Unix(1489597698, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/map.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -570,7 +570,7 @@ func testsuiteJsonObjectNumberJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/number.json", size: 2840, mode: os.FileMode(420), modTime: time.Unix(1489594341, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/number.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -590,7 +590,7 @@ func testsuiteJsonObjectSetJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/set.json", size: 1812, mode: os.FileMode(420), modTime: time.Unix(1489597566, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/set.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -610,7 +610,7 @@ func testsuiteJsonObjectStringJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/string.json", size: 1764, mode: os.FileMode(420), modTime: time.Unix(1489596732, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/string.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -630,7 +630,7 @@ func testsuiteJsonObjectStructJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/struct.json", size: 1301, mode: os.FileMode(420), modTime: time.Unix(1489597046, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/struct.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -650,7 +650,7 @@ func testsuiteJsonObjectUnionJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "testsuite/json-object/union.json", size: 1460, mode: os.FileMode(420), modTime: time.Unix(1489598266, 0)}
+	info := bindataFileInfo{name: "testsuite/json-object/union.json", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

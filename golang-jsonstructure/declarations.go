@@ -147,10 +147,15 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 		err := fmt.Errorf("Unknown type '%s'", td.Type)
 		return errorAt(err, scope)
 	}
-	if pf == nil {
+	if pf != nil && decl != nil {
+		err := fmt.Errorf("Unexpected error. Type declaration shadows primitive type '%s'", td.Type)
+		return errorAt(err, scope)
+	}
+	if decl != nil {
 		err := detectTypeAliasCycle(structure, decl, nil)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
+		return errs
 	}
 	e1 := permissible("format", td.Type, pf, td.Format != nil, scope)
 	e2 := permissible("nullable", td.Type, pf, td.Nullable != nil, scope)

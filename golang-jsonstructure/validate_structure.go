@@ -44,7 +44,6 @@ func validateStructureTopLevel(structure *JSONStructure) error {
 		errs = multierror.Append(errs, err)
 	}
 	return errs
-
 }
 
 func validateStructureDecls(structure *JSONStructure) error {

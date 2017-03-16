@@ -95,7 +95,12 @@
           "type": "boolean"
         },
         "minItems": 0,
-        "maxItems": 0
+        "maxItems": 0,
+        "types": {
+          "foo": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "valid": false
