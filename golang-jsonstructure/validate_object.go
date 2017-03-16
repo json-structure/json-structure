@@ -25,10 +25,10 @@ func (structure *JSONStructure) Validate(text []byte) error {
 	if err != nil {
 		return err
 	}
-	return structure.Definition.Main.Validate(value, structure, "")
+	return structure.Definition.Main.Validate(value, structure, nil)
 }
 
-func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope string) error {
+func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	name := td.Type
 
@@ -92,7 +92,7 @@ func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope 
 	return errs
 }
 
-func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	_, ok := value.(bool)
 	if !ok {
 		err := errors.New("JSON value is not a boolean")
@@ -101,7 +101,7 @@ func validateBoolean(td *TypeDecl, value interface{}, structure *JSONStructure, 
 	return nil
 }
 
-func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	num, ok := value.(json.Number)
 	if !ok {
@@ -140,7 +140,7 @@ func validateNumber(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	err := validateNumber(td, value, structure, scope)
 	if err != nil {
 		return err
@@ -154,7 +154,7 @@ func validateInteger(td *TypeDecl, value interface{}, structure *JSONStructure, 
 	return nil
 }
 
-func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	str, ok := value.(string)
 	if !ok {
@@ -182,7 +182,7 @@ func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var err error
 	errs := make(map[string]error)
 	for k, decl := range td.Types {
@@ -195,7 +195,7 @@ func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 	return unionFilterErrors(errs, structure, scope)
 }
 
-func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	obj, ok := value.(map[string]interface{})
 	if !ok {
@@ -205,7 +205,7 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	for name, decl := range td.Fields {
 		child, ok2 := obj[name]
 		if ok2 {
-			newscope := scope + "/" + name
+			newscope := append(scope, name)
 			err := decl.Validate(child, structure, newscope)
 			errs = multierror.Append(errs, err)
 		} else if len(decl.DefaultRaw) == 0 {
@@ -224,7 +224,7 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return errs
 }
 
-func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	arr, ok := value.([]interface{})
 	if !ok {
@@ -242,14 +242,14 @@ func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 		errs = multierror.Append(errs, err)
 	}
 	for i, val := range arr {
-		newscope := scope + "/" + strconv.Itoa(i)
+		newscope := append(scope, strconv.Itoa(i))
 		err := td.Items.Validate(val, structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
 
-func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	arr, ok := value.([]interface{})
 	if !ok {
@@ -268,7 +268,7 @@ func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 	}
 	uniq := createSet()
 	for i, val := range arr {
-		newscope := scope + "/" + strconv.Itoa(i)
+		newscope := append(scope, strconv.Itoa(i))
 		insert, err := uniq.PutIfAbsent(val)
 		if err != nil {
 			err = errorAt(err, newscope)
@@ -285,7 +285,7 @@ func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 	return errs
 }
 
-func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	obj, ok := value.(map[string]interface{})
 	if !ok {
@@ -303,14 +303,14 @@ func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 		errs = multierror.Append(errs, err)
 	}
 	for k, v := range obj {
-		newscope := scope + "/" + k
+		newscope := append(scope, k)
 		err := td.Items.Validate(v, structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
 
-func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	if td.Format == nil {
 		return nil
 	}
@@ -329,7 +329,7 @@ func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, s
 	return err
 }
 
-func validateEnum(td *TypeDecl, value interface{}, structure *JSONStructure, scope string) error {
+func validateEnum(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	if td.Enum == nil {
 		return nil
 	}

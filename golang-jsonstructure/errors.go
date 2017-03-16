@@ -1,9 +1,12 @@
 package jsonstructure
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type SchemaError struct {
-	Scope string
+	Scope []string
 	Err   error
 }
 
@@ -12,22 +15,14 @@ type EnumError struct {
 }
 
 func (e *SchemaError) Error() string {
-	msg := e.Scope
-	if len(msg) == 0 {
-		msg = "/"
-	}
-	return fmt.Sprintf("At %s: %s", msg, e.Err.Error())
+	return fmt.Sprintf("At /%s: %s", strings.Join(e.Scope, "/"), e.Err.Error())
 }
 
 func (e *EnumError) Error() string {
-	msg := e.Scope
-	if len(msg) == 0 {
-		msg = "/"
-	}
-	return fmt.Sprintf("At %s: %s", msg, e.Err.Error())
+	return fmt.Sprintf("At /%s: %s", strings.Join(e.Scope, "/"), e.Err.Error())
 }
 
-func errorAt(err error, scope string) error {
+func errorAt(err error, scope []string) error {
 	if err == nil {
 		return nil
 	}
@@ -37,7 +32,7 @@ func errorAt(err error, scope string) error {
 	}
 }
 
-func enumError(err error, scope string) error {
+func enumError(err error, scope []string) error {
 	if err == nil {
 		return nil
 	}
