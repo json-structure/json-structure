@@ -60,7 +60,7 @@ func doCompose(target interface{},
 		if obj, ok2 := v.(map[string]interface{}); ok2 {
 			newscope := scope + "/" + k
 			err = doCompose(obj, types, fragments, prev, newscope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 		}
 	}
 	if errs != nil {
@@ -72,24 +72,22 @@ func doCompose(target interface{},
 	}
 	defs, ok3 := c.([]interface{})
 	if !ok3 {
-		err = errors.New("'compose' property must be an string array")
+		err = errors.New("'\\u0ADD' property must be an string array")
 		return errorAt(err, scope)
 	}
-	local := make(map[string]interface{})
-	for k, v := range object {
-		local[k] = v
-		delete(object, k)
-	}
+	dest := make(map[string]interface{})
 	for _, iDef := range defs {
 		defName, ok := iDef.(string)
 		if !ok {
-			err = errors.New("'compose' property must be an string array")
-			return errorAt(err, scope)
+			err = errors.New("'\\u0ADD' property must be an string array")
+			err = errorAt(err, scope)
+			errs = multierror.Append(errs, err)
+			continue
 		}
 		if elementOf(prev, defName) {
 			err = fmt.Errorf("cycle detected with definitions %v", prev)
 			err = errorAt(err, scope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 			continue
 		}
 		tDef := types[defName]
@@ -97,14 +95,14 @@ func doCompose(target interface{},
 		if (tDef == nil) && (fDef == nil) {
 			err = fmt.Errorf("Unknown definition %s", defName)
 			err = errorAt(err, scope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 			continue
 		}
 		if (tDef != nil) && (fDef != nil) {
 			// this should have been previously detected
 			err = fmt.Errorf("Internal error duplicate definition %s", defName)
 			err = errorAt(err, scope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 			continue
 		}
 		var def map[string]interface{}
@@ -112,28 +110,34 @@ func doCompose(target interface{},
 			next := append(prev, defName)
 			newscope := "/types/" + defName
 			err = doCompose(tDef, types, fragments, next, newscope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 			if err != nil {
 				continue
 			}
 			def = tDef.(map[string]interface{})
-		} else if fDef != nil {
+		} else {
 			next := append(prev, defName)
 			newscope := "/fragments/" + defName
 			err = doCompose(fDef, types, fragments, next, newscope)
-			errs = multierror.Append(err, errs)
+			errs = multierror.Append(errs, err)
 			if err != nil {
 				continue
 			}
 			def = fDef.(map[string]interface{})
 		}
-		err = mapMerge(object, def, scope)
-		errs = multierror.Append(err, errs)
+		err = mapMerge(dest, def, scope)
+		errs = multierror.Append(errs, err)
 	}
-	err = mapMerge(object, local, scope)
-	errs = multierror.Append(err, errs)
+	err = mapMerge(dest, object, scope)
+	errs = multierror.Append(errs, err)
 	if errs != nil {
 		return errs
+	}
+	for k := range object {
+		delete(object, k)
+	}
+	for k, v := range dest {
+		object[k] = v
 	}
 	delete(object, ComposeSymbol)
 	return nil
