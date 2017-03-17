@@ -7,14 +7,13 @@ import (
 
 func TestValidateFailureUnknownType(t *testing.T) {
 	structure := EmptyJSONStructure()
-	structure.Definition.Main = &TypeDecl{}
-	structure.Definition.Main.Type = "string"
-	structure.InitOnce.Do(structure.doValidation)
-	err := structure.InitError
+	structure.definition.Main = &TypeDecl{}
+	structure.definition.Main.Type = "string"
+	err := structure.ValidateStructure()
 	if err != nil {
 		t.Fatal("Unexpected validation error", err)
 	}
-	structure.Definition.Main.Type = "foobar"
+	structure.definition.Main.Type = "foobar"
 	text := `"foobar"`
 	err = structure.Validate([]byte(text))
 	if err == nil {
@@ -25,25 +24,25 @@ func TestValidateFailureUnknownType(t *testing.T) {
 
 func TestValidateFailureUnion(t *testing.T) {
 	structure := EmptyJSONStructure()
-	structure.Definition.Main = &TypeDecl{}
-	structure.Definition.Main.Type = "union"
-	structure.Definition.Main.Types = make(map[string]*TypeDecl)
-	structure.Definition.Main.Types["foo"] = &TypeDecl{}
-	structure.Definition.Main.Types["foo"].Type = "struct"
-	structure.Definition.Main.Types["foo"].Fields = make(map[string]*TypeDecl)
-	structure.Definition.Main.Types["foo"].Fields["type"] = &TypeDecl{}
-	structure.Definition.Main.Types["foo"].Fields["type"].Type = "string"
-	structure.Definition.Main.Types["foo"].Fields["type"].EnumRaw = []json.RawMessage{json.RawMessage(`"foo"`)}
-	structure.Definition.Main.Types["foo"].Fields["foo"] = &TypeDecl{}
-	structure.Definition.Main.Types["foo"].Fields["foo"].Type = "integer"
-	structure.Definition.Main.Types["foo"].Fields["bar"] = &TypeDecl{}
-	structure.Definition.Main.Types["foo"].Fields["bar"].Type = "integer"
-	structure.Definition.Main.Types["bar"] = &TypeDecl{}
-	structure.Definition.Main.Types["bar"].Type = "struct"
-	structure.Definition.Main.Types["bar"].Fields = make(map[string]*TypeDecl)
-	structure.Definition.Main.Types["bar"].Fields["type"] = &TypeDecl{}
-	structure.Definition.Main.Types["bar"].Fields["type"].Type = "string"
-	structure.Definition.Main.Types["bar"].Fields["type"].EnumRaw = []json.RawMessage{json.RawMessage(`"bar"`)}
+	structure.definition.Main = &TypeDecl{}
+	structure.definition.Main.Type = "union"
+	structure.definition.Main.Types = make(map[string]*TypeDecl)
+	structure.definition.Main.Types["foo"] = &TypeDecl{}
+	structure.definition.Main.Types["foo"].Type = "struct"
+	structure.definition.Main.Types["foo"].Fields = make(map[string]*TypeDecl)
+	structure.definition.Main.Types["foo"].Fields["type"] = &TypeDecl{}
+	structure.definition.Main.Types["foo"].Fields["type"].Type = "string"
+	structure.definition.Main.Types["foo"].Fields["type"].EnumRaw = []json.RawMessage{json.RawMessage(`"foo"`)}
+	structure.definition.Main.Types["foo"].Fields["foo"] = &TypeDecl{}
+	structure.definition.Main.Types["foo"].Fields["foo"].Type = "integer"
+	structure.definition.Main.Types["foo"].Fields["bar"] = &TypeDecl{}
+	structure.definition.Main.Types["foo"].Fields["bar"].Type = "integer"
+	structure.definition.Main.Types["bar"] = &TypeDecl{}
+	structure.definition.Main.Types["bar"].Type = "struct"
+	structure.definition.Main.Types["bar"].Fields = make(map[string]*TypeDecl)
+	structure.definition.Main.Types["bar"].Fields["type"] = &TypeDecl{}
+	structure.definition.Main.Types["bar"].Fields["type"].Type = "string"
+	structure.definition.Main.Types["bar"].Fields["type"].EnumRaw = []json.RawMessage{json.RawMessage(`"bar"`)}
 
 	text := `{"type": "foo"}`
 
@@ -52,7 +51,7 @@ func TestValidateFailureUnion(t *testing.T) {
 		t.Error("JSON object validation did not fail")
 	}
 	t.Log(err)
-	structure.Options.UnionError = AllUnionReport
+	structure.options.UnionError = AllUnionReport
 	err = structure.Validate([]byte(text))
 	if err == nil {
 		t.Error("JSON object validation did not fail")

@@ -1,15 +1,11 @@
 package jsonstructure
 
-import (
-	"encoding/json"
-	"sync"
-)
+import "encoding/json"
 
 type JSONStructure struct {
-	Definition JSONStructureDefinition
-	Options    JSONStructureOptions
-	InitOnce   sync.Once
-	InitError  error
+	definition  JSONStructureDefinition
+	options     JSONStructureOptions
+	initialized bool
 }
 
 type JSONStructureDefinition struct {
@@ -23,9 +19,9 @@ type JSONStructureDefinition struct {
 
 func EmptyJSONStructure() *JSONStructure {
 	return &JSONStructure{
-		Definition: JSONStructureDefinition{},
-		Options:    DefaultOptions(),
-		InitOnce:   sync.Once{},
+		definition:  JSONStructureDefinition{},
+		options:     DefaultOptions(),
+		initialized: false,
 	}
 }
 
@@ -36,14 +32,17 @@ func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStruct
 		return nil, err
 	}
 	result := JSONStructure{
-		Definition: definition,
-		Options:    options,
-		InitOnce:   sync.Once{},
+		definition:  definition,
+		options:     options,
+		initialized: false,
 	}
-	result.InitOnce.Do(result.doValidation)
-	err = result.InitError
+	err = result.ValidateStructure()
 	if err != nil {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (structure *JSONStructure) JSONMarshalDefinition() ([]byte, error) {
+	return json.Marshal(structure.definition)
 }

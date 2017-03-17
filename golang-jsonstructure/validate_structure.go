@@ -7,6 +7,17 @@ import (
 )
 
 func (structure *JSONStructure) ValidateStructure() error {
+	if structure.initialized {
+		return nil
+	}
+	err := doValidateStructure(structure)
+	if err == nil {
+		structure.initialized = true
+	}
+	return err
+}
+
+func doValidateStructure(structure *JSONStructure) error {
 	err := validateStructureTopLevel(structure)
 	if err != nil {
 		return err
@@ -22,13 +33,9 @@ func (structure *JSONStructure) ValidateStructure() error {
 	return nil
 }
 
-func (structure *JSONStructure) doValidation() {
-	structure.InitError = structure.ValidateStructure()
-}
-
 func validateStructureTopLevel(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.Definition
+	definition := &structure.definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		if v == nil {
@@ -48,7 +55,7 @@ func validateStructureTopLevel(structure *JSONStructure) error {
 
 func validateStructureDecls(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.Definition
+	definition := &structure.definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		err := v.ValidateDecl(structure, scope)
@@ -62,7 +69,7 @@ func validateStructureDecls(structure *JSONStructure) error {
 
 func validateEmbeddedObjects(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.Definition
+	definition := &structure.definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		err := v.ValidateEmbedded(structure, scope)

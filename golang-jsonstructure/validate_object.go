@@ -13,8 +13,7 @@ import (
 
 func (structure *JSONStructure) Validate(text []byte) error {
 	var value interface{}
-	structure.InitOnce.Do(structure.doValidation)
-	err := structure.InitError
+	err := structure.ValidateStructure()
 	if err != nil {
 		return err
 	}
@@ -25,7 +24,7 @@ func (structure *JSONStructure) Validate(text []byte) error {
 	if err != nil {
 		return err
 	}
-	return structure.Definition.Main.Validate(value, structure, nil)
+	return structure.definition.Main.Validate(value, structure, nil)
 }
 
 func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
@@ -33,7 +32,7 @@ func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope 
 	name := td.Type
 
 	if !PrimitiveTypes[name] {
-		def := structure.Definition.Types[name]
+		def := structure.definition.Types[name]
 		if def == nil {
 			err := fmt.Errorf("Unknown type '%s'", name)
 			return errorAt(err, scope)
@@ -315,7 +314,7 @@ func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		return nil
 	}
 	name := *td.Format
-	format := structure.Options.Formats[name]
+	format := structure.options.Formats[name]
 	if format == nil {
 		err := fmt.Errorf(`unknown format "%s"`, name)
 		err = errorAt(err, scope)

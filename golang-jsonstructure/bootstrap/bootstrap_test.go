@@ -1,7 +1,6 @@
 package bootstrap
 
 import (
-	"encoding/json"
 	"testing"
 
 	jsonstructure "github.com/json-structure/json-structure/golang-jsonstructure"
@@ -19,7 +18,7 @@ func TestBootstrap(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error creating JSON Structure ", err)
 	}
-	transform, err = json.Marshal(structure.Definition)
+	transform, err = structure.JSONMarshalDefinition()
 	if err != nil {
 		t.Fatal("Error marshalling JSON Structure ", err)
 	}

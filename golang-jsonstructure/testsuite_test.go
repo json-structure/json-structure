@@ -39,7 +39,7 @@ func TestSuite(t *testing.T) {
 				continue
 			}
 			structure := EmptyJSONStructure()
-			err = json.Unmarshal(suite.Structure, &structure.Definition)
+			err = json.Unmarshal(suite.Structure, &structure.definition)
 			if err == nil {
 				err = structure.ValidateStructure()
 			}
