@@ -231,12 +231,12 @@ func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 		return errorAt(err, scope)
 	}
 	if td.MinItems != nil && len(arr) < *td.MinItems {
-		err := fmt.Errorf("length of array %d is less than minimum items %d", len(arr), *td.MinItems)
+		err := fmt.Errorf("length %d of array is less than minimum items %d", len(arr), *td.MinItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.MaxItems != nil && len(arr) > *td.MaxItems {
-		err := fmt.Errorf("length of array %d is greater than maximum items %d", len(arr), *td.MaxItems)
+		err := fmt.Errorf("length %d of array is greater than maximum items %d", len(arr), *td.MaxItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
@@ -256,12 +256,12 @@ func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 		return errorAt(err, scope)
 	}
 	if td.MinItems != nil && len(arr) < *td.MinItems {
-		err := fmt.Errorf("size of set %d is less than minimum items %d", len(arr), *td.MinItems)
+		err := fmt.Errorf("size %d of set is less than minimum items %d", len(arr), *td.MinItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.MaxItems != nil && len(arr) > *td.MaxItems {
-		err := fmt.Errorf("size of set %d is greater than maximum items %d", len(arr), *td.MaxItems)
+		err := fmt.Errorf("size %d of set is greater than maximum items %d", len(arr), *td.MaxItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
@@ -292,12 +292,12 @@ func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 		return errorAt(err, scope)
 	}
 	if td.MinItems != nil && len(obj) < *td.MinItems {
-		err := fmt.Errorf("size of map %d is less than minimum items %d", len(obj), *td.MinItems)
+		err := fmt.Errorf("size %d of map is less than minimum items %d", len(obj), *td.MinItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.MaxItems != nil && len(obj) > *td.MaxItems {
-		err := fmt.Errorf("size of map %d is greater than maximum items %d", len(obj), *td.MaxItems)
+		err := fmt.Errorf("size %d of map is greater than maximum items %d", len(obj), *td.MaxItems)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
 	}

@@ -3,9 +3,10 @@ package jsonstructure
 import "encoding/json"
 
 type JSONStructure struct {
-	definition  JSONStructureDefinition
-	options     JSONStructureOptions
-	initialized bool
+	definition JSONStructureDefinition
+	options    JSONStructureOptions
+	init       bool
+	initErr    error
 }
 
 type JSONStructureDefinition struct {
@@ -19,9 +20,10 @@ type JSONStructureDefinition struct {
 
 func EmptyJSONStructure() *JSONStructure {
 	return &JSONStructure{
-		definition:  JSONStructureDefinition{},
-		options:     DefaultOptions(),
-		initialized: false,
+		definition: JSONStructureDefinition{},
+		options:    DefaultOptions(),
+		init:       false,
+		initErr:    nil,
 	}
 }
 
@@ -32,9 +34,10 @@ func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStruct
 		return nil, err
 	}
 	result := JSONStructure{
-		definition:  definition,
-		options:     options,
-		initialized: false,
+		definition: definition,
+		options:    options,
+		init:       false,
+		initErr:    nil,
 	}
 	err = result.ValidateStructure()
 	if err != nil {

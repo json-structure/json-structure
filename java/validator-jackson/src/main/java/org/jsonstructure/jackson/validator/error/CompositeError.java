@@ -43,4 +43,16 @@ public class CompositeError extends ValidationError {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(children.size());
+        builder.append(" errors occurred:\n\n");
+        for (ValidationError error : children) {
+            builder.append(error.toString());
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
+
 }

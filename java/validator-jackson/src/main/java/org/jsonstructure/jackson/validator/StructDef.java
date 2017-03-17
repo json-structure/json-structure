@@ -57,11 +57,17 @@ public class StructDef {
 
         ObjectMapper objectMapper = Jackson.OBJECT_MAPPER;
         JsonNode tree = objectMapper.readTree(inputStream);
+        return createFromNode(tree);
+    }
+
+    @Nonnull
+    public static Result<StructDef, ValidationError> createFromNode(@Nonnull JsonNode tree)
+            throws IOException {
         ValidationError error = Compose.compose(tree);
         if (error != null) {
             return Result.err(error);
         }
-        StructDef definition = objectMapper.treeToValue(tree, StructDef.class);
+        StructDef definition = Jackson.OBJECT_MAPPER.treeToValue(tree, StructDef.class);
         return Result.ok(definition);
     }
 

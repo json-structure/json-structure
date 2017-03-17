@@ -7,14 +7,15 @@ import (
 )
 
 func (structure *JSONStructure) ValidateStructure() error {
-	if structure.initialized {
-		return nil
+	if !structure.init {
+		structure.initErr = doValidateStructure(structure)
+		structure.init = true
 	}
-	err := doValidateStructure(structure)
-	if err == nil {
-		structure.initialized = true
-	}
-	return err
+	return structure.initErr
+}
+
+func (structure *JSONStructure) Reset() {
+	structure.init = false
 }
 
 func doValidateStructure(structure *JSONStructure) error {

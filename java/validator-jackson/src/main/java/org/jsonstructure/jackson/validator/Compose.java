@@ -8,7 +8,6 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
 import org.jsonstructure.jackson.validator.error.ValidationError;
@@ -59,9 +58,10 @@ public class Compose {
         Iterator<Map.Entry<String, JsonNode>> iterator = object.fields();
         while (iterator.hasNext()) {
             Map.Entry<String, JsonNode> entry = iterator.next();
+            String key = entry.getKey();
             JsonNode value = entry.getValue();
             if (value.isObject()) {
-                Slice<String> newScope = scope.append(entry.getKey());
+                Slice<String> newScope = scope.append(key);
                 errors.add(doCompose(value, types, fragments, prev, newScope));
             }
         }

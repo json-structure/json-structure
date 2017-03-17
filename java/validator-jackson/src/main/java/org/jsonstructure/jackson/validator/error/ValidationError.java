@@ -42,4 +42,9 @@ public class ValidationError {
         this.message = message;
         this.scope = scope;
     }
+
+    @Override
+    public String toString() {
+        return String.format("At %s: %s", scope, message);
+    }
 }

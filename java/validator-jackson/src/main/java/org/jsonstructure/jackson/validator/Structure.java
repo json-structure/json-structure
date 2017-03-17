@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.jsonstructure.jackson.validator.error.CompositeError;
 import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Result;
@@ -18,12 +20,29 @@ public class Structure {
 
     final StructDef definition;
     boolean initialized;
+    ValidationError initError;
+
+    Structure(StructDef definition) {
+        this.definition = definition;
+    }
 
     @Nonnull
     public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream)
             throws IOException {
 
         Result<StructDef, ValidationError> child = StructDef.create(inputStream);
+        return buildStructure(child);
+    }
+
+    @Nonnull
+    public static Result<Structure, ValidationError> createFromNode(@Nonnull JsonNode node)
+            throws IOException {
+
+        Result<StructDef, ValidationError> child = StructDef.createFromNode(node);
+        return buildStructure(child);
+    }
+
+    private static Result<Structure, ValidationError> buildStructure(Result<StructDef, ValidationError> child) {
         if (child.isError()) {
             // Silence false positive NPE inspection
             assert(child.getErr() != null);
@@ -37,23 +56,16 @@ public class Structure {
         return Result.ok(structure);
     }
 
-    Structure(StructDef definition) {
-        this.definition = definition;
-    }
-
-    public void resetValidation() {
+    public void reset() {
         initialized = false;
     }
 
     public ValidationError validateStructure() {
-        if (initialized) {
-            return null;
-        }
-        ValidationError error = doValidateStructure();
-        if (error == null) {
+        if (!initialized) {
+            initError = doValidateStructure();
             initialized = true;
         }
-        return error;
+        return initError;
     }
 
     @Nullable
@@ -117,6 +129,11 @@ public class Structure {
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateEmbedded(this, scope));
         return errors.simplify();
+    }
+
+    @Nullable
+    public ValidationError validateFromNode(@Nonnull JsonNode node) {
+        return definition.main.validate(node, this, Slice.empty());
     }
 
 
