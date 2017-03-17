@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import org.jsonstructure.jackson.validator.loanword.Slice;
 
-public class JSONStructureError {
+public class ValidationError {
 
     @Nullable
     private final String message;
@@ -15,7 +15,7 @@ public class JSONStructureError {
     @Nullable
     private final String scope;
 
-    JSONStructureError() {
+    ValidationError() {
         this.message = null;
         this.scope = null;
     }
@@ -33,12 +33,12 @@ public class JSONStructureError {
         return builder.toString();
     }
 
-    public static JSONStructureError errorAt(@Nonnull String message, @Nonnull Slice<String> scope) {
+    public static ValidationError errorAt(@Nonnull String message, @Nonnull Slice<String> scope) {
         String scopeStr = "/" + join(scope);
-        return new JSONStructureError(message, scopeStr);
+        return new ValidationError(message, scopeStr);
     }
 
-    JSONStructureError(@Nullable String message, @Nullable String scope) {
+    ValidationError(@Nullable String message, @Nullable String scope) {
         this.message = message;
         this.scope = scope;
     }

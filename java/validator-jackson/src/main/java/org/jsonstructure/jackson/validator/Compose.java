@@ -11,16 +11,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
-import org.jsonstructure.jackson.validator.error.JSONStructureError;
+import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Slice;
 
-import static org.jsonstructure.jackson.validator.error.JSONStructureError.errorAt;
+import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
 public class Compose {
 
     public static final String COMPOSE_SYMBOL = "\u0ADD";
 
-    private static JSONStructureError mapMerge(ObjectNode dst, ObjectNode src, Slice<String> scope) {
+    private static ValidationError mapMerge(ObjectNode dst, ObjectNode src, Slice<String> scope) {
         CompositeError errors = new CompositeError();
         Iterator<Map.Entry<String, JsonNode>> iterator = src.fields();
         while (iterator.hasNext()) {
@@ -28,13 +28,13 @@ public class Compose {
             Slice<String> newScope = scope.append(entry.getKey());
             JsonNode dstValue = dst.get(entry.getKey());
             if (dstValue != null) {
-                boolean srcMap = entry.getValue() instanceof ObjectNode;
-                boolean dstMap = dstValue instanceof ObjectNode;
+                boolean srcMap = entry.getValue().isObject();
+                boolean dstMap = dstValue.isObject();
                 if ((srcMap && !dstMap) || (!srcMap && dstMap)) {
-                    JSONStructureError err = errorAt("Attempted merge between map and non-map types", newScope);
+                    ValidationError err = errorAt("Attempted merge between map and non-map types", newScope);
                     errors.add(err);
                 } else if (srcMap && dstMap) {
-                    JSONStructureError err = mapMerge((ObjectNode) dstValue, (ObjectNode) entry.getValue(), newScope);
+                    ValidationError err = mapMerge((ObjectNode) dstValue, (ObjectNode) entry.getValue(), newScope);
                     errors.add(err);
                 } else {
                     dst.set(entry.getKey(), entry.getValue().deepCopy());
@@ -46,13 +46,13 @@ public class Compose {
         return errors;
     }
 
-    private static JSONStructureError doCompose(JsonNode target,
-                                                ObjectNode types,
-                                                ObjectNode fragments,
-                                                Set<String> prev,
-                                                Slice<String> scope) {
+    private static ValidationError doCompose(JsonNode target,
+                                             ObjectNode types,
+                                             ObjectNode fragments,
+                                             Set<String> prev,
+                                             Slice<String> scope) {
         CompositeError errors = new CompositeError();
-        if (!(target instanceof ObjectNode)) {
+        if (!target.isObject()) {
             return errorAt("definition is not a JSON object", scope);
         }
         ObjectNode object = (ObjectNode) target;
@@ -60,7 +60,7 @@ public class Compose {
         while (iterator.hasNext()) {
             Map.Entry<String, JsonNode> entry = iterator.next();
             JsonNode value = entry.getValue();
-            if (value instanceof ObjectNode) {
+            if (value.isObject()) {
                 Slice<String> newScope = scope.append(entry.getKey());
                 errors.add(doCompose(value, types, fragments, prev, newScope));
             }
@@ -72,7 +72,7 @@ public class Compose {
         if (composeNode == null) {
             return null;
         }
-        if (!(composeNode instanceof ArrayNode)) {
+        if (!composeNode.isArray()) {
             return errorAt("'\\u0ADD' property must be a string array", scope);
         }
         ArrayNode defs = (ArrayNode) composeNode;
@@ -80,7 +80,7 @@ public class Compose {
         Iterator<JsonNode> defIter = defs.elements();
         while (defIter.hasNext()) {
             JsonNode defNode = defIter.next();
-            if (!(defNode instanceof TextNode)) {
+            if (!defNode.isTextual()) {
                 errors.add(errorAt("'\\u0ADD' property must be a string array", scope));
                 continue;
             }
@@ -104,7 +104,7 @@ public class Compose {
                 Slice<String> newScope = Slice.<String>create("types", defName);
                 Set<String> next = new HashSet<>(prev);
                 next.add(defName);
-                JSONStructureError err = doCompose(tDef, types, fragments, next, newScope);
+                ValidationError err = doCompose(tDef, types, fragments, next, newScope);
                 errors.add(err);
                 if (err != null) {
                     continue;
@@ -114,17 +114,17 @@ public class Compose {
                 Slice<String> newScope = Slice.<String>create("fragments", defName);
                 Set<String> next = new HashSet<>(prev);
                 next.add(defName);
-                JSONStructureError err = doCompose(fDef, types, fragments, next, newScope);
+                ValidationError err = doCompose(fDef, types, fragments, next, newScope);
                 errors.add(err);
                 if (err != null) {
                     continue;
                 }
                 def = (ObjectNode) fDef;
             }
-            JSONStructureError err = mapMerge(dest, def, scope);
+            ValidationError err = mapMerge(dest, def, scope);
             errors.add(err);
         }
-        JSONStructureError err = mapMerge(dest, object, scope);
+        ValidationError err = mapMerge(dest, object, scope);
         errors.add(err);
         if (errors.size() > 0) {
             return errors;
@@ -135,9 +135,9 @@ public class Compose {
         return null;
     }
 
-    public static JSONStructureError compose(JsonNode shellNode) {
+    public static ValidationError compose(JsonNode shellNode) {
         CompositeError errors = new CompositeError();
-        if (!(shellNode instanceof ObjectNode)) {
+        if (!shellNode.isObject()) {
              return errorAt("root object must be a JSON object", Slice.empty());
         }
         ObjectNode shell = (ObjectNode) shellNode;
@@ -150,13 +150,13 @@ public class Compose {
         if (fragmentsNode == null) {
             fragmentsNode = new ObjectNode(Jackson.NODE_FACTORY);
         }
-        if (!(typesNode instanceof ObjectNode)) {
+        if (!typesNode.isObject()) {
             errors.add(errorAt("'types' property must be a JSON object", Slice.empty()));
         }
-        if (!(fragmentsNode instanceof ObjectNode)) {
+        if (!fragmentsNode.isObject()) {
             errors.add(errorAt("'fragments' property must be a JSON object", Slice.empty()));
         }
-        if (!(typesNode instanceof ObjectNode) || !(fragmentsNode instanceof ObjectNode)) {
+        if (errors.size() > 0) {
             return errors.simplify();
         }
         ObjectNode types = (ObjectNode) typesNode;

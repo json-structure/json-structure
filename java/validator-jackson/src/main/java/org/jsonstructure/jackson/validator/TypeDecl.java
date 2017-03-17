@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
-import org.jsonstructure.jackson.validator.error.JSONStructureError;
+import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Slice;
 
-import static org.jsonstructure.jackson.validator.error.JSONStructureError.errorAt;
+import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
 public class TypeDecl {
 
@@ -125,7 +125,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    public JSONStructureError validateDecl(@Nonnull JSONStructure structure, @Nonnull Slice<String> scope) {
+    public ValidationError validateDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if ((type == null) || (type.length() == 0)) {
             return errorAt("missing required property 'type'", scope);
@@ -167,26 +167,30 @@ public class TypeDecl {
     }
 
     @Nullable
-    private static JSONStructureError detectTypeAliasCycle(@Nonnull JSONStructure structure,
-                                                           @Nonnull TypeDecl td,
-                                                           @Nonnull Set<String> prev,
-                                                           @Nonnull Slice<String> scope) {
-        String name = td.type;
-        TypeDecl decl = structure.definition.types.get(name);
-        if (prev.contains(name)) {
-            return errorAt("Type alias cycle detected " + prev, scope);
+    public ValidationError validate(@Nullable JsonNode value,
+                                    @Nonnull Structure structure,
+                                    @Nonnull Slice<String> scope) {
+        CompositeError errors = new CompositeError();
+        if (!PrimitiveTypes.PRIMITIVE_TYPES.contains(type)) {
+            TypeDecl def = structure.definition.types.get(type);
+            if (def == null) {
+                return errorAt("Unknown type '" + type + "'", scope);
+            }
+            return def.validate(value, structure, scope);
         }
-        if (decl == null) {
-            return null;
+        if ((value == null) || value.isNull()) {
+            if ((nullable != null) && nullable) {
+                return null;
+            }
+            return errorAt("JSON null value when nullable property is false", scope);
         }
-        prev.add(name);
-        return detectTypeAliasCycle(structure, decl, prev, scope);
+        return errors;
     }
 
     @Nullable
-    private JSONStructureError permissible(@Nonnull String name, @Nonnull String type,
-                                           @Nonnull PrimitiveTypes.PermissibleFields fields,
-                                           boolean observed, @Nonnull Slice<String> scope) {
+    private ValidationError permissible(@Nonnull String name, @Nonnull String type,
+                                        @Nonnull PrimitiveTypes.PermissibleFields fields,
+                                        boolean observed, @Nonnull Slice<String> scope) {
         boolean allowed = fields.contains(type);
         if (observed && !allowed) {
             return errorAt("Property " + name + " is not allowed with type " + type, scope);
@@ -195,7 +199,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    private JSONStructureError validateNumberTypeDecl(@Nonnull Slice<String> scope) {
+    private ValidationError validateNumberTypeDecl(@Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         BigDecimal min = null, max = null;
         if (!"integer".equals(type) && !"number".equals("type")) {
@@ -227,7 +231,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    private JSONStructureError validateStringTypeDecl(@Nonnull Slice<String> scope) {
+    private ValidationError validateStringTypeDecl(@Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if (!"string".equals(type)) {
             return null;
@@ -245,7 +249,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    private JSONStructureError validateStructTypeDecl(@Nonnull JSONStructure structure, @Nonnull Slice<String> scope) {
+    private ValidationError validateStructTypeDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if (!"struct".equals(type)) {
             return null;
@@ -261,7 +265,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    private JSONStructureError validateCollectionTypeDecl(@Nonnull JSONStructure structure, @Nonnull Slice<String> scope) {
+    private ValidationError validateCollectionTypeDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if (!"array".equals(type) && !"set".equals(type) && !"map".equals(type)) {
             return null;
@@ -284,7 +288,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    private JSONStructureError validateUnionTypeDecl(@Nonnull JSONStructure structure, @Nonnull Slice<String> scope) {
+    private ValidationError validateUnionTypeDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if (!"union".equals(type)) {
             return null;
@@ -302,7 +306,62 @@ public class TypeDecl {
     }
 
     @Nullable
-    JSONStructureError validateEmbedded(@Nonnull JSONStructure structure, @Nonnull Slice<String> scope) {
+    private static ValidationError detectTypeAliasCycle(@Nonnull Structure structure,
+                                                        @Nonnull TypeDecl td,
+                                                        @Nonnull Set<String> prev,
+                                                        @Nonnull Slice<String> scope) {
+        String name = td.type;
+        TypeDecl decl = structure.definition.types.get(name);
+        if (prev.contains(name)) {
+            return errorAt("Type alias cycle detected " + prev, scope);
+        }
+        if (decl == null) {
+            return null;
+        }
+        prev.add(name);
+        return detectTypeAliasCycle(structure, decl, prev, scope);
+    }
+
+    @Nullable
+    ValidationError validateEmbedded(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
+        CompositeError errors = new CompositeError();
+        if (enumValues != null) {
+            for (int i = 0; i < enumValues.length; i++) {
+                Slice<String> iScope = scope.append("enum", Integer.toString(i));
+                errors.add(validate(enumValues[i], structure, iScope));
+            }
+        }
+        if (defaultValue != null) {
+            Slice<String> newScope = scope.append("default");
+            errors.add(validate(defaultValue, structure, newScope));
+        }
+        if (fields != null) {
+            for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
+                Slice<String> newScope = scope.append("fields", entry.getKey());
+                errors.add(entry.getValue().validateEmbedded(structure, newScope));
+            }
+        }
+        if (types != null) {
+            for (Map.Entry<String, TypeDecl> entry : types.entrySet()) {
+                Slice<String> newScope = scope.append("types", entry.getKey());
+                errors.add(entry.getValue().validateEmbedded(structure, newScope));
+            }
+        }
+        if (items != null) {
+            Slice<String> newScope = scope.append("items");
+            errors.add(items.validateEmbedded(structure, newScope));
+        }
+        return errors;
+    }
+
+    @Nullable
+    private ValidationError validateBoolean(@Nonnull JsonNode value,
+                                            @Nonnull Slice<String> scope) {
+        if (!value.isBoolean()) {
+            return errorAt("JSON value is not a boolean", scope);
+        }
         return null;
     }
+
+
 }

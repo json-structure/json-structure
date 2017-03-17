@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.jsonstructure.jackson.validator.error.JSONStructureError;
+import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Result;
 
-public class JSONStructureDefinition {
+public class StructDef {
 
     @Nullable
     final String title;
@@ -37,12 +37,12 @@ public class JSONStructureDefinition {
     final TypeDecl main;
 
     @JsonCreator
-    public JSONStructureDefinition(@JsonProperty("title") String title,
-                                   @JsonProperty("description") String description,
-                                   @JsonProperty("imports") Map<String, String> imports,
-                                   @JsonProperty("fragments") Map<String, JsonNode> fragments,
-                                   @JsonProperty("types") Map<String, TypeDecl> types,
-                                   @JsonProperty("main") TypeDecl main) {
+    public StructDef(@JsonProperty("title") String title,
+                     @JsonProperty("description") String description,
+                     @JsonProperty("imports") Map<String, String> imports,
+                     @JsonProperty("fragments") Map<String, JsonNode> fragments,
+                     @JsonProperty("types") Map<String, TypeDecl> types,
+                     @JsonProperty("main") TypeDecl main) {
         this.title = title;
         this.description = description;
         this.imports = (imports == null) ? new HashMap<>() : imports;
@@ -52,16 +52,16 @@ public class JSONStructureDefinition {
     }
 
     @Nonnull
-    public static Result<JSONStructureDefinition, JSONStructureError> create(@Nonnull InputStream inputStream)
+    public static Result<StructDef, ValidationError> create(@Nonnull InputStream inputStream)
             throws IOException {
 
         ObjectMapper objectMapper = Jackson.OBJECT_MAPPER;
         JsonNode tree = objectMapper.readTree(inputStream);
-        JSONStructureError error = Compose.compose(tree);
+        ValidationError error = Compose.compose(tree);
         if (error != null) {
             return Result.err(error);
         }
-        JSONStructureDefinition definition = objectMapper.treeToValue(tree, JSONStructureDefinition.class);
+        StructDef definition = objectMapper.treeToValue(tree, StructDef.class);
         return Result.ok(definition);
     }
 

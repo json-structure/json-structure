@@ -8,49 +8,57 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
-import org.jsonstructure.jackson.validator.error.JSONStructureError;
-import org.jsonstructure.jackson.validator.loanword.Once;
+import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Result;
 import org.jsonstructure.jackson.validator.loanword.Slice;
 
-import static org.jsonstructure.jackson.validator.error.JSONStructureError.errorAt;
+import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
-public class JSONStructure {
+public class Structure {
 
-    final JSONStructureDefinition definition;
-    final Once<JSONStructureError> validateOnce;
+    final StructDef definition;
+    boolean initialized;
 
     @Nonnull
-    public static Result<JSONStructure, JSONStructureError> create(@Nonnull InputStream inputStream)
+    public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream)
             throws IOException {
 
-        Result<JSONStructureDefinition, JSONStructureError> child = JSONStructureDefinition.create(inputStream);
+        Result<StructDef, ValidationError> child = StructDef.create(inputStream);
         if (child.isError()) {
             // Silence false positive NPE inspection
             assert(child.getErr() != null);
             return Result.err(child.getErr());
         }
-        JSONStructure structure = new JSONStructure(child.getOk());
-        JSONStructureError error = structure.validateStructure();
+        Structure structure = new Structure(child.getOk());
+        ValidationError error = structure.validateStructure();
         if (error != null) {
             return Result.err(error);
         }
         return Result.ok(structure);
     }
 
-    JSONStructure(JSONStructureDefinition definition) {
+    Structure(StructDef definition) {
         this.definition = definition;
-        this.validateOnce = new Once<>(this::doValidateStructure);
+    }
+
+    public void resetValidation() {
+        initialized = false;
+    }
+
+    public ValidationError validateStructure() {
+        if (initialized) {
+            return null;
+        }
+        ValidationError error = doValidateStructure();
+        if (error == null) {
+            initialized = true;
+        }
+        return error;
     }
 
     @Nullable
-    public JSONStructureError validateStructure() {
-        return validateOnce.value();
-    }
-
-    @Nullable
-    private JSONStructureError doValidateStructure() {
-        JSONStructureError error = validateStructureTopLevel();
+    private ValidationError doValidateStructure() {
+        ValidationError error = validateStructureTopLevel();
         if (error != null) {
             return error;
         }
@@ -66,7 +74,7 @@ public class JSONStructure {
     }
 
     @Nullable
-    private JSONStructureError validateStructureTopLevel() {
+    private ValidationError validateStructureTopLevel() {
         CompositeError errors = new CompositeError();
 
         for (Map.Entry<String, TypeDecl> entry : definition.types.entrySet()) {
@@ -80,11 +88,11 @@ public class JSONStructure {
             errors.add(errorAt("main type declaration must be declared", scope));
         }
 
-        return errors;
+        return errors.simplify();
     }
 
     @Nullable
-    private JSONStructureError validateStructureDecls() {
+    private ValidationError validateStructureDecls() {
         CompositeError errors = new CompositeError();
 
         for (Map.Entry<String, TypeDecl> entry : definition.types.entrySet()) {
@@ -94,11 +102,11 @@ public class JSONStructure {
         assert(definition.main != null);
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateDecl(this, scope));
-        return errors;
+        return errors.simplify();
     }
 
     @Nullable
-    private JSONStructureError validateEmbedded() {
+    private ValidationError validateEmbedded() {
         CompositeError errors = new CompositeError();
 
         for (Map.Entry<String, TypeDecl> entry : definition.types.entrySet()) {
@@ -108,7 +116,7 @@ public class JSONStructure {
         assert(definition.main != null);
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateEmbedded(this, scope));
-        return errors;
+        return errors.simplify();
     }
 
 

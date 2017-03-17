@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class Jackson {
 
-    public static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.withExactBigDecimals(true);
+    public static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
 
     public static final ObjectMapper OBJECT_MAPPER;
 

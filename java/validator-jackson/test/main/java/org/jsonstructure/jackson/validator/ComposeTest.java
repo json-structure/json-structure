@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
-import org.jsonstructure.jackson.validator.error.JSONStructureError;
+import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +44,7 @@ public class ComposeTest {
         assertEquals(new TextNode("number"), tree.get("types").get("foo").get("type"));
         assertNull(tree.get("types").get("foo").get("multipleOf"));
 
-        JSONStructureError errors = Compose.compose((ObjectNode) tree);
+        ValidationError errors = Compose.compose((ObjectNode) tree);
         assertNull(errors);
 
         assertEquals(new TextNode("number"), tree.get("types").get("foo").get("type"));
