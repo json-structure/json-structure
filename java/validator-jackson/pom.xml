@@ -14,6 +14,7 @@
         <project.build.targetJdk>1.8</project.build.targetJdk>
         <dep.jackson.version>2.7.9</dep.jackson.version>
         <dep.jsr305.version>3.0.1</dep.jsr305.version>
+        <dep.apache.commons.validator>1.5.1</dep.apache.commons.validator>
     </properties>
 
     <build>
@@ -61,6 +62,11 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${dep.jackson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${dep.apache.commons.validator}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -73,6 +79,28 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-digester</groupId>
+                    <artifactId>commons-digester</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

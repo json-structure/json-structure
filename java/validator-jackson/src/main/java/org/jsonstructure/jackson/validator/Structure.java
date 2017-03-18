@@ -18,37 +18,44 @@ import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
 public class Structure {
 
+    @Nonnull
     final StructDef definition;
+
+    @Nonnull
+    final Options options;
+
     boolean initialized;
     ValidationError initError;
 
-    Structure(StructDef definition) {
+    Structure(@Nonnull StructDef definition, @Nonnull Options options) {
         this.definition = definition;
+        this.options = options;
     }
 
     @Nonnull
-    public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream)
+    public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream, @Nonnull Options options)
             throws IOException {
 
         Result<StructDef, ValidationError> child = StructDef.create(inputStream);
-        return buildStructure(child);
+        return buildStructure(child, options);
     }
 
     @Nonnull
-    public static Result<Structure, ValidationError> createFromNode(@Nonnull JsonNode node)
+    public static Result<Structure, ValidationError> createFromNode(@Nonnull JsonNode node, @Nonnull Options options)
             throws IOException {
 
         Result<StructDef, ValidationError> child = StructDef.createFromNode(node);
-        return buildStructure(child);
+        return buildStructure(child, options);
     }
 
-    private static Result<Structure, ValidationError> buildStructure(Result<StructDef, ValidationError> child) {
+    private static Result<Structure, ValidationError> buildStructure(@Nonnull Result<StructDef, ValidationError> child,
+                                                                     @Nonnull Options options) {
         if (child.isError()) {
             // Silence false positive NPE inspection
             assert(child.getErr() != null);
             return Result.err(child.getErr());
         }
-        Structure structure = new Structure(child.getOk());
+        Structure structure = new Structure(child.getOk(), options);
         ValidationError error = structure.validateStructure();
         if (error != null) {
             return Result.err(error);

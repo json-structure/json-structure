@@ -12,9 +12,9 @@
         "valid": true
       },
       {
-        "description": "correct ipv4",
+        "description": "incorrect ipv4",
         "data": "1.2.3.4",
-        "valid": true
+        "valid": false
       },
       {
         "description": "incorrect ipv6",

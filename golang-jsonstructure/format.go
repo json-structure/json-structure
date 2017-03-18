@@ -16,7 +16,7 @@ type Format struct {
 	Apply  func(val interface{}, typ string) error
 }
 
-var hostnameLabels = regexp.MustCompile(`[^0-9a-zA-Z\-]`)
+var hostnameIllegalChars = regexp.MustCompile(`[^0-9a-zA-Z.\-]`)
 
 var defaultFormats = map[string]*Format{
 	"date-time": &Format{acceptString, dateTimeApply},
@@ -65,12 +65,10 @@ func hostnameApply(val interface{}, _ string) error {
 		if len(label) > 63 {
 			return fmt.Errorf("label %d of hostname > 63 characters", i+1)
 		}
-		char := hostnameLabels.FindString(label)
-		if char != "" {
-			return fmt.Errorf(
-				`label %d of hostname has illegal character "%s"`,
-				i+1, char)
-		}
+	}
+	char := hostnameIllegalChars.FindString(str)
+	if char != "" {
+		return fmt.Errorf(`hostname has illegal character "%s"`, char)
 	}
 	return nil
 }
@@ -98,6 +96,9 @@ func ipv6Apply(val interface{}, _ string) error {
 	ip := net.ParseIP(str)
 	if ip == nil {
 		return errors.New("invalid IPv6 address")
+	}
+	if ip.To4() != nil {
+		return errors.New("invalid IPv4 address")
 	}
 	if ip.To16() == nil {
 		return errors.New("invalid IPv6 address")

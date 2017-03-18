@@ -5,15 +5,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
@@ -22,103 +24,127 @@ import org.jsonstructure.jackson.validator.loanword.Slice;
 
 import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
+@JsonDeserialize(builder = TypeDeclBuilder.class)
 public class TypeDecl {
 
     // required
 
-    @Nonnull
-    @JsonProperty("type")
-    public String type;
+    @Nullable
+    final String type;
 
     // properties available to all type declarations
 
     @Nonnull
-    @JsonProperty("default")
-    public JsonNode defaultValue = MissingNode.getInstance();
+    final JsonNode defaultValue;
 
     @Nullable
-    @JsonProperty("enum")
-    public JsonNode[] enumValues;
+    final JsonNode[] enumValues;
 
     @Nonnull
-    @JsonIgnore
     final Set<JsonNode> enumSet = new HashSet<>();
 
     // common to primitive types
 
     @Nullable
-    @JsonProperty("format")
-    public String format;
+    final String format;
 
     @Nullable
-    @JsonProperty("nullable")
-    public Boolean nullable;
+    final Boolean nullable;
 
     // number
 
     @Nullable
-    @JsonProperty("multipleOf")
-    public BigDecimal multipleOf;
+    final BigDecimal multipleOf;
 
     @Nullable
-    @JsonProperty("minimum")
-    public BigDecimal minimum;
+    final BigDecimal minimum;
 
     @Nullable
-    @JsonProperty("maximum")
-    public BigDecimal maximum;
+    final BigDecimal maximum;
 
     @Nullable
-    @JsonProperty("exclusiveMinimum")
-    public BigDecimal exclusiveMinimum;
+    final BigDecimal exclusiveMinimum;
 
     @Nullable
-    @JsonProperty("exclusiveMaximum")
-    public BigDecimal exclusiveMaximum;
+    final BigDecimal exclusiveMaximum;
 
     // string
 
     @Nullable
-    @JsonProperty("pattern")
-    public String pattern;
+    final String patternRaw;
 
     @Nullable
-    @JsonProperty("minLength")
-    public Integer minLength;
+    Pattern pattern;
 
     @Nullable
-    @JsonProperty("maxLength")
-    public Integer maxLength;
+    final Integer minLength;
+
+    @Nullable
+    final Integer maxLength;
 
     // struct
 
     @Nullable
-    @JsonProperty("fields")
-    public Map<String, TypeDecl> fields;
+    final Map<String, TypeDecl> fields;
 
     // array, set, and map types
 
     @Nullable
-    @JsonProperty("items")
-    public TypeDecl items;
+    final TypeDecl items;
 
     @Nullable
-    @JsonProperty("minItems")
-    public Integer minItems;
+    final Integer minItems;
 
     @Nullable
-    @JsonProperty("maxItems")
-    public Integer maxItems;
+    final Integer maxItems;
 
     // union
 
-    @JsonProperty("types")
-    public Map<String, TypeDecl> types;
+    @Nullable
+    final Map<String, TypeDecl> types;
+
+    TypeDecl(@Nullable String type,
+             @Nonnull JsonNode defaultValue,
+             @Nullable JsonNode[] enumValues,
+             @Nullable String format,
+             @Nullable Boolean nullable,
+             @Nullable BigDecimal multipleOf,
+             @Nullable BigDecimal minimum,
+             @Nullable  BigDecimal maximum,
+             @Nullable BigDecimal exclusiveMinimum,
+             @Nullable BigDecimal exclusiveMaximum,
+             @Nullable String patternRaw,
+             @Nullable Integer minLength,
+             @Nullable Integer maxLength,
+             @Nullable Map<String, TypeDecl> fields,
+             @Nullable TypeDecl items,
+             @Nullable Integer minItems,
+             @Nullable Integer maxItems,
+             @Nullable Map<String, TypeDecl> types) {
+        this.type = type;
+        this.defaultValue = defaultValue;
+        this.enumValues = enumValues;
+        this.format = format;
+        this.nullable = nullable;
+        this.multipleOf = multipleOf;
+        this.minimum = minimum;
+        this.maximum = maximum;
+        this.exclusiveMinimum = exclusiveMinimum;
+        this.exclusiveMaximum = exclusiveMaximum;
+        this.patternRaw = patternRaw;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        this.fields = fields;
+        this.items = items;
+        this.minItems = minItems;
+        this.maxItems = maxItems;
+        this.types = types;
+    }
 
     @Nullable
     public ValidationError validateDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
-        if (type.length() == 0) {
+        if ((type == null) || (type.length() == 0)) {
             return errorAt("missing required property 'type'", scope);
         }
         PrimitiveTypes.PermissibleFields pf = PrimitiveTypes.PERMISSIBLE_FIELDS.get(type);
@@ -139,7 +165,7 @@ public class TypeDecl {
         errors.add(permissible("maximum", type, pf, maximum != null, scope));
         errors.add(permissible("exclusiveMinimum", type, pf, exclusiveMinimum != null, scope));
         errors.add(permissible("exclusiveMaximum", type, pf, exclusiveMaximum != null, scope));
-        errors.add(permissible("pattern", type, pf, false, scope));
+        errors.add(permissible("pattern", type, pf, (pattern != null) || (patternRaw != null), scope));
         errors.add(permissible("minLength", type, pf, minLength != null, scope));
         errors.add(permissible("maxLength", type, pf, maxLength != null, scope));
         errors.add(permissible("fields", type, pf, fields != null, scope));
@@ -153,6 +179,7 @@ public class TypeDecl {
         errors.add(validateStructTypeDecl(structure, scope));
         errors.add(validateCollectionTypeDecl(structure, scope));
         errors.add(validateUnionTypeDecl(structure, scope));
+        errors.add(validateFormatTypeDecl(structure, scope));
 
         return errors.simplify();
     }
@@ -162,6 +189,9 @@ public class TypeDecl {
                                     @Nonnull Structure structure,
                                     @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
+        if ((type == null) || (type.length() == 0)) {
+            return errorAt("missing required property 'type'", scope);
+        }
         if (!PrimitiveTypes.PRIMITIVE_TYPES.contains(type)) {
             TypeDecl def = structure.definition.types.get(type);
             if (def == null) {
@@ -176,6 +206,7 @@ public class TypeDecl {
             return errorAt("JSON null value when nullable property is false", scope);
         }
 
+        errors.add(validateFormat(value, structure, scope));
         errors.add(validateEnum(value, scope));
 
         switch (type) {
@@ -264,6 +295,13 @@ public class TypeDecl {
         if (!"string".equals(type)) {
             return null;
         }
+        if (patternRaw != null) {
+            try {
+                pattern = Pattern.compile(patternRaw);
+            } catch (PatternSyntaxException ex) {
+                errors.add(errorAt("'pattern' is not a valid regular expression. " + ex.getMessage(), scope));
+            }
+        }
         if ((minLength != null) && (minLength < 0)) {
             errors.add(errorAt("'minLength' must be a non-negative integer", scope));
         }
@@ -331,6 +369,22 @@ public class TypeDecl {
             errors.add(entry.getValue().validateDecl(structure, newScope));
         }
         return errors;
+    }
+
+    @Nullable
+    public ValidationError validateFormatTypeDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
+        assert(type != null);
+        if (format == null) {
+            return null;
+        }
+        Format formatDecl = structure.options.formats.get(format);
+        if (formatDecl == null) {
+            return errorAt("unknown format '" + format + "'", scope);
+        }
+        if (!formatDecl.accept(type)) {
+            return errorAt("format '" + format + "' does not accept type '" + type + "'", scope);
+        }
+        return null;
     }
 
     @Nullable
@@ -446,6 +500,9 @@ public class TypeDecl {
             return errorAt("JSON value is not a string", scope);
         }
         String str = value.textValue();
+        if ((pattern != null) && !pattern.matcher(str).find()) {
+            errors.add(errorAt("'pattern' regular expression is not a match", scope));
+        }
         if (minLength != null && str.length() < minLength) {
             errors.add(errorAt(String.format("length of string %s is less than minimum length %s", str, minLength), scope));
         }
@@ -469,11 +526,12 @@ public class TypeDecl {
         }
         for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
             String key = entry.getKey();
+            TypeDecl decl = entry.getValue();
             JsonNode child = obj.get(key);
             if (child != null) {
                 Slice<String> newScope = scope.append(key);
-                errors.add(entry.getValue().validate(child, structure, newScope));
-            } else if (entry.getValue().defaultValue.isMissingNode()) {
+                errors.add(decl.validate(child, structure, newScope));
+            } else if (decl.defaultValue.isMissingNode()) {
                 errors.add(errorAt("missing required field '" + key + "'", scope));
             }
         }
@@ -571,6 +629,24 @@ public class TypeDecl {
         return errors;
     }
 
+    private ValidationError validateFormat(@Nonnull JsonNode value,
+                                           @Nonnull Structure structure,
+                                           @Nonnull Slice<String> scope) {
+        if (format == null) {
+            return null;
+        }
+        Format formatDecl = structure.options.formats.get(format);
+        if (formatDecl == null) {
+            return errorAt("unrecognized format '" + format + "'", scope);
+        }
+        assert(type != null);
+        String msg = formatDecl.apply(value, type);
+        if (msg != null) {
+            return errorAt(msg, scope);
+        }
+        return null;
+    }
+
     private ValidationError validateEnum(@Nonnull JsonNode value,
                                          @Nonnull Slice<String> scope) {
         if (enumValues == null) {
@@ -581,5 +657,7 @@ public class TypeDecl {
         }
         return null;
     }
+
+
 
 }

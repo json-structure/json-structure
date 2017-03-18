@@ -65,7 +65,7 @@ public class TestSuite {
                 ObjectMapper mapper = Jackson.OBJECT_MAPPER;
                 TestDeclaration[] decls = mapper.readValue(inputStream, mapper.getTypeFactory().constructArrayType(TestDeclaration.class));
                 for (TestDeclaration decl : decls) {
-                    Result<Structure, ValidationError> result = Structure.createFromNode(decl.structure);
+                    Result<Structure, ValidationError> result = Structure.createFromNode(decl.structure, Options.defaultOpt());
                     if (result.isError() && decl.valid) {
                         collector.addError(new Throwable(
                                 String.format("%s, %s.\nUnexpected JSON structure validation error: %s",
