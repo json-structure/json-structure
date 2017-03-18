@@ -3,8 +3,6 @@ package org.jsonstructure.jackson.validator;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -40,7 +38,7 @@ public final class TypeDeclBuilder {
     }
 
     @JsonProperty("default")
-    public TypeDeclBuilder defaultValue(@Nonnull JsonNode defaultValue) {
+    public TypeDeclBuilder defaultValue(JsonNode defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }

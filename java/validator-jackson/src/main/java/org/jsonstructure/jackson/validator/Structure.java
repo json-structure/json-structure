@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
 import org.jsonstructure.jackson.validator.error.ValidationError;
@@ -25,6 +26,7 @@ public class Structure {
     final Options options;
 
     boolean initialized;
+
     ValidationError initError;
 
     Structure(@Nonnull StructDef definition, @Nonnull Options options) {
@@ -41,10 +43,10 @@ public class Structure {
     }
 
     @Nonnull
-    public static Result<Structure, ValidationError> createFromNode(@Nonnull JsonNode node, @Nonnull Options options)
+    public static Result<Structure, ValidationError> createNode(@Nonnull JsonNode node, @Nonnull Options options)
             throws IOException {
 
-        Result<StructDef, ValidationError> child = StructDef.createFromNode(node);
+        Result<StructDef, ValidationError> child = StructDef.createNode(node);
         return buildStructure(child, options);
     }
 
@@ -55,6 +57,7 @@ public class Structure {
             assert(child.getErr() != null);
             return Result.err(child.getErr());
         }
+        assert(child.getOk() != null);
         Structure structure = new Structure(child.getOk(), options);
         ValidationError error = structure.validateStructure();
         if (error != null) {
@@ -139,7 +142,21 @@ public class Structure {
     }
 
     @Nullable
-    public ValidationError validateFromNode(@Nonnull JsonNode node) {
+    public ValidationError validate(InputStream data) throws IOException {
+        ObjectMapper mapper = Jackson.OBJECT_MAPPER;
+        JsonNode node = mapper.readTree(data);
+        return validateNode(node);
+    }
+
+    @Nullable
+    public ValidationError validateNode(@Nonnull JsonNode node) {
+        ValidationError error = validateStructure();
+        if (error != null) {
+            return error;
+        }
+        if (definition.main == null) {
+            return errorAt("JSON structure is missing required 'main' declaration", Slice.empty());
+        }
         return definition.main.validate(node, this, Slice.empty());
     }
 

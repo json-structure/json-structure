@@ -11,11 +11,10 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
@@ -104,13 +103,13 @@ public class TypeDecl {
     final Map<String, TypeDecl> types;
 
     TypeDecl(@Nullable String type,
-             @Nonnull JsonNode defaultValue,
+             @Nullable JsonNode defaultValue,
              @Nullable JsonNode[] enumValues,
              @Nullable String format,
              @Nullable Boolean nullable,
              @Nullable BigDecimal multipleOf,
              @Nullable BigDecimal minimum,
-             @Nullable  BigDecimal maximum,
+             @Nullable BigDecimal maximum,
              @Nullable BigDecimal exclusiveMinimum,
              @Nullable BigDecimal exclusiveMaximum,
              @Nullable String patternRaw,
@@ -122,7 +121,7 @@ public class TypeDecl {
              @Nullable Integer maxItems,
              @Nullable Map<String, TypeDecl> types) {
         this.type = type;
-        this.defaultValue = defaultValue;
+        this.defaultValue = (defaultValue == null) ? MissingNode.getInstance() : defaultValue;
         this.enumValues = enumValues;
         this.format = format;
         this.nullable = nullable;
@@ -409,7 +408,7 @@ public class TypeDecl {
         CompositeError errors = new CompositeError();
         if (enumValues != null) {
             for (int i = 0; i < enumValues.length; i++) {
-                JsonNode value = enumValues[i];
+                JsonNode value = UnifyNumbers.unify(enumValues[i]);
                 Slice<String> iScope = scope.append("enum", Integer.toString(i));
                 if (value.isNull()) {
                     errors.add(errorAt("null enum value is not permitted", iScope));
@@ -652,7 +651,7 @@ public class TypeDecl {
         if (enumValues == null) {
             return null;
         }
-        if (!enumSet.contains(value)) {
+        if (!enumSet.contains(UnifyNumbers.unify(value))) {
             return errorAt("value not found in 'enum' set", scope);
         }
         return null;

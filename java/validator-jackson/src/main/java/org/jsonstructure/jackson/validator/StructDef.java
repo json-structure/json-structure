@@ -2,6 +2,7 @@ package org.jsonstructure.jackson.validator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,17 +38,17 @@ public class StructDef {
     final TypeDecl main;
 
     @JsonCreator
-    public StructDef(@JsonProperty("title") String title,
-                     @JsonProperty("description") String description,
-                     @JsonProperty("imports") Map<String, String> imports,
-                     @JsonProperty("fragments") Map<String, JsonNode> fragments,
-                     @JsonProperty("types") Map<String, TypeDecl> types,
-                     @JsonProperty("main") TypeDecl main) {
+    public StructDef(@Nullable @JsonProperty("title") String title,
+                     @Nullable @JsonProperty("description") String description,
+                     @Nullable @JsonProperty("imports") Map<String, String> imports,
+                     @Nullable @JsonProperty("fragments") Map<String, JsonNode> fragments,
+                     @Nullable @JsonProperty("types") Map<String, TypeDecl> types,
+                     @Nullable @JsonProperty("main") TypeDecl main) {
         this.title = title;
         this.description = description;
-        this.imports = (imports == null) ? new HashMap<>() : imports;
-        this.fragments = (fragments == null) ? new HashMap<>() : fragments;
-        this.types = (types == null) ? new HashMap<>() : types;
+        this.imports = (imports == null) ? Collections.emptyMap() : imports;
+        this.fragments = (fragments == null) ? Collections.emptyMap() : fragments;
+        this.types = (types == null) ? Collections.emptyMap() : types;
         this.main = main;
     }
 
@@ -57,11 +58,11 @@ public class StructDef {
 
         ObjectMapper objectMapper = Jackson.OBJECT_MAPPER;
         JsonNode tree = objectMapper.readTree(inputStream);
-        return createFromNode(tree);
+        return createNode(tree);
     }
 
     @Nonnull
-    public static Result<StructDef, ValidationError> createFromNode(@Nonnull JsonNode tree)
+    public static Result<StructDef, ValidationError> createNode(@Nonnull JsonNode tree)
             throws IOException {
         ValidationError error = Compose.compose(tree);
         if (error != null) {

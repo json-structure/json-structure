@@ -1,6 +1,5 @@
 package org.jsonstructure.jackson.validator;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -18,11 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Result;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-
-import jdk.internal.org.objectweb.asm.TypeReference;
 
 import static org.junit.Assert.*;
 
@@ -65,7 +61,7 @@ public class TestSuite {
                 ObjectMapper mapper = Jackson.OBJECT_MAPPER;
                 TestDeclaration[] decls = mapper.readValue(inputStream, mapper.getTypeFactory().constructArrayType(TestDeclaration.class));
                 for (TestDeclaration decl : decls) {
-                    Result<Structure, ValidationError> result = Structure.createFromNode(decl.structure, Options.defaultOpt());
+                    Result<Structure, ValidationError> result = Structure.createNode(decl.structure, Options.defaultOpt());
                     if (result.isError() && decl.valid) {
                         collector.addError(new Throwable(
                                 String.format("%s, %s.\nUnexpected JSON structure validation error: %s",
@@ -78,7 +74,7 @@ public class TestSuite {
                         Structure structure = result.getOk();
                         assertNotNull(structure);
                         for (TestCase testcase : decl.tests) {
-                            ValidationError error = structure.validateFromNode(testcase.data);
+                            ValidationError error = structure.validateNode(testcase.data);
                             if ((error != null) && testcase.valid) {
                                 collector.addError(new Throwable(
                                         String.format("%s, %s, %s.\nUnexpected object validation error: %s",
