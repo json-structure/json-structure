@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jsonstructure.jackson.validator.error.CompositeError;
 import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Slice;
+import org.jsonstructure.jackson.validator.simpleregexp.SimpleRegexp;
 
 import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
@@ -174,7 +175,7 @@ public class TypeDecl {
         errors.add(permissible("types", type, pf, types != null, scope));
 
         errors.add(validateNumberTypeDecl(scope));
-        errors.add(validateStringTypeDecl(scope));
+        errors.add(validateStringTypeDecl(structure, scope));
         errors.add(validateStructTypeDecl(structure, scope));
         errors.add(validateCollectionTypeDecl(structure, scope));
         errors.add(validateUnionTypeDecl(structure, scope));
@@ -289,7 +290,8 @@ public class TypeDecl {
     }
 
     @Nullable
-    private ValidationError validateStringTypeDecl(@Nonnull Slice<String> scope) {
+    private ValidationError validateStringTypeDecl(@Nonnull Structure structure,
+                                                   @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if (!"string".equals(type)) {
             return null;
@@ -299,6 +301,13 @@ public class TypeDecl {
                 pattern = Pattern.compile(patternRaw);
             } catch (PatternSyntaxException ex) {
                 errors.add(errorAt("'pattern' is not a valid regular expression. " + ex.getMessage(), scope));
+            }
+        }
+        if ((pattern != null) && structure.options.regexFlavor == Options.RegexFlavor.STRICT) {
+            String error = SimpleRegexp.accept(pattern.pattern());
+            if (error != null) {
+                errors.add(errorAt("'pattern' expression is not cross-platform. "+
+                        "Consider the NativeRegex option. " + error, scope));
             }
         }
         if ((minLength != null) && (minLength < 0)) {

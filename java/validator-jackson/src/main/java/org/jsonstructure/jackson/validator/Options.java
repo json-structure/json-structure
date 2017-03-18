@@ -15,8 +15,16 @@ import org.jsonstructure.jackson.validator.format.UriFormat;
 
 public class Options {
 
+    public enum RegexFlavor {
+        STRICT,
+        NATIVE;
+    }
+
     @Nonnull
     final Map<String, Format> formats;
+
+    @Nonnull
+    final RegexFlavor regexFlavor;
 
     public static final Map<String, Format> DEFAULT_FORMATS;
 
@@ -31,11 +39,13 @@ public class Options {
         DEFAULT_FORMATS = Collections.unmodifiableMap(formats);
     }
 
-    Options(@Nonnull Map<String, Format> formats) {
+    Options(@Nonnull Map<String, Format> formats,
+            @Nonnull RegexFlavor regexFlavor) {
         this.formats = formats;
+        this.regexFlavor = regexFlavor;
     }
 
     public static Options defaultOpt() {
-        return new Options(DEFAULT_FORMATS);
+        return new Options(DEFAULT_FORMATS, RegexFlavor.STRICT);
     }
 }

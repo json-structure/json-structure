@@ -15,6 +15,7 @@
         <dep.jackson.version>2.7.9</dep.jackson.version>
         <dep.jsr305.version>3.0.1</dep.jsr305.version>
         <dep.apache.commons.validator>1.5.1</dep.apache.commons.validator>
+        <dep.antlr4.runtime>4.6</dep.antlr4.runtime>
     </properties>
 
     <build>
@@ -67,6 +68,11 @@
                 <artifactId>commons-validator</artifactId>
                 <version>${dep.apache.commons.validator}</version>
             </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>${dep.antlr4.runtime}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -101,6 +107,10 @@
                     <artifactId>commons-digester</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
