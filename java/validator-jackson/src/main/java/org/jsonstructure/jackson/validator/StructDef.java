@@ -62,8 +62,7 @@ public class StructDef {
     }
 
     @Nonnull
-    public static Result<StructDef, ValidationError> createNode(@Nonnull JsonNode tree)
-            throws IOException {
+    static Result<StructDef, ValidationError> createNode(@Nonnull JsonNode tree) throws IOException {
         ValidationError error = Compose.compose(tree);
         if (error != null) {
             return Result.err(error);

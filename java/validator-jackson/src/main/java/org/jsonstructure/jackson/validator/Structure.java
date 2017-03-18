@@ -35,17 +35,16 @@ public class Structure {
     }
 
     @Nonnull
-    public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream, @Nonnull Options options)
+    public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream,
+                                                            @Nonnull Options options)
             throws IOException {
-
         Result<StructDef, ValidationError> child = StructDef.create(inputStream);
         return buildStructure(child, options);
     }
 
     @Nonnull
-    public static Result<Structure, ValidationError> createNode(@Nonnull JsonNode node, @Nonnull Options options)
-            throws IOException {
-
+    static Result<Structure, ValidationError> createNode(@Nonnull JsonNode node,
+                                                         @Nonnull Options options) throws IOException {
         Result<StructDef, ValidationError> child = StructDef.createNode(node);
         return buildStructure(child, options);
     }
@@ -149,7 +148,7 @@ public class Structure {
     }
 
     @Nullable
-    public ValidationError validateNode(@Nonnull JsonNode node) {
+    ValidationError validateNode(@Nonnull JsonNode node) {
         ValidationError error = validateStructure();
         if (error != null) {
             return error;
@@ -159,6 +158,5 @@ public class Structure {
         }
         return definition.main.validate(node, this, Slice.empty());
     }
-
 
 }
