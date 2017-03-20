@@ -3,6 +3,7 @@ package jsonstructure
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	multierror "github.com/mspiegel/go-multierror"
 )
@@ -19,7 +20,11 @@ func filterPriority(errs []error, scope []string) error {
 	for _, err := range errs {
 		switch e := err.(type) {
 		case *EnumError:
-			if len(e.Scope) == len(scope)+1 {
+			count := 0
+			if len(e.Scope) > 1 {
+				count = strings.Count(e.Scope, "/")
+			}
+			if count == len(scope)+1 {
 				result = multierror.Append(result, err)
 			}
 		}

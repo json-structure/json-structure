@@ -10,17 +10,17 @@ import org.jsonstructure.jackson.validator.loanword.Slice;
 public class ValidationError {
 
     @Nullable
-    private final String message;
+    public final String message;
 
     @Nullable
-    private final String scope;
+    public final String scope;
 
     ValidationError() {
         this.message = null;
         this.scope = null;
     }
 
-    private static String join(Slice<String> scope) {
+    static String join(Slice<String> scope) {
         List<String> values = scope.toList();
         int size = values.size();
         StringBuilder builder = new StringBuilder();
@@ -33,9 +33,13 @@ public class ValidationError {
         return builder.toString();
     }
 
-    public static ValidationError errorAt(@Nonnull String message, @Nonnull Slice<String> scope) {
-        String scopeStr = "/" + join(scope);
-        return new ValidationError(message, scopeStr);
+    public static ValidationError errorAt(@Nonnull String message, @Nullable Slice<String> scope) {
+        if (scope == null) {
+            return new ValidationError(message, null);
+        } else {
+            String scopeStr = "/" + join(scope);
+            return new ValidationError(message, scopeStr);
+        }
     }
 
     ValidationError(@Nullable String message, @Nullable String scope) {
@@ -45,6 +49,10 @@ public class ValidationError {
 
     @Override
     public String toString() {
-        return String.format("At %s: %s", scope, message);
+        if (scope != null) {
+            return String.format("At %s: %s", scope, message);
+        } else {
+            return message;
+        }
     }
 }

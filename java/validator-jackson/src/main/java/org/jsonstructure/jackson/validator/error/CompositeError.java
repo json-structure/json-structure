@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 public class CompositeError extends ValidationError {
 
     @Nonnull
-    private final List<ValidationError> children;
+    public final List<ValidationError> children;
 
     public CompositeError() {
         children = new ArrayList<>();
@@ -48,9 +48,11 @@ public class CompositeError extends ValidationError {
         StringBuilder builder = new StringBuilder();
         builder.append(children.size());
         builder.append(" errors occurred:\n\n");
-        for (ValidationError error : children) {
-            builder.append(error.toString());
-            builder.append("\n");
+        for (int i = 0; i < children.size(); i++) {
+            builder.append(children.get(i).toString());
+            if (i < (children.size() - 1)) {
+                builder.append("\n");
+            }
         }
         return builder.toString();
     }

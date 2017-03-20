@@ -1,6 +1,7 @@
 package org.jsonstructure.jackson.validator;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
+import org.jsonstructure.jackson.validator.error.EnumError;
 import org.jsonstructure.jackson.validator.error.ValidationError;
 import org.jsonstructure.jackson.validator.loanword.Slice;
 import org.jsonstructure.jackson.validator.simpleregexp.SimpleRegexp;
@@ -238,7 +240,7 @@ public class TypeDecl {
                 errors.add(validateMap(value, structure, scope));
                 break;
             case "union":
-                //errors.add(validateUnion(value, structure, scope));
+                errors.add(validateUnion(value, structure, scope));
                 break;
             default:
                 errors.add(errorAt("Internal error. Unhandled primitive type '" + type + "'", scope));
@@ -637,6 +639,23 @@ public class TypeDecl {
         return errors;
     }
 
+    private ValidationError validateUnion(@Nonnull JsonNode value,
+                                          @Nonnull Structure structure,
+                                          @Nonnull Slice<String> scope) {
+        if (types == null) {
+            return errorAt("union definition is missing required property 'types'", scope);
+        }
+        Map<String, ValidationError> errors = new HashMap<>();
+        for (Map.Entry<String, TypeDecl> entry : types.entrySet()) {
+            ValidationError error = entry.getValue().validateValue(value, structure, scope);
+            if (error == null) {
+                return null;
+            }
+            errors.put(entry.getKey(), error);
+        }
+        return UnionErrors.filterErrors(errors, structure, scope);
+    }
+
     private ValidationError validateFormat(@Nonnull JsonNode value,
                                            @Nonnull Structure structure,
                                            @Nonnull Slice<String> scope) {
@@ -661,7 +680,7 @@ public class TypeDecl {
             return null;
         }
         if (!enumSet.contains(UnifyNumbers.unify(value))) {
-            return errorAt("value not found in 'enum' set", scope);
+            return EnumError.enumError("value not found in 'enum' set", scope);
         }
         return null;
     }

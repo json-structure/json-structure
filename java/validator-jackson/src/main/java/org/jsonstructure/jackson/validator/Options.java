@@ -20,11 +20,19 @@ public class Options {
         NATIVE;
     }
 
-    @Nonnull
-    final Map<String, Format> formats;
+    public enum UnionErrorReport {
+        PRIORITY,
+        ALL
+    }
 
     @Nonnull
-    final RegexFlavor regexFlavor;
+    public Map<String, Format> formats;
+
+    @Nonnull
+    public RegexFlavor regexFlavor;
+
+    @Nonnull
+    public UnionErrorReport unionErrors;
 
     public static final Map<String, Format> DEFAULT_FORMATS;
 
@@ -40,12 +48,14 @@ public class Options {
     }
 
     Options(@Nonnull Map<String, Format> formats,
-            @Nonnull RegexFlavor regexFlavor) {
+            @Nonnull RegexFlavor regexFlavor,
+            @Nonnull UnionErrorReport unionErrors) {
         this.formats = formats;
         this.regexFlavor = regexFlavor;
+        this.unionErrors = unionErrors;
     }
 
     public static Options defaultOpt() {
-        return new Options(DEFAULT_FORMATS, RegexFlavor.STRICT);
+        return new Options(DEFAULT_FORMATS, RegexFlavor.STRICT, UnionErrorReport.PRIORITY);
     }
 }

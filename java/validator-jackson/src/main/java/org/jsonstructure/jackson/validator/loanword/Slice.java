@@ -44,6 +44,10 @@ public class Slice<T> {
         return new Slice<>(newData, total);
     }
 
+    public int length() {
+        return this.length;
+    }
+
     public List<T> toList() {
         return (List<T>) Arrays.asList(data).subList(0, length);
     }

@@ -20,6 +20,8 @@ import org.jsonstructure.jackson.validator.loanword.Result;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -27,6 +29,8 @@ public class TestSuite {
 
     @ClassRule
     public static ErrorCollector collector = new ErrorCollector();
+
+    private static final Logger log = LoggerFactory.getLogger(TestSuite.class);
 
     public static class TestDeclaration {
         @JsonProperty
@@ -76,11 +80,15 @@ public class TestSuite {
                         assertNotNull(structure);
                         for (TestCase testcase : decl.tests) {
                             ValidationError error = structure.validateValue(testcase.data);
-                            if ((error != null) && testcase.valid) {
-                                collector.addError(new Throwable(
-                                        String.format("%s, %s, %s.\nUnexpected object validation error: %s",
-                                                file, decl.description, testcase.description, error)));
-                            } else if ((error == null) && !testcase.valid) {
+                            if (error != null) {
+                                if (testcase.valid) {
+                                    collector.addError(new Throwable(
+                                            String.format("%s, %s, %s.\nUnexpected object validation error: %s",
+                                                    file, decl.description, testcase.description, error)));
+                                } else {
+                                    log.info("{}", error);
+                                }
+                            } else if (!testcase.valid) {
                                 collector.addError(new Throwable(
                                         String.format("%s, %s, %s.\nJSON object validation did not fail.",
                                                 file, decl.description, testcase.description)));
