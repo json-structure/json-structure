@@ -30,78 +30,78 @@ public class TypeDecl {
     // required
 
     @Nullable
-    final String type;
+    public String type;
 
     // properties available to all type declarations
 
     @Nonnull
-    final JsonNode defaultValue;
+    public JsonNode defaultValue;
 
     @Nullable
-    final JsonNode[] enumValues;
+    public JsonNode[] enumValues;
 
     @Nonnull
-    final Set<JsonNode> enumSet = new HashSet<>();
+    public Set<JsonNode> enumSet = new HashSet<>();
 
     // common to primitive types
 
     @Nullable
-    final String format;
+    public String format;
 
     @Nullable
-    final Boolean nullable;
+    public Boolean nullable;
 
     // number
 
     @Nullable
-    final BigDecimal multipleOf;
+    public BigDecimal multipleOf;
 
     @Nullable
-    final BigDecimal minimum;
+    public BigDecimal minimum;
 
     @Nullable
-    final BigDecimal maximum;
+    public BigDecimal maximum;
 
     @Nullable
-    final BigDecimal exclusiveMinimum;
+    public BigDecimal exclusiveMinimum;
 
     @Nullable
-    final BigDecimal exclusiveMaximum;
+    public BigDecimal exclusiveMaximum;
 
     // string
 
     @Nullable
-    final String patternRaw;
+    public String patternRaw;
 
     @Nullable
-    Pattern pattern;
+    public Pattern pattern;
 
     @Nullable
-    final Integer minLength;
+    public Integer minLength;
 
     @Nullable
-    final Integer maxLength;
+    public Integer maxLength;
 
     // struct
 
     @Nullable
-    final Map<String, TypeDecl> fields;
+    public Map<String, TypeDecl> fields;
 
     // array, set, and map types
 
     @Nullable
-    final TypeDecl items;
+    public TypeDecl items;
 
     @Nullable
-    final Integer minItems;
+    public Integer minItems;
 
     @Nullable
-    final Integer maxItems;
+    public Integer maxItems;
 
     // union
 
     @Nullable
-    final Map<String, TypeDecl> types;
+    public Map<String, TypeDecl> types;
 
     TypeDecl(@Nullable String type,
              @Nullable JsonNode defaultValue,
@@ -185,7 +185,7 @@ public class TypeDecl {
     }
 
     @Nullable
-    public ValidationError validate(@Nullable JsonNode value,
+    public ValidationError validateValue(@Nullable JsonNode value,
                                     @Nonnull Structure structure,
                                     @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
@@ -197,7 +197,7 @@ public class TypeDecl {
             if (def == null) {
                 return errorAt("Unknown type '" + type + "'", scope);
             }
-            return def.validate(value, structure, scope);
+            return def.validateValue(value, structure, scope);
         }
         if ((value == null) || value.isNull()) {
             if ((nullable != null) && nullable) {
@@ -424,13 +424,13 @@ public class TypeDecl {
                 } else if (!enumSet.add(value)) {
                     errors.add(errorAt("duplicate enum value", iScope));
                 } else {
-                    errors.add(validate(value, structure, iScope));
+                    errors.add(validateValue(value, structure, iScope));
                 }
             }
         }
         if (!defaultValue.isMissingNode()) {
             Slice<String> newScope = scope.append("default");
-            errors.add(validate(defaultValue, structure, newScope));
+            errors.add(validateValue(defaultValue, structure, newScope));
         }
         if (fields != null) {
             for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
@@ -538,7 +538,7 @@ public class TypeDecl {
             JsonNode child = obj.get(key);
             if (child != null) {
                 Slice<String> newScope = scope.append(key);
-                errors.add(decl.validate(child, structure, newScope));
+                errors.add(decl.validateValue(child, structure, newScope));
             } else if (decl.defaultValue.isMissingNode()) {
                 errors.add(errorAt("missing required field '" + key + "'", scope));
             }
@@ -575,7 +575,7 @@ public class TypeDecl {
         for(int i = 0; elements.hasNext(); i++) {
             JsonNode child = elements.next();
             Slice<String> newScope = scope.append(Integer.toString(i));
-            errors.add(items.validate(child, structure, newScope));
+            errors.add(items.validateValue(child, structure, newScope));
         }
         return errors;
     }
@@ -605,7 +605,7 @@ public class TypeDecl {
             if (!unique.add(child)) {
                 errors.add(errorAt("set has duplicate value", newScope));
             } else{
-                errors.add(items.validate(child, structure, newScope));
+                errors.add(items.validateValue(child, structure, newScope));
             }
         }
         return errors;
@@ -632,7 +632,7 @@ public class TypeDecl {
         while (iterator.hasNext()) {
             Map.Entry<String,JsonNode> entry = iterator.next();
             Slice<String> newScope = scope.append(entry.getKey());
-            errors.add(items.validate(entry.getValue(), structure, newScope));
+            errors.add(items.validateValue(entry.getValue(), structure, newScope));
         }
         return errors;
     }

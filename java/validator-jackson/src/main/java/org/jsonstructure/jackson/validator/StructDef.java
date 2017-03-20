@@ -3,7 +3,6 @@ package org.jsonstructure.jackson.validator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -55,14 +54,13 @@ public class StructDef {
     @Nonnull
     public static Result<StructDef, ValidationError> create(@Nonnull InputStream inputStream)
             throws IOException {
-
         ObjectMapper objectMapper = Jackson.OBJECT_MAPPER;
         JsonNode tree = objectMapper.readTree(inputStream);
-        return createNode(tree);
+        return create(tree);
     }
 
     @Nonnull
-    static Result<StructDef, ValidationError> createNode(@Nonnull JsonNode tree) throws IOException {
+    public static Result<StructDef, ValidationError> create(@Nonnull JsonNode tree) throws IOException {
         ValidationError error = Compose.compose(tree);
         if (error != null) {
             return Result.err(error);

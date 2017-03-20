@@ -14,7 +14,9 @@ public class UnifyNumbers {
 
     @Nonnull
     public static JsonNode unify(@Nonnull JsonNode node) {
-        if (node.isBigInteger()) {
+        if (node.isBigDecimal()) {
+            return node;
+        } else if (node.isNumber()) {
             return new DecimalNode(node.decimalValue());
         } else if (node.isObject()) {
             ObjectNode obj = (ObjectNode) node;

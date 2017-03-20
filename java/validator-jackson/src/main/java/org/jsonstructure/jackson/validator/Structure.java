@@ -19,34 +19,57 @@ import static org.jsonstructure.jackson.validator.error.ValidationError.errorAt;
 
 public class Structure {
 
-    @Nonnull
-    final StructDef definition;
+    private static final ValidationError UNINITIALIZED = ValidationError.errorAt("", Slice.empty());
 
     @Nonnull
-    final Options options;
+    public StructDef definition;
 
-    boolean initialized;
+    @Nonnull
+    public Options options;
 
-    ValidationError initError;
+    @Nullable
+    public ValidationError structureError;
 
-    Structure(@Nonnull StructDef definition, @Nonnull Options options) {
+    public Structure(@Nonnull StructDef definition, @Nonnull Options options) {
         this.definition = definition;
         this.options = options;
+        this.structureError = UNINITIALIZED;
     }
 
     @Nonnull
     public static Result<Structure, ValidationError> create(@Nonnull InputStream inputStream,
-                                                            @Nonnull Options options)
-            throws IOException {
+                                                            @Nonnull Options options) throws IOException {
         Result<StructDef, ValidationError> child = StructDef.create(inputStream);
         return buildStructure(child, options);
     }
 
     @Nonnull
-    static Result<Structure, ValidationError> createNode(@Nonnull JsonNode node,
-                                                         @Nonnull Options options) throws IOException {
-        Result<StructDef, ValidationError> child = StructDef.createNode(node);
+    public static Result<Structure, ValidationError> create(@Nonnull JsonNode node,
+                                                            @Nonnull Options options) throws IOException {
+        Result<StructDef, ValidationError> child = StructDef.create(node);
         return buildStructure(child, options);
+    }
+
+    @Nullable
+    public ValidationError validateValue(InputStream data) throws IOException {
+        ObjectMapper mapper = Jackson.OBJECT_MAPPER;
+        JsonNode node = mapper.readTree(data);
+        return validateValue(node);
+    }
+
+    @Nullable
+    public ValidationError validateValue(@Nonnull JsonNode node) {
+        ValidationError error = structureError;
+        if (error == UNINITIALIZED) {
+            error = validateStructure();
+        }
+        if (error != null) {
+            return error;
+        }
+        if (definition.main == null) {
+            return errorAt("JSON structure is missing required 'main' declaration", Slice.empty());
+        }
+        return definition.main.validateValue(node, this, Slice.empty());
     }
 
     private static Result<Structure, ValidationError> buildStructure(@Nonnull Result<StructDef, ValidationError> child,
@@ -65,16 +88,9 @@ public class Structure {
         return Result.ok(structure);
     }
 
-    public void reset() {
-        initialized = false;
-    }
-
     public ValidationError validateStructure() {
-        if (!initialized) {
-            initError = doValidateStructure();
-            initialized = true;
-        }
-        return initError;
+        structureError = doValidateStructure();
+        return structureError;
     }
 
     @Nullable
@@ -138,25 +154,6 @@ public class Structure {
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateEmbedded(this, scope));
         return errors.simplify();
-    }
-
-    @Nullable
-    public ValidationError validate(InputStream data) throws IOException {
-        ObjectMapper mapper = Jackson.OBJECT_MAPPER;
-        JsonNode node = mapper.readTree(data);
-        return validateNode(node);
-    }
-
-    @Nullable
-    ValidationError validateNode(@Nonnull JsonNode node) {
-        ValidationError error = validateStructure();
-        if (error != null) {
-            return error;
-        }
-        if (definition.main == null) {
-            return errorAt("JSON structure is missing required 'main' declaration", Slice.empty());
-        }
-        return definition.main.validate(node, this, Slice.empty());
     }
 
 }

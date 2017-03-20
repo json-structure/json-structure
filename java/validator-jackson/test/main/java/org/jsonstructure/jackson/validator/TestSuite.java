@@ -3,6 +3,7 @@ package org.jsonstructure.jackson.validator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -61,7 +62,7 @@ public class TestSuite {
                 ObjectMapper mapper = Jackson.OBJECT_MAPPER;
                 TestDeclaration[] decls = mapper.readValue(inputStream, mapper.getTypeFactory().constructArrayType(TestDeclaration.class));
                 for (TestDeclaration decl : decls) {
-                    Result<Structure, ValidationError> result = Structure.createNode(decl.structure, Options.defaultOpt());
+                    Result<Structure, ValidationError> result = Structure.create(decl.structure, Options.defaultOpt());
                     if (result.isError() && decl.valid) {
                         collector.addError(new Throwable(
                                 String.format("%s, %s.\nUnexpected JSON structure validation error: %s",
@@ -74,7 +75,7 @@ public class TestSuite {
                         Structure structure = result.getOk();
                         assertNotNull(structure);
                         for (TestCase testcase : decl.tests) {
-                            ValidationError error = structure.validateNode(testcase.data);
+                            ValidationError error = structure.validateValue(testcase.data);
                             if ((error != null) && testcase.valid) {
                                 collector.addError(new Throwable(
                                         String.format("%s, %s, %s.\nUnexpected object validation error: %s",
@@ -108,7 +109,9 @@ public class TestSuite {
     @Test
     public void testSuite() throws IOException, URISyntaxException {
         ClassLoader classLoader = getClass().getClassLoader();
-        Path root = Paths.get(classLoader.getResource("testsuite").toURI());
+        URL testsuite = classLoader.getResource("testsuite");
+        assertNotNull(testsuite);
+        Path root = Paths.get(testsuite.toURI());
         System.out.println(root);
         Files.walkFileTree(root, new TestCaseVisitor());
     }
