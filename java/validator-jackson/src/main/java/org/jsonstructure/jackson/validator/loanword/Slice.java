@@ -36,7 +36,7 @@ public class Slice<T> {
         Object[] newData = data;
         int total = length + elements.length;
         if (total > data.length) {
-            int newSize = (total *  3) / 2 + 1;
+            int newSize = (total * 3) / 2 + 1;
             newData = new Object[newSize];
             System.arraycopy(data, 0, newData, 0, length);
         }

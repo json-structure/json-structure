@@ -186,8 +186,8 @@ public class TypeDecl {
 
     @Nullable
     public ValidationError validateValue(@Nullable JsonNode value,
-                                    @Nonnull Structure structure,
-                                    @Nonnull Slice<String> scope) {
+                                         @Nonnull Structure structure,
+                                         @Nonnull Slice<String> scope) {
         CompositeError errors = new CompositeError();
         if ((type == null) || (type.length() == 0)) {
             return errorAt("missing required property 'type'", scope);
@@ -306,7 +306,7 @@ public class TypeDecl {
         if ((pattern != null) && structure.options.regexFlavor == Options.RegexFlavor.STRICT) {
             String error = SimpleRegexp.accept(pattern.pattern());
             if (error != null) {
-                errors.add(errorAt("'pattern' expression is not cross-platform. "+
+                errors.add(errorAt("'pattern' expression is not cross-platform. " +
                         "Consider the NativeRegex option. " + error, scope));
             }
         }
@@ -381,7 +381,7 @@ public class TypeDecl {
 
     @Nullable
     public ValidationError validateFormatTypeDecl(@Nonnull Structure structure, @Nonnull Slice<String> scope) {
-        assert(type != null);
+        assert (type != null);
         if (format == null) {
             return null;
         }
@@ -572,7 +572,7 @@ public class TypeDecl {
             errors.add(errorAt(String.format("size %d of array is greater than maximum items %s", arr.size(), maxItems), scope));
         }
         Iterator<JsonNode> elements = arr.elements();
-        for(int i = 0; elements.hasNext(); i++) {
+        for (int i = 0; elements.hasNext(); i++) {
             JsonNode child = elements.next();
             Slice<String> newScope = scope.append(Integer.toString(i));
             errors.add(items.validateValue(child, structure, newScope));
@@ -599,12 +599,12 @@ public class TypeDecl {
         }
         HashSet<JsonNode> unique = new HashSet<>();
         Iterator<JsonNode> elements = arr.elements();
-        for(int i = 0; elements.hasNext(); i++) {
+        for (int i = 0; elements.hasNext(); i++) {
             JsonNode child = elements.next();
             Slice<String> newScope = scope.append(Integer.toString(i));
             if (!unique.add(child)) {
                 errors.add(errorAt("set has duplicate value", newScope));
-            } else{
+            } else {
                 errors.add(items.validateValue(child, structure, newScope));
             }
         }
@@ -628,9 +628,9 @@ public class TypeDecl {
         if (maxItems != null && obj.size() > maxItems) {
             errors.add(errorAt(String.format("size %d of map is greater than maximum items %s", obj.size(), maxItems), scope));
         }
-        Iterator<Map.Entry<String,JsonNode>> iterator = obj.fields();
+        Iterator<Map.Entry<String, JsonNode>> iterator = obj.fields();
         while (iterator.hasNext()) {
-            Map.Entry<String,JsonNode> entry = iterator.next();
+            Map.Entry<String, JsonNode> entry = iterator.next();
             Slice<String> newScope = scope.append(entry.getKey());
             errors.add(items.validateValue(entry.getValue(), structure, newScope));
         }
@@ -647,7 +647,7 @@ public class TypeDecl {
         if (formatDecl == null) {
             return errorAt("unrecognized format '" + format + "'", scope);
         }
-        assert(type != null);
+        assert (type != null);
         String msg = formatDecl.apply(value, type);
         if (msg != null) {
             return errorAt(msg, scope);
@@ -665,7 +665,6 @@ public class TypeDecl {
         }
         return null;
     }
-
 
 
 }

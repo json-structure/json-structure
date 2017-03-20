@@ -76,10 +76,10 @@ public class Structure {
                                                                      @Nonnull Options options) {
         if (child.isError()) {
             // Silence false positive NPE inspection
-            assert(child.getErr() != null);
+            assert (child.getErr() != null);
             return Result.err(child.getErr());
         }
-        assert(child.getOk() != null);
+        assert (child.getOk() != null);
         Structure structure = new Structure(child.getOk(), options);
         ValidationError error = structure.validateStructure();
         if (error != null) {
@@ -136,7 +136,7 @@ public class Structure {
             Slice<String> scope = Slice.create("types", entry.getKey());
             errors.add(entry.getValue().validateDecl(this, scope));
         }
-        assert(definition.main != null);
+        assert (definition.main != null);
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateDecl(this, scope));
         return errors.simplify();
@@ -150,7 +150,7 @@ public class Structure {
             Slice<String> scope = Slice.create("types", entry.getKey());
             errors.add(entry.getValue().validateEmbedded(this, scope));
         }
-        assert(definition.main != null);
+        assert (definition.main != null);
         Slice<String> scope = Slice.create("main");
         errors.add(definition.main.validateEmbedded(this, scope));
         return errors.simplify();

@@ -3,7 +3,7 @@ package org.jsonstructure.jackson.validator.loanword;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class Result<T,E> {
+public class Result<T, E> {
 
     @Nullable
     private final T ok;
@@ -11,17 +11,17 @@ public class Result<T,E> {
     @Nullable
     private final E err;
 
-    public static<T,E> Result<T, E> ok(@Nullable T value) {
+    public static <T, E> Result<T, E> ok(@Nullable T value) {
         return new Result<>(value, null);
     }
 
-    public static<T,E> Result<T, E> err(@Nonnull E error) {
+    public static <T, E> Result<T, E> err(@Nonnull E error) {
         return new Result<>(null, error);
     }
 
 
     Result(@Nullable T ok, @Nullable E err) {
-        assert((ok == null) || (err == null));
+        assert ((ok == null) || (err == null));
         this.ok = ok;
         this.err = err;
     }

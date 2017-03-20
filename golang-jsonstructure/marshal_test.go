@@ -130,13 +130,13 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 	if err != nil {
 		t.Error("Unmarshal error", err)
 	}
-	if structure.definition.Types["foo"].MultipleOf == nil {
+	if structure.Definition.Types["foo"].MultipleOf == nil {
 		t.Error("Composition failure")
 	}
-	if !structure.definition.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
+	if !structure.Definition.Types["foo"].MultipleOf.Equal(decimal.NewFromFloat(4.0)) {
 		t.Error("Composition failure")
 	}
-	if structure.definition.Types["foo"].Type != "number" {
+	if structure.Definition.Types["foo"].Type != "number" {
 		t.Error("Composition failure")
 	}
 }
@@ -247,14 +247,14 @@ func TestMarshalStructureString(t *testing.T) {
 	var result JSONStructureDefinition
 	var data []byte
 	s1 := EmptyJSONStructure()
-	s1.definition.Main = &TypeDecl{}
-	s1.definition.Main.Type = "string"
-	s1.definition.Main.Pattern = regexp.MustCompile("[0-9]+")
+	s1.Definition.Main = &TypeDecl{}
+	s1.Definition.Main.Type = "string"
+	s1.Definition.Main.Pattern = regexp.MustCompile("[0-9]+")
 	err := s1.ValidateStructure()
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}
-	data, err = json.MarshalIndent(s1.definition, "", "  ")
+	data, err = json.MarshalIndent(s1.Definition, "", "  ")
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}
@@ -272,16 +272,16 @@ func TestMarshalStructureInteger(t *testing.T) {
 	var data []byte
 	dec, _ := decimal.NewFromString("2")
 	s1 := EmptyJSONStructure()
-	s1.definition.Main = &TypeDecl{}
-	s1.definition.Main.Type = "integer"
-	s1.definition.Main.MultipleOf = &dec
-	s1.definition.Main.Minimum = &dec
-	s1.definition.Main.Maximum = &dec
+	s1.Definition.Main = &TypeDecl{}
+	s1.Definition.Main.Type = "integer"
+	s1.Definition.Main.MultipleOf = &dec
+	s1.Definition.Main.Minimum = &dec
+	s1.Definition.Main.Maximum = &dec
 	err := s1.ValidateStructure()
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}
-	data, err = json.MarshalIndent(s1.definition, "", "  ")
+	data, err = json.MarshalIndent(s1.Definition, "", "  ")
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}
@@ -299,15 +299,15 @@ func TestMarshalStructureInteger(t *testing.T) {
 		t.Error("Marshal failure")
 	}
 	s2 := EmptyJSONStructure()
-	s2.definition.Main = &TypeDecl{}
-	s2.definition.Main.Type = "integer"
-	s2.definition.Main.ExclusiveMinimum = &dec
-	s2.definition.Main.ExclusiveMaximum = &dec
+	s2.Definition.Main = &TypeDecl{}
+	s2.Definition.Main.Type = "integer"
+	s2.Definition.Main.ExclusiveMinimum = &dec
+	s2.Definition.Main.ExclusiveMaximum = &dec
 	err = s2.ValidateStructure()
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}
-	data, err = json.MarshalIndent(s2.definition, "", "  ")
+	data, err = json.MarshalIndent(s2.Definition, "", "  ")
 	if err != nil {
 		t.Error("Unexpected error ", err)
 	}

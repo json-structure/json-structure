@@ -22,7 +22,7 @@ func TestBootstrap(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error marshalling JSON Structure ", err)
 	}
-	err = structure.Validate(transform)
+	err = structure.ValidateValue(transform)
 	if err != nil {
 		t.Fatal("Error validating JSON Structure using JSON Structure ", err)
 	}

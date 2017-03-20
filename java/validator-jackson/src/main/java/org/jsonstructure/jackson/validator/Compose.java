@@ -138,7 +138,7 @@ public class Compose {
     public static ValidationError compose(JsonNode shellNode) {
         CompositeError errors = new CompositeError();
         if (!shellNode.isObject()) {
-             return errorAt("root object must be a JSON object", Slice.empty());
+            return errorAt("root object must be a JSON object", Slice.empty());
         }
         ObjectNode shell = (ObjectNode) shellNode;
         JsonNode typesNode = shell.get("types");
@@ -163,7 +163,7 @@ public class Compose {
         ObjectNode fragments = (ObjectNode) fragmentsNode;
         Set<String> dupls = intersection(types, fragments);
         if (dupls.size() > 0) {
-           return errorAt("Duplicate keys across 'types' and 'fragments': " + dupls, Slice.empty());
+            return errorAt("Duplicate keys across 'types' and 'fragments': " + dupls, Slice.empty());
         }
         Iterator<Map.Entry<String, JsonNode>> iterator = fragments.fields();
         while (iterator.hasNext()) {

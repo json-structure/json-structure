@@ -8,7 +8,7 @@ import (
 )
 
 func unionFilterErrors(errs map[string]error, structure *JSONStructure, scope []string) error {
-	if structure.options.UnionError == AllUnionReport {
+	if structure.Options.UnionError == AllUnionReport {
 		return unionAllErrors(errs)
 	}
 	return unionPriorityErrors(errs, structure, scope)

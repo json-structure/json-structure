@@ -33,10 +33,10 @@ public class HostnameFormat implements Format {
         for (int i = 0; i < components.length; i++) {
             String label = components[i];
             if (label.length() < 1) {
-                return String.format("label %d of hostname is 0 characters", i+1);
+                return String.format("label %d of hostname is 0 characters", i + 1);
             }
             if (label.length() > 63) {
-                return String.format("label %d of hostname > 63 characters", i+1);
+                return String.format("label %d of hostname > 63 characters", i + 1);
             }
         }
         Matcher matcher = ILLEGAL_LABEL_CHARS.matcher(str);

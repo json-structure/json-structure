@@ -1,13 +1,17 @@
 package jsonstructure
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+)
 
 type JSONStructure struct {
-	definition JSONStructureDefinition
-	options    JSONStructureOptions
-	init       bool
-	initErr    error
+	Definition JSONStructureDefinition
+	Options    JSONStructureOptions
+	StructErr  error
 }
+
+var errNotInit = errors.New("")
 
 type JSONStructureDefinition struct {
 	Title       string                     `json:"title"`
@@ -20,10 +24,9 @@ type JSONStructureDefinition struct {
 
 func EmptyJSONStructure() *JSONStructure {
 	return &JSONStructure{
-		definition: JSONStructureDefinition{},
-		options:    DefaultOptions(),
-		init:       false,
-		initErr:    nil,
+		Definition: JSONStructureDefinition{},
+		Options:    DefaultOptions(),
+		StructErr:  errNotInit,
 	}
 }
 
@@ -34,10 +37,9 @@ func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStruct
 		return nil, err
 	}
 	result := JSONStructure{
-		definition: definition,
-		options:    options,
-		init:       false,
-		initErr:    nil,
+		Definition: definition,
+		Options:    options,
+		StructErr:  errNotInit,
 	}
 	err = result.ValidateStructure()
 	if err != nil {
@@ -47,5 +49,5 @@ func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStruct
 }
 
 func (structure *JSONStructure) JSONMarshalDefinition() ([]byte, error) {
-	return json.Marshal(structure.definition)
+	return json.Marshal(structure.Definition)
 }

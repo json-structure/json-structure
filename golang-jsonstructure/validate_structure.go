@@ -7,15 +7,8 @@ import (
 )
 
 func (structure *JSONStructure) ValidateStructure() error {
-	if !structure.init {
-		structure.initErr = doValidateStructure(structure)
-		structure.init = true
-	}
-	return structure.initErr
-}
-
-func (structure *JSONStructure) Reset() {
-	structure.init = false
+	structure.StructErr = doValidateStructure(structure)
+	return structure.StructErr
 }
 
 func doValidateStructure(structure *JSONStructure) error {
@@ -36,7 +29,7 @@ func doValidateStructure(structure *JSONStructure) error {
 
 func validateStructureTopLevel(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.definition
+	definition := &structure.Definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		if v == nil {
@@ -56,7 +49,7 @@ func validateStructureTopLevel(structure *JSONStructure) error {
 
 func validateStructureDecls(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.definition
+	definition := &structure.Definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		err := v.ValidateDecl(structure, scope)
@@ -70,7 +63,7 @@ func validateStructureDecls(structure *JSONStructure) error {
 
 func validateEmbeddedObjects(structure *JSONStructure) error {
 	var errs error
-	definition := &structure.definition
+	definition := &structure.Definition
 	for k, v := range definition.Types {
 		scope := []string{"types", k}
 		err := v.ValidateEmbedded(structure, scope)

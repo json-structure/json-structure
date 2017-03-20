@@ -11,9 +11,12 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (structure *JSONStructure) Validate(text []byte) error {
+func (structure *JSONStructure) ValidateValue(text []byte) error {
 	var value interface{}
-	err := structure.ValidateStructure()
+	err := structure.StructErr
+	if err == errNotInit {
+		err = structure.ValidateStructure()
+	}
 	if err != nil {
 		return err
 	}
@@ -24,20 +27,20 @@ func (structure *JSONStructure) Validate(text []byte) error {
 	if err != nil {
 		return err
 	}
-	return structure.definition.Main.Validate(value, structure, nil)
+	return structure.Definition.Main.ValidateValue(value, structure, nil)
 }
 
-func (td *TypeDecl) Validate(value interface{}, structure *JSONStructure, scope []string) error {
+func (td *TypeDecl) ValidateValue(value interface{}, structure *JSONStructure, scope []string) error {
 	var errs error
 	name := td.Type
 
 	if !PrimitiveTypes[name] {
-		def := structure.definition.Types[name]
+		def := structure.Definition.Types[name]
 		if def == nil {
 			err := fmt.Errorf("Unknown type '%s'", name)
 			return errorAt(err, scope)
 		}
-		return def.Validate(value, structure, scope)
+		return def.ValidateValue(value, structure, scope)
 	}
 
 	if value == nil {
@@ -185,7 +188,7 @@ func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 	var err error
 	errs := make(map[string]error)
 	for k, decl := range td.Types {
-		err = decl.Validate(value, structure, scope)
+		err = decl.ValidateValue(value, structure, scope)
 		if err == nil {
 			return nil
 		}
@@ -205,7 +208,7 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		child, ok2 := obj[name]
 		if ok2 {
 			newscope := append(scope, name)
-			err := decl.Validate(child, structure, newscope)
+			err := decl.ValidateValue(child, structure, newscope)
 			errs = multierror.Append(errs, err)
 		} else if len(decl.DefaultRaw) == 0 {
 			err := fmt.Errorf(`missing required field "%s"`, name)
@@ -242,7 +245,7 @@ func validateArray(td *TypeDecl, value interface{}, structure *JSONStructure, sc
 	}
 	for i, val := range arr {
 		newscope := append(scope, strconv.Itoa(i))
-		err := td.Items.Validate(val, structure, newscope)
+		err := td.Items.ValidateValue(val, structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
@@ -277,7 +280,7 @@ func validateSet(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 			err = errorAt(err, newscope)
 			errs = multierror.Append(errs, err)
 		} else {
-			err = td.Items.Validate(val, structure, newscope)
+			err = td.Items.ValidateValue(val, structure, newscope)
 			errs = multierror.Append(errs, err)
 		}
 	}
@@ -303,7 +306,7 @@ func validateMap(td *TypeDecl, value interface{}, structure *JSONStructure, scop
 	}
 	for k, v := range obj {
 		newscope := append(scope, k)
-		err := td.Items.Validate(v, structure, newscope)
+		err := td.Items.ValidateValue(v, structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs
@@ -314,7 +317,7 @@ func validateFormat(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		return nil
 	}
 	name := *td.Format
-	format := structure.options.Formats[name]
+	format := structure.Options.Formats[name]
 	if format == nil {
 		err := fmt.Errorf(`unknown format "%s"`, name)
 		err = errorAt(err, scope)

@@ -142,7 +142,7 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 		return errorAt(err, scope)
 	}
 	pf := PermissibleFields[td.Type]
-	decl := structure.definition.Types[td.Type]
+	decl := structure.Definition.Types[td.Type]
 	if pf == nil && decl == nil {
 		err := fmt.Errorf("Unknown type '%s'", td.Type)
 		return errorAt(err, scope)
@@ -194,7 +194,7 @@ func permissible(name string, typ string, fields map[string]bool, observed bool,
 
 func detectTypeAliasCycle(structure *JSONStructure, td *TypeDecl, prev map[string]bool) error {
 	name := td.Type
-	decl := structure.definition.Types[td.Type]
+	decl := structure.Definition.Types[td.Type]
 	if prev[name] {
 		keys := keysSet(prev)
 		return fmt.Errorf("Type alias cycle detected %v", keys)
@@ -308,7 +308,7 @@ func validateStringTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 			err = fmt.Errorf("'pattern' expression. %s", err)
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)
-		} else if structure.options.Regex == StrictRegex {
+		} else if structure.Options.Regex == StrictRegex {
 			err = simpleregexp.Accept(*td.PatternRaw)
 			if err != nil {
 				err = fmt.Errorf("'pattern' expression is not cross-platform. "+
@@ -399,7 +399,7 @@ func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 		return nil
 	}
 	name := *td.Format
-	format := structure.options.Formats[name]
+	format := structure.Options.Formats[name]
 	if format == nil {
 		err := fmt.Errorf(`unknown format "%s"`, name)
 		err = errorAt(err, scope)
@@ -446,7 +446,7 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 				err = errorAt(err, iScope)
 				errs = multierror.Append(errs, err)
 			} else {
-				err = td.Validate(value, structure, iScope)
+				err = td.ValidateValue(value, structure, iScope)
 				if err != nil {
 					errs = multierror.Append(errs, err)
 				}
@@ -463,7 +463,7 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 			err = errorAt(err, newscope)
 			errs = multierror.Append(errs, err)
 		} else {
-			err = td.Validate(td.Default, structure, newscope)
+			err = td.ValidateValue(td.Default, structure, newscope)
 			if err != nil {
 				errs = multierror.Append(errs, err)
 			}

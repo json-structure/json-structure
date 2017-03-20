@@ -20,7 +20,7 @@ public class UnifyNumbers {
             return new DecimalNode(node.decimalValue());
         } else if (node.isObject()) {
             ObjectNode obj = (ObjectNode) node;
-            Iterator<Map.Entry<String,JsonNode>> iterator = obj.fields();
+            Iterator<Map.Entry<String, JsonNode>> iterator = obj.fields();
             while (iterator.hasNext()) {
                 Map.Entry<String, JsonNode> next = iterator.next();
                 next.setValue(unify(next.getValue()));

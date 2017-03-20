@@ -39,7 +39,7 @@ func TestSuite(t *testing.T) {
 				continue
 			}
 			structure := EmptyJSONStructure()
-			err = json.Unmarshal(suite.Structure, &structure.definition)
+			err = json.Unmarshal(suite.Structure, &structure.Definition)
 			if err == nil {
 				err = structure.ValidateStructure()
 			}
@@ -54,7 +54,7 @@ func TestSuite(t *testing.T) {
 				continue
 			}
 			for _, test := range suite.Tests {
-				err = structure.Validate(test.Data)
+				err = structure.ValidateValue(test.Data)
 				if err != nil && test.Valid {
 					t.Errorf("Unexpected object validation error %s, %s, %s, %s", name, suite.Description, test.Description, err)
 				} else if err != nil {
