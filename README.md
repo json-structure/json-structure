@@ -144,6 +144,19 @@ are not required to be valid type definitions so they cannot be
 used in the types section unless they are used in a compose
 property.
 
+## A Larger Example
+
+A JSON Structure specification for JSON Structures
+[is available](https://github.com/json-structure/json-structure/blob/master/specification/json-structure.json).
+Notice how the "\u0ADD" property is nested to facilitate
+the reuse of declarations. The specification is a little longer
+than 250 lines. The [expanded version](https://github.com/json-structure/json-structure/blob/master/specification/json-structure-composed.json) with composition sections expanded to their full form is 610 lines.
+
+As with more specification languages, not all constraints of a valid
+JSON Structure can be described with a JSON structure. The goal
+is to describe a significant amount of the semantics and rely
+on each application to fill in the missing pieces.
+
 ## Primitive Types
 
 JSON Structure supports the following primitive types.
@@ -160,25 +173,6 @@ JSON Structure supports the following primitive types.
 | set     | Collection type. |
 | map     | Collection type. |
 | union   | union over types |
-
-## Declaration Names
-
-A type name and a fragment name cannot have the same name.
-Types and fragments cannot have the name of primitive types.
-A JSON Structure validator must check for cycles in 'compose'
-properties and report an error when cycles are detected.
-
-The following is valid.
-
-```
-   "types": {
-        "foo": { "type": "bar" }
-   }
-```
-
-"foo" is defined as a type alias for "bar". A JSON Structure
-validator must check for cycles in type aliasing and report
-an error when cycles are detected.
 
 ## Type Declarations
 
@@ -269,6 +263,23 @@ provide an [ANTLRv4 Grammar](simpleregexp/SimpleRegexp.g4)
 to implement this requirement. A JSON Structure validator
 may provide an option to parse the JSON Structure with
 the host language's native regular expression dialect.
+
+## Declarations and Cycles
+
+A type declaration and a fragment declaration cannot have the same name.
+Types and fragments cannot have the name of primitive types.
+
+A JSON Structure validator must check for cycles in 'compose'
+properties and report an error when compose cycles are detected.
+A JSON Structure validator must check for cycles in type
+aliasing and report an error when type cycles are detected.
+This is an example of a type alias.
+
+```
+   "types": {
+        "foo": { "type": "bar" }
+   }
+```
 
 ## Contributing
 
