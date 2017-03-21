@@ -165,7 +165,7 @@ JSON Structure supports the following primitive types.
 | -----   |  ----------- |
 | boolean | true or false |
 | integer | mathematical integer  |
-| number  | JSON number (rational number) |
+| number  | JSON number (mathematical rational number) |
 | string  | JSON string |
 | json    | Raw json values. |
 | struct  | structure or record |
