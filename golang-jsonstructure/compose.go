@@ -137,6 +137,14 @@ func doCompose(target interface{},
 	return nil
 }
 
+func removeNilValues(m map[string]interface{}) {
+	for k, v := range m {
+		if v == nil {
+			delete(m, k)
+		}
+	}
+}
+
 func Compose(shell map[string]interface{}) error {
 	var typ, frag map[string]interface{}
 	var ok bool
@@ -165,6 +173,8 @@ func Compose(shell map[string]interface{}) error {
 	if errs != nil {
 		return errs
 	}
+	removeNilValues(typ)
+	removeNilValues(frag)
 	dupls := intersection(typ, frag)
 	if len(dupls) > 0 {
 		err = fmt.Errorf("Duplicate keys across 'types' and 'fragments': %v", dupls)

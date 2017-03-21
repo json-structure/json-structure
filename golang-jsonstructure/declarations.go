@@ -29,15 +29,15 @@ var PrimitiveTypes = map[string]bool{
 type TypeDecl struct {
 	// required
 	Type string `json:"type"`
-	// store RawMessage to distinguish between "nil" and "null"
-	// properties available to all type declarations
+	// common to primitive types
+	Format   *string `json:"format,omitempty"`
+	Nullable *bool   `json:"nullable,omitempty"`
+	Optional *bool   `json:"optional,omitempty"`
+	// store RawMessage to unmarhshal numbers correctly
 	DefaultRaw json.RawMessage   `json:"default,omitempty"`
 	EnumRaw    []json.RawMessage `json:"enum,omitempty"`
 	Default    interface{}       `json:"-"`
 	Enum       sethash           `json:"-"`
-	// common to primitive types
-	Format   *string `json:"format,omitempty"`
-	Nullable *bool   `json:"nullable,omitempty"`
 	// number
 	// decimal library marshals JSON with quotes
 	// (unless terrible hack flag is used)
@@ -68,71 +68,66 @@ type TypeDecl struct {
 	Types map[string]*TypeDecl `json:"types,omitempty"`
 }
 
-var PermissibleFields = map[string]map[string]bool{
-	"boolean": map[string]bool{
-		"format":   true,
-		"nullable": true,
-	},
-	"integer": map[string]bool{
-		"format":           true,
-		"nullable":         true,
-		"multipleOf":       true,
-		"minimum":          true,
-		"maximum":          true,
-		"exclusiveMinimum": true,
-		"exclusiveMaximum": true,
-	},
-	"number": map[string]bool{
-		"format":           true,
-		"nullable":         true,
-		"multipleOf":       true,
-		"minimum":          true,
-		"maximum":          true,
-		"exclusiveMinimum": true,
-		"exclusiveMaximum": true,
-	},
-	"string": map[string]bool{
-		"format":    true,
-		"nullable":  true,
-		"pattern":   true,
-		"minLength": true,
-		"maxLength": true,
-	},
-	"json": map[string]bool{
-		"format":   true,
-		"nullable": true,
-	},
-	"struct": map[string]bool{
-		"format":   true,
-		"nullable": true,
-		"fields":   true,
-	},
-	"array": map[string]bool{
-		"format":   true,
-		"nullable": true,
-		"items":    true,
-		"minItems": true,
-		"maxItems": true,
-	},
-	"set": map[string]bool{
-		"format":   true,
-		"nullable": true,
-		"items":    true,
-		"minItems": true,
-		"maxItems": true,
-	},
-	"map": map[string]bool{
-		"format":   true,
-		"nullable": true,
-		"items":    true,
-		"minItems": true,
-		"maxItems": true,
-	},
-	"union": map[string]bool{
-		"format":   true,
-		"nullable": true,
-		"types":    true,
-	},
+var commonFields = map[string]bool{
+	"enum":     true,
+	"default":  true,
+	"format":   true,
+	"nullable": true,
+	"optional": true,
+}
+
+var PermissibleFields map[string]map[string]bool
+
+func init() {
+	PermissibleFields = map[string]map[string]bool{
+		"boolean": map[string]bool{},
+		"integer": map[string]bool{
+			"multipleOf":       true,
+			"minimum":          true,
+			"maximum":          true,
+			"exclusiveMinimum": true,
+			"exclusiveMaximum": true,
+		},
+		"number": map[string]bool{
+			"multipleOf":       true,
+			"minimum":          true,
+			"maximum":          true,
+			"exclusiveMinimum": true,
+			"exclusiveMaximum": true,
+		},
+		"string": map[string]bool{
+			"pattern":   true,
+			"minLength": true,
+			"maxLength": true,
+		},
+		"json": map[string]bool{},
+		"struct": map[string]bool{
+			"fields": true,
+		},
+		"array": map[string]bool{
+			"items":    true,
+			"minItems": true,
+			"maxItems": true,
+		},
+		"set": map[string]bool{
+			"items":    true,
+			"minItems": true,
+			"maxItems": true,
+		},
+		"map": map[string]bool{
+			"items":    true,
+			"minItems": true,
+			"maxItems": true,
+		},
+		"union": map[string]bool{
+			"types": true,
+		},
+	}
+	for _, m := range PermissibleFields {
+		for k := range commonFields {
+			m[k] = true
+		}
+	}
 }
 
 func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error {
@@ -155,24 +150,27 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 		err := detectTypeAliasCycle(structure, decl, nil)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
-		return errs
 	}
-	e1 := permissible("format", td.Type, pf, td.Format != nil, scope)
-	e2 := permissible("nullable", td.Type, pf, td.Nullable != nil, scope)
-	e3 := permissible("multipleOf", td.Type, pf, td.MultipleOfRaw != nil || td.MultipleOf != nil, scope)
-	e4 := permissible("minimum", td.Type, pf, td.MinimumRaw != nil || td.Minimum != nil, scope)
-	e5 := permissible("maximum", td.Type, pf, td.MaximumRaw != nil || td.Maximum != nil, scope)
-	e6 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimumRaw != nil || td.ExclusiveMinimum != nil, scope)
-	e7 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximumRaw != nil || td.ExclusiveMaximum != nil, scope)
-	e8 := permissible("pattern", td.Type, pf, td.PatternRaw != nil || td.Pattern != nil, scope)
-	e9 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
-	e10 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
-	e11 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
-	e12 := permissible("items", td.Type, pf, td.Items != nil, scope)
-	e13 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
-	e14 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
-	e15 := permissible("types", td.Type, pf, td.Types != nil, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15)
+	e1 := permissible("enum", td.Type, pf, td.EnumRaw != nil || td.Enum != nil, scope)
+	e2 := permissible("default", td.Type, pf, td.DefaultRaw != nil || td.Default != nil, scope)
+	e3 := permissible("format", td.Type, pf, td.Format != nil, scope)
+	e4 := permissible("nullable", td.Type, pf, td.Nullable != nil, scope)
+	e5 := permissible("optional", td.Type, pf, td.Optional != nil, scope)
+	e6 := permissible("multipleOf", td.Type, pf, td.MultipleOfRaw != nil || td.MultipleOf != nil, scope)
+	e7 := permissible("minimum", td.Type, pf, td.MinimumRaw != nil || td.Minimum != nil, scope)
+	e8 := permissible("maximum", td.Type, pf, td.MaximumRaw != nil || td.Maximum != nil, scope)
+	e9 := permissible("exclusiveMinimum", td.Type, pf, td.ExclusiveMinimumRaw != nil || td.ExclusiveMinimum != nil, scope)
+	e10 := permissible("exclusiveMaximum", td.Type, pf, td.ExclusiveMaximumRaw != nil || td.ExclusiveMaximum != nil, scope)
+	e11 := permissible("pattern", td.Type, pf, td.PatternRaw != nil || td.Pattern != nil, scope)
+	e12 := permissible("minLength", td.Type, pf, td.MinLength != nil, scope)
+	e13 := permissible("maxLength", td.Type, pf, td.MaxLength != nil, scope)
+	e14 := permissible("fields", td.Type, pf, td.Fields != nil, scope)
+	e15 := permissible("items", td.Type, pf, td.Items != nil, scope)
+	e16 := permissible("minItems", td.Type, pf, td.MinItems != nil, scope)
+	e17 := permissible("maxItems", td.Type, pf, td.MaxItems != nil, scope)
+	e18 := permissible("types", td.Type, pf, td.Types != nil, scope)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9,
+		e10, e11, e12, e13, e14, e15, e16, e17, e18)
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
@@ -334,6 +332,9 @@ func validateStructTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 		return err
 	}
 	for k, v := range td.Fields {
+		if v == nil {
+			continue
+		}
 		newscope := append(scope, "fields", k)
 		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.Append(errs, err)
@@ -381,12 +382,11 @@ func validateUnionTypeDecl(td *TypeDecl, structure *JSONStructure, scope []strin
 		err := errors.New("missing required property 'types'")
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
-	} else if len(td.Types) == 0 {
-		err := errors.New("'types' must have at least one entry")
-		err = errorAt(err, scope)
-		errs = multierror.Append(errs, err)
 	}
 	for k, v := range td.Types {
+		if v == nil {
+			continue
+		}
 		newscope := append(scope, "types", k)
 		err := v.ValidateDecl(structure, newscope)
 		errs = multierror.Append(errs, err)
@@ -414,7 +414,7 @@ func validateFormatTypeDecl(td *TypeDecl, structure *JSONStructure, scope []stri
 }
 
 func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) error {
-	var errs error
+	var err, errs error
 	// enums must be populated before default is validated
 	if td.EnumRaw != nil {
 		td.Enum = createSet()
@@ -425,7 +425,7 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 			reader := bytes.NewReader(raw)
 			decoder := json.NewDecoder(reader)
 			decoder.UseNumber()
-			err := decoder.Decode(&value)
+			err = decoder.Decode(&value)
 			if err != nil {
 				err = errorAt(err, iScope)
 				errs = multierror.Append(errs, err)
@@ -453,35 +453,45 @@ func (td *TypeDecl) ValidateEmbedded(structure *JSONStructure, scope []string) e
 			}
 		}
 	}
+	newscope := append(scope, "default")
+	defaultDecoded := false
 	if td.DefaultRaw != nil {
-		newscope := append(scope, "default")
 		reader := bytes.NewReader(td.DefaultRaw)
 		decoder := json.NewDecoder(reader)
 		decoder.UseNumber()
-		err := decoder.Decode(&td.Default)
+		err = decoder.Decode(&td.Default)
 		if err != nil {
 			err = errorAt(err, newscope)
 			errs = multierror.Append(errs, err)
 		} else {
-			err = td.ValidateValue(td.Default, structure, newscope)
-			if err != nil {
-				errs = multierror.Append(errs, err)
-			}
+			defaultDecoded = true
+		}
+	}
+	if defaultDecoded || (td.Default != nil) || (td.Optional != nil && *td.Optional) {
+		err = td.ValidateValue(td.Default, structure, newscope)
+		if err != nil {
+			errs = multierror.Append(errs, err)
 		}
 	}
 	for k, v := range td.Fields {
-		newscope := append(scope, "fields", k)
-		err := v.ValidateEmbedded(structure, newscope)
+		if v == nil {
+			continue
+		}
+		newscope = append(scope, "fields", k)
+		err = v.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	for k, v := range td.Types {
-		newscope := append(scope, "types", k)
-		err := v.ValidateEmbedded(structure, newscope)
+		if v == nil {
+			continue
+		}
+		newscope = append(scope, "types", k)
+		err = v.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	if td.Items != nil {
-		newscope := append(scope, "items")
-		err := td.Items.ValidateEmbedded(structure, newscope)
+		newscope = append(scope, "items")
+		err = td.Items.ValidateEmbedded(structure, newscope)
 		errs = multierror.Append(errs, err)
 	}
 	return errs

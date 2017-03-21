@@ -1,51 +1,46 @@
 {
   "title": "JSON Structure meta-structure",
+  "description": "",
+  "imports": null,
   "fragments": {
     "common": {
       "default": {
-        "default": null,
         "nullable": true,
+        "optional": true,
         "type": "json"
       },
       "enum": {
-        "default": null,
         "items": {
           "type": "json"
         },
         "nullable": true,
+        "optional": true,
         "type": "set"
+      },
+      "format": {
+        "nullable": true,
+        "optional": true,
+        "type": "string"
+      },
+      "nullable": {
+        "default": false,
+        "nullable": true,
+        "optional": true,
+        "type": "boolean"
+      },
+      "optional": {
+        "default": false,
+        "nullable": true,
+        "optional": true,
+        "type": "boolean"
       }
     },
     "nonnegative": {
       "minimum": 0
     },
-    "optional": {
-      "default": null,
-      "nullable": true
-    },
-    "primitives": {
-      "default": {
-        "default": null,
-        "nullable": true,
-        "type": "json"
-      },
-      "enum": {
-        "default": null,
-        "items": {
-          "type": "json"
-        },
-        "nullable": true,
-        "type": "set"
-      },
-      "format": {
-        "default": null,
-        "nullable": true,
-        "type": "string"
-      },
-      "nullable": {
-        "default": false,
-        "type": "boolean"
-      }
+    "orNull": {
+      "nullable": true,
+      "optional": true
     }
   },
   "types": {
@@ -54,39 +49,47 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "items": {
           "type": "TypeDecl"
         },
         "maxItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "minItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -102,24 +105,32 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -135,50 +146,58 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "exclusiveMaximum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "exclusiveMinimum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "maximum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "minimum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "multipleOf": {
           "type": "number",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -194,24 +213,32 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -227,39 +254,47 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "items": {
           "type": "TypeDecl"
         },
         "maxItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "minItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -275,50 +310,58 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "exclusiveMaximum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "exclusiveMinimum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "maximum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "minimum": {
           "type": "number",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "multipleOf": {
           "type": "number",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -334,39 +377,47 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "items": {
           "type": "TypeDecl"
         },
         "maxItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "minItems": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -382,42 +433,50 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "maxLength": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "minLength": {
           "type": "integer",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "minimum": 0
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "pattern": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "type": {
           "type": "string",
@@ -432,13 +491,13 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
@@ -451,11 +510,19 @@
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -509,24 +576,32 @@
       "fields": {
         "default": {
           "type": "json",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "enum": {
           "type": "set",
-          "default": null,
           "nullable": true,
+          "optional": true,
           "items": {
             "type": "json"
           }
         },
         "format": {
           "type": "string",
-          "default": null,
-          "nullable": true
+          "nullable": true,
+          "optional": true
         },
         "nullable": {
           "type": "boolean",
+          "nullable": true,
+          "optional": true,
+          "default": false
+        },
+        "optional": {
+          "type": "boolean",
+          "nullable": true,
+          "optional": true,
           "default": false
         },
         "type": {
@@ -546,19 +621,6 @@
     "UserType": {
       "type": "struct",
       "fields": {
-        "default": {
-          "type": "json",
-          "default": null,
-          "nullable": true
-        },
-        "enum": {
-          "type": "set",
-          "default": null,
-          "nullable": true,
-          "items": {
-            "type": "json"
-          }
-        },
         "type": {
           "type": "string"
         }
@@ -570,21 +632,21 @@
     "fields": {
       "description": {
         "type": "string",
-        "default": null,
-        "nullable": true
+        "nullable": true,
+        "optional": true
       },
       "fragments": {
         "type": "map",
-        "default": null,
         "nullable": true,
+        "optional": true,
         "items": {
           "type": "json"
         }
       },
       "imports": {
         "type": "map",
-        "default": null,
         "nullable": true,
+        "optional": true,
         "items": {
           "type": "string"
         }
@@ -594,13 +656,13 @@
       },
       "title": {
         "type": "string",
-        "default": null,
-        "nullable": true
+        "nullable": true,
+        "optional": true
       },
       "types": {
         "type": "map",
-        "default": null,
         "nullable": true,
+        "optional": true,
         "items": {
           "type": "TypeDecl"
         }

@@ -4,30 +4,33 @@
     "nonnegative": {
       "minimum": 0
     },
-    "optional": {
+    "orNull": {
       "nullable": true,
-      "default": null
+      "optional": true
     },
     "common": {
       "default": {
         "type": "json",
-        "\u0ADD": [ "optional" ]
+        "\u0ADD": [ "orNull" ]
       },
       "enum": {
         "type": "set",
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "items": {
           "type": "json"
         }
-      }
-    },
-    "primitives": {
-      "\u0ADD": [ "common" ],
+      },
       "format": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "string"
       },
       "nullable": {
+        "\u0ADD": [ "orNull" ],
+        "type": "boolean",
+        "default": false
+      },
+      "optional": {
+        "\u0ADD": [ "orNull" ],
         "type": "boolean",
         "default": false
       }
@@ -37,7 +40,7 @@
     "Boolean": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "boolean" ]
@@ -47,29 +50,29 @@
     "String": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "string" ]
         },
         "pattern": {
           "type": "string",
-          "\u0ADD": [ "optional" ]
+          "\u0ADD": [ "orNull" ]
         },
         "minLength": {
           "type": "integer",
-          "\u0ADD": [ "optional", "nonnegative" ]
+          "\u0ADD": [ "orNull", "nonnegative" ]
         },
         "maxLength": {
           "type": "integer",
-          "\u0ADD": [ "optional", "nonnegative" ]
+          "\u0ADD": [ "orNull", "nonnegative" ]
         }
       }
     },
     "Json": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "json" ]
@@ -79,30 +82,30 @@
     "Number": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "number" ]
         },
         "multipleOf": {
           "type": "number",
-          "\u0ADD": [ "optional", "nonnegative" ]
+          "\u0ADD": [ "orNull", "nonnegative" ]
         },
         "minimum": {
           "type": "number",
-          "\u0ADD": [ "optional" ]
+          "\u0ADD": [ "orNull" ]
         },
         "maximum": {
           "type": "number",
-          "\u0ADD": [ "optional" ]
+          "\u0ADD": [ "orNull" ]
         },
         "exclusiveMinimum": {
           "type": "number",
-          "\u0ADD": [ "optional" ]
+          "\u0ADD": [ "orNull" ]
         },
         "exclusiveMaximum": {
           "type": "number",
-          "\u0ADD": [ "optional" ]
+          "\u0ADD": [ "orNull" ]
         }
       }
     },
@@ -118,7 +121,7 @@
     "Struct": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "struct" ]
@@ -134,7 +137,7 @@
     "Array": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "array" ]
@@ -144,11 +147,11 @@
         },
         "minItems": {
           "type": "integer",
-          "\u0ADD": [ "optional", "nonnegative" ]
+          "\u0ADD": [ "orNull", "nonnegative" ]
         },
         "maxItems": {
           "type": "integer",
-          "\u0ADD": [ "optional", "nonnegative" ]
+          "\u0ADD": [ "orNull", "nonnegative" ]
         }
       }
     },
@@ -173,7 +176,7 @@
     "Union": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "primitives" ],
+        "\u0ADD": [ "common" ],
         "type": {
           "type": "string",
           "enum": [ "union" ]
@@ -189,7 +192,6 @@
     "UserType": {
       "type": "struct",
       "fields": {
-        "\u0ADD": [ "common" ],
         "type": {
           "type": "string"
         }
@@ -216,29 +218,29 @@
     "type": "struct",
     "fields": {
       "title": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "string"
       },
       "imports": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "map",
         "items": {
           "type": "string"
         }
       },
       "description": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "string"
       },
       "fragments": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "map",
         "items": {
           "type": "json"
         }
       },
       "types": {
-        "\u0ADD": [ "optional" ],
+        "\u0ADD": [ "orNull" ],
         "type": "map",
         "items": {
           "type": "TypeDecl"

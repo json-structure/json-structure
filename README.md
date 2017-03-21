@@ -186,15 +186,16 @@ The remaining properties are optional.
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
 | type     | string | Required. Must be either the name of a primitive type or a name defined in the "types" map. |
-| default  | JSON value | Use this value when none is provided |
 
 **Properties Shared By All Primitive Types**
 
 | Property      | JSON |  Description |
 | ------------- | ---- |  ----------- |
 | format   | string |  Defines additional semantic validation |
-| nullable | boolean|  If true then allow the null value. Default is false. |
-
+| nullable | boolean|  If true then allow the null value. Default is false |
+| optional | boolean | If true then allow the value to be missing. Requires default value |
+| default  | JSON value | Use this value when none is provided. |
+| enum | list of JSON values | Value must be one of the provided elements. Optional |
 
 **Number and Integer Properties**
 
@@ -288,13 +289,6 @@ Version 2. Please open an issue before submitting a pull
 request. We tend to be conservative with new feature requests,
 so opening an issue lets us talk about the proposal before
 you spend the effort writing code.
-
-In general we aren't looking for features that solve one-off
-problems. We prefer a new feature that can solve an entire
-class of problems or multiple classes of problems. An
-example of this design is the "default" property. Not only
-does it provide a value when none is provided. It is
-also used to indicate that a value is optional.
 
 Another source of concern is feature interaction.
 In general there should only be one way to do a thing.

@@ -1,0 +1,78 @@
+[
+  {
+    "description": "null 'types' property",
+    "structure": {
+        "types": null,
+        "main": { "type": "boolean" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "boolean value",
+        "data": true,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "null type declaration",
+    "structure": {
+      "types": {
+        "a": null
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "boolean value",
+        "data": true,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "null struct field",
+    "structure": {
+      "main": { 
+        "type": "struct",
+        "fields": { "foo": null }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "empty struct",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "missing field",
+        "data": { "foo": "bar" },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "null union type",
+    "structure": {
+      "main": {
+        "type": "union",
+        "types": { "foo": null }
+      }
+    },
+    "valid": true,
+    "tests": [
+      {
+        "description": "any value",
+        "data": {},
+        "valid": false
+      },
+      {
+        "description": "any value",
+        "data": "hello world",
+        "valid": false
+      }
+    ]
+  }
+]

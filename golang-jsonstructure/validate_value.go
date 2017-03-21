@@ -187,12 +187,21 @@ func validateString(td *TypeDecl, value interface{}, structure *JSONStructure, s
 func validateUnion(td *TypeDecl, value interface{}, structure *JSONStructure, scope []string) error {
 	var err error
 	errs := make(map[string]error)
+	empty := true
 	for k, decl := range td.Types {
+		if decl == nil {
+			continue
+		}
+		empty = false
 		err = decl.ValidateValue(value, structure, scope)
 		if err == nil {
 			return nil
 		}
 		errs[k] = err
+	}
+	if empty {
+		err = errors.New("union 'types' property is an empty map")
+		return errorAt(err, scope)
 	}
 	return unionFilterErrors(errs, structure, scope)
 }
@@ -205,12 +214,15 @@ func validateStruct(td *TypeDecl, value interface{}, structure *JSONStructure, s
 		return errorAt(err, scope)
 	}
 	for name, decl := range td.Fields {
+		if decl == nil {
+			continue
+		}
 		child, ok2 := obj[name]
 		if ok2 {
 			newscope := append(scope, name)
 			err := decl.ValidateValue(child, structure, newscope)
 			errs = multierror.Append(errs, err)
-		} else if len(decl.DefaultRaw) == 0 {
+		} else if (decl.Optional == nil) || (*decl.Optional == false) {
 			err := fmt.Errorf(`missing required field "%s"`, name)
 			err = errorAt(err, scope)
 			errs = multierror.Append(errs, err)

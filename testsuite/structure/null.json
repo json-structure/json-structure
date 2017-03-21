@@ -1,0 +1,137 @@
+[
+  {
+    "description": "null 'types' property",
+    "structure": {
+        "types": null,
+        "main": { "type": "boolean" }
+    },
+    "valid": true
+  },
+  {
+    "description": "null 'fragments' property",
+    "structure": {
+        "fragments": null,
+        "main": { "type": "boolean" }
+    },
+    "valid": true
+  },
+  {
+    "description": "null type declaration",
+    "structure": {
+      "types": {
+        "a": null
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": true
+  },
+  {
+    "description": "reference to null type declaration",
+    "structure": {
+      "types": {
+        "a": null
+      },
+      "main": { "type": "a" }
+    },
+    "valid": false
+  },  
+  {
+    "description": "null fragment declaration",
+    "structure": {
+      "fragments": {
+        "a": null
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": true
+  },
+  {
+    "description": "reference to null fragment declaration",
+    "structure": {
+      "fragments": {
+        "a": null,
+        "b": {
+          "\u0ADD": [ "a" ]
+        }
+      },
+      "main": { "type": "boolean" }
+    },
+    "valid": false
+  },
+  {
+    "description": "null struct field",
+    "structure": {
+      "main": { 
+        "type": "struct",
+        "fields": { "foo": null }
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "null union type",
+    "structure": {
+      "main": {
+        "type": "union",
+        "types": { "foo": null }
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "null default when nullable is false",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "default": null
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "no default when optional is true",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "optional": true
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "null default when nullable is true",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "default": null,
+        "nullable": true
+      }
+    },
+    "valid": true
+  },
+  {
+    "description": "null properties",
+    "structure": {
+      "main": {
+        "type": "boolean",
+        "format": null,
+        "nullable": null,
+        "enum": null,
+        "multipleOf": null,
+        "minimum": null,
+        "exclusiveMinimum": null,
+        "maximum": null,
+        "exclusiveMaximum": null,
+        "pattern": null,
+        "minLength": null,
+        "maxLength": null,
+        "fields": null,
+        "items": null,
+        "minItems": null,
+        "maxItems": null,
+        "types": null
+      }
+    },
+    "valid": true
+  }
+]

@@ -1,6 +1,8 @@
 package jsonstructure
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
 	"errors"
 )
@@ -49,5 +51,10 @@ func CreateJSONStructure(data []byte, options JSONStructureOptions) (*JSONStruct
 }
 
 func (structure *JSONStructure) JSONMarshalDefinition() ([]byte, error) {
-	return json.Marshal(structure.Definition)
+	var buf bytes.Buffer
+	writer := bufio.NewWriter(&buf)
+	enc := json.NewEncoder(writer)
+	enc.SetIndent("", "  ")
+	err := enc.Encode(structure.Definition)
+	return buf.Bytes(), err
 }

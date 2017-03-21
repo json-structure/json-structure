@@ -6,7 +6,7 @@
         "type": "struct",
         "fields": {
           "foo": { "type": "integer" },
-          "bar": { "type": "string", "nullable": true, "default": null }
+          "bar": { "type": "string", "nullable": true, "optional": true }
         }
       }
     },

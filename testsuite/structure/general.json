@@ -12,16 +12,6 @@
     "valid": false
   },
   {
-    "description": "null type declaration",
-    "structure": {
-      "types": {
-        "a": null
-      },
-      "main": { "type": "boolean" }
-    },
-    "valid": false
-  },
-  {
     "description": "unknown type",
     "structure": {
       "main": { "type": "foo" }
@@ -101,6 +91,58 @@
             "type": "boolean"
           }
         }
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "type alias with optional",
+    "structure": {
+      "types": {
+        "foo": { "type": "integer" }
+      },
+      "main": {
+        "type": "foo",
+        "optional": false
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "type alias with nullable",
+    "structure": {
+      "types": {
+        "foo": { "type": "integer" }
+      },
+      "main": {
+        "type": "foo",
+        "nullable": true
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "type alias with default",
+    "structure": {
+      "types": {
+        "foo": { "type": "integer" }
+      },
+      "main": {
+        "type": "foo",
+        "default": 0
+      }
+    },
+    "valid": false
+  },
+  {
+    "description": "type alias with enum",
+    "structure": {
+      "types": {
+        "foo": { "type": "integer" }
+      },
+      "main": {
+        "type": "foo",
+        "enum": [0, 1, 2]
       }
     },
     "valid": false

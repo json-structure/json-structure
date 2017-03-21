@@ -104,7 +104,7 @@ func TestUnmarshalStructureSuccess(t *testing.T) {
 	}`
 	structure, err := CreateJSONStructure([]byte(text), DefaultOptions())
 	if err != nil {
-		t.Error("Unmarshal error", err)
+		t.Fatal("Unmarshal error", err)
 	}
 	text = `{
 		"fragments": {
