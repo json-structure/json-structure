@@ -172,7 +172,7 @@ JSON Structure supports the following primitive types.
 | array   | sequence of values of the same type |
 | set     | Collection type. |
 | map     | Collection type. |
-| union   | union over types |
+| union   | sum type |
 
 ## Type Declarations
 
@@ -180,7 +180,7 @@ JSON Structures are composed primarily of type declarations.
 Here is a description of the properties that define a
 type declaration. "type" is the only property that is
 required for all type declarations. Some primitive types
-("struct", "array", "union") have required properties.
+("struct", "array", "set", "map", "union") have required properties.
 The remaining properties are optional.
 
 | Property      | JSON |  Description |
