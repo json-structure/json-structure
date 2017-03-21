@@ -167,11 +167,11 @@ JSON Structure supports the following primitive types.
 | integer | mathematical integer  |
 | number  | JSON number (mathematical rational number) |
 | string  | JSON string |
-| json    | Raw json values |
+| json    | raw json values |
 | struct  | structure or record |
 | array   | sequence of values of the same type |
-| set     | Collection type |
-| map     | Collection type |
+| set     | typed collection of unique values |
+| map     | typed associative array of strings to values |
 | union   | sum type |
 
 ## Type Declarations
