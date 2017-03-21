@@ -150,7 +150,7 @@ A JSON Structure specification for JSON Structures
 [is provided](https://github.com/json-structure/json-structure/blob/master/specification/json-structure.json).
 Notice how the "\u0ADD" property is nested to facilitate
 the reuse of declarations. The specification is a little longer
-than 250 lines. The [expanded version](https://github.com/json-structure/json-structure/blob/master/specification/json-structure-composed.json) with composition sections expanded to their full form is 610 lines.
+than 250 lines. The [expanded version](https://github.com/json-structure/json-structure/blob/master/specification/json-structure-composed.json) with composition sections expanded to their full form is 670 lines.
 
 As with more specification languages, not all constraints of a valid
 JSON Structure can be described with a JSON structure. The goal
@@ -167,11 +167,11 @@ JSON Structure supports the following primitive types.
 | integer | mathematical integer  |
 | number  | JSON number (mathematical rational number) |
 | string  | JSON string |
-| json    | Raw json values. |
+| json    | Raw json values |
 | struct  | structure or record |
 | array   | sequence of values of the same type |
-| set     | Collection type. |
-| map     | Collection type. |
+| set     | Collection type |
+| map     | Collection type |
 | union   | sum type |
 
 ## Type Declarations
