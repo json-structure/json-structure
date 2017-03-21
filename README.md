@@ -147,7 +147,7 @@ property.
 ## A Larger Example
 
 A JSON Structure specification for JSON Structures
-[is available](https://github.com/json-structure/json-structure/blob/master/specification/json-structure.json).
+[is provided](https://github.com/json-structure/json-structure/blob/master/specification/json-structure.json).
 Notice how the "\u0ADD" property is nested to facilitate
 the reuse of declarations. The specification is a little longer
 than 250 lines. The [expanded version](https://github.com/json-structure/json-structure/blob/master/specification/json-structure-composed.json) with composition sections expanded to their full form is 610 lines.
