@@ -144,10 +144,10 @@ public class Compose {
         JsonNode typesNode = shell.get("types");
         JsonNode fragmentsNode = shell.get("fragments");
         JsonNode mainNode = shell.get("main");
-        if (typesNode == null) {
+        if ((typesNode == null) || typesNode.isNull()) {
             typesNode = new ObjectNode(Jackson.NODE_FACTORY);
         }
-        if (fragmentsNode == null) {
+        if ((fragmentsNode == null) || fragmentsNode.isNull()) {
             fragmentsNode = new ObjectNode(Jackson.NODE_FACTORY);
         }
         if (!typesNode.isObject()) {
@@ -161,6 +161,8 @@ public class Compose {
         }
         ObjectNode types = (ObjectNode) typesNode;
         ObjectNode fragments = (ObjectNode) fragmentsNode;
+        removeNullValues(types);
+        removeNullValues(fragments);
         Set<String> dupls = intersection(types, fragments);
         if (dupls.size() > 0) {
             return errorAt("Duplicate keys across 'types' and 'fragments': " + dupls, Slice.empty());
@@ -195,6 +197,16 @@ public class Compose {
             errors.add(doCompose(mainNode, types, fragments, prev, scope));
         }
         return errors.simplify();
+    }
+
+    private static void removeNullValues(ObjectNode types) {
+        Iterator<Map.Entry<String, JsonNode>> iterator = types.fields();
+        while (iterator.hasNext()) {
+            JsonNode next = iterator.next().getValue();
+            if (next.isNull()) {
+                iterator.remove();
+            }
+        }
     }
 
     private static Set<String> intersection(ObjectNode a, ObjectNode b) {

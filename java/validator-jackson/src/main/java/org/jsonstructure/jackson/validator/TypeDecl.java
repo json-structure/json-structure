@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.jsonstructure.jackson.validator.error.CompositeError;
@@ -34,7 +35,7 @@ public class TypeDecl {
     @Nullable
     public String type;
 
-    // properties available to all type declarations
+    // common to primitive types
 
     @Nonnull
     public JsonNode defaultValue;
@@ -45,13 +46,14 @@ public class TypeDecl {
     @Nonnull
     public Set<JsonNode> enumSet = new HashSet<>();
 
-    // common to primitive types
-
     @Nullable
     public String format;
 
     @Nullable
     public Boolean nullable;
+
+    @Nullable
+    public Boolean optional;
 
     // number
 
@@ -110,6 +112,7 @@ public class TypeDecl {
              @Nullable JsonNode[] enumValues,
              @Nullable String format,
              @Nullable Boolean nullable,
+             @Nullable Boolean optional,
              @Nullable BigDecimal multipleOf,
              @Nullable BigDecimal minimum,
              @Nullable BigDecimal maximum,
@@ -128,6 +131,7 @@ public class TypeDecl {
         this.enumValues = enumValues;
         this.format = format;
         this.nullable = nullable;
+        this.optional = optional;
         this.multipleOf = multipleOf;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -158,10 +162,16 @@ public class TypeDecl {
             return errorAt("unexpected error. type declaration '" + type + "' shadows primitive type", scope);
         }
         if (decl != null) {
-            return detectTypeAliasCycle(structure, decl, new HashSet<>(), scope);
+            errors.add(detectTypeAliasCycle(structure, decl, new HashSet<>(), scope));
+            pf = PrimitiveTypes.PermissibleFields.USER_DEFINED;
+        } else {
+            errors.add(validateFormatTypeDecl(structure, scope));
         }
         errors.add(permissible("format", type, pf, format != null, scope));
         errors.add(permissible("nullable", type, pf, nullable != null, scope));
+        errors.add(permissible("optional", type, pf, optional != null, scope));
+        errors.add(permissible("default", type, pf, !defaultValue.isMissingNode(), scope));
+        errors.add(permissible("enum", type, pf, enumValues != null || !enumSet.isEmpty(), scope));
         errors.add(permissible("multipleOf", type, pf, multipleOf != null, scope));
         errors.add(permissible("minimum", type, pf, minimum != null, scope));
         errors.add(permissible("maximum", type, pf, maximum != null, scope));
@@ -181,7 +191,6 @@ public class TypeDecl {
         errors.add(validateStructTypeDecl(structure, scope));
         errors.add(validateCollectionTypeDecl(structure, scope));
         errors.add(validateUnionTypeDecl(structure, scope));
-        errors.add(validateFormatTypeDecl(structure, scope));
 
         return errors.simplify();
     }
@@ -334,6 +343,9 @@ public class TypeDecl {
             return errorAt("missing required property 'fields'", scope);
         }
         for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
+            if (entry.getValue() == null) {
+                continue;
+            }
             Slice<String> newScope = scope.append("fields", entry.getKey());
             errors.add(entry.getValue().validateDecl(structure, newScope));
         }
@@ -371,10 +383,11 @@ public class TypeDecl {
         }
         if (types == null) {
             return errorAt("missing required property 'types'", scope);
-        } else if (types.isEmpty()) {
-            return errorAt("'types' must have at least one entry", scope);
         }
         for (Map.Entry<String, TypeDecl> entry : types.entrySet()) {
+            if (entry.getValue() == null) {
+                continue;
+            }
             Slice<String> newScope = scope.append("types", entry.getKey());
             errors.add(entry.getValue().validateDecl(structure, newScope));
         }
@@ -430,18 +443,28 @@ public class TypeDecl {
                 }
             }
         }
-        if (!defaultValue.isMissingNode()) {
+        if (!defaultValue.isMissingNode() || (optional == Boolean.TRUE)) {
+            JsonNode target = defaultValue;
+            if (target.isMissingNode()) {
+                target = NullNode.instance;
+            }
             Slice<String> newScope = scope.append("default");
-            errors.add(validateValue(defaultValue, structure, newScope));
+            errors.add(validateValue(target, structure, newScope));
         }
         if (fields != null) {
             for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
                 Slice<String> newScope = scope.append("fields", entry.getKey());
                 errors.add(entry.getValue().validateEmbedded(structure, newScope));
             }
         }
         if (types != null) {
             for (Map.Entry<String, TypeDecl> entry : types.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
                 Slice<String> newScope = scope.append("types", entry.getKey());
                 errors.add(entry.getValue().validateEmbedded(structure, newScope));
             }
@@ -537,11 +560,14 @@ public class TypeDecl {
         for (Map.Entry<String, TypeDecl> entry : fields.entrySet()) {
             String key = entry.getKey();
             TypeDecl decl = entry.getValue();
+            if (decl == null) {
+                continue;
+            }
             JsonNode child = obj.get(key);
             if (child != null) {
                 Slice<String> newScope = scope.append(key);
                 errors.add(decl.validateValue(child, structure, newScope));
-            } else if (decl.defaultValue.isMissingNode()) {
+            } else if ((decl.optional == null) || (decl.optional == Boolean.FALSE))  {
                 errors.add(errorAt("missing required field '" + key + "'", scope));
             }
         }
@@ -645,13 +671,21 @@ public class TypeDecl {
         if (types == null) {
             return errorAt("union definition is missing required property 'types'", scope);
         }
+        boolean empty = true;
         Map<String, ValidationError> errors = new HashMap<>();
         for (Map.Entry<String, TypeDecl> entry : types.entrySet()) {
+            if (entry.getValue() == null) {
+                continue;
+            }
+            empty = false;
             ValidationError error = entry.getValue().validateValue(value, structure, scope);
             if (error == null) {
                 return null;
             }
             errors.put(entry.getKey(), error);
+        }
+        if (empty) {
+            return errorAt("union 'types' property is an empty map", scope);
         }
         return UnionErrors.filterErrors(errors, structure, scope);
     }

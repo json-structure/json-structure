@@ -15,6 +15,7 @@ public final class TypeDeclBuilder {
     JsonNode[] enumValues;
     String format;
     Boolean nullable;
+    Boolean optional;
     BigDecimal multipleOf;
     BigDecimal minimum;
     BigDecimal maximum;
@@ -56,6 +57,11 @@ public final class TypeDeclBuilder {
 
     public TypeDeclBuilder nullable(Boolean nullable) {
         this.nullable = nullable;
+        return this;
+    }
+
+    public TypeDeclBuilder optional(Boolean optional) {
+        this.optional = optional;
         return this;
     }
 
@@ -131,6 +137,7 @@ public final class TypeDeclBuilder {
                 enumValues,
                 format,
                 nullable,
+                optional,
                 multipleOf,
                 minimum,
                 maximum,

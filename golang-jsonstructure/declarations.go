@@ -150,6 +150,9 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 		err := detectTypeAliasCycle(structure, decl, nil)
 		err = errorAt(err, scope)
 		errs = multierror.Append(errs, err)
+	} else {
+		err := validateFormatTypeDecl(td, structure, scope)
+		errs = multierror.Append(errs, err)
 	}
 	e1 := permissible("enum", td.Type, pf, td.EnumRaw != nil || td.Enum != nil, scope)
 	e2 := permissible("default", td.Type, pf, td.DefaultRaw != nil || td.Default != nil, scope)
@@ -171,13 +174,14 @@ func (td *TypeDecl) ValidateDecl(structure *JSONStructure, scope []string) error
 	e18 := permissible("types", td.Type, pf, td.Types != nil, scope)
 	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6, e7, e8, e9,
 		e10, e11, e12, e13, e14, e15, e16, e17, e18)
+
 	e1 = validateNumberTypeDecl(td, scope)
 	e2 = validateStringTypeDecl(td, structure, scope)
 	e3 = validateStructTypeDecl(td, structure, scope)
 	e4 = validateCollectionTypeDecl(td, structure, scope)
 	e5 = validateUnionTypeDecl(td, structure, scope)
-	e6 = validateFormatTypeDecl(td, structure, scope)
-	errs = multierror.Append(errs, e1, e2, e3, e4, e5, e6)
+	errs = multierror.Append(errs, e1, e2, e3, e4, e5)
+
 	return errs
 }
 

@@ -78,20 +78,22 @@ public class TestSuite {
                     } else if (result.isOK()) {
                         Structure structure = result.getOk();
                         assertNotNull(structure);
-                        for (TestCase testcase : decl.tests) {
-                            ValidationError error = structure.validateValue(testcase.data);
-                            if (error != null) {
-                                if (testcase.valid) {
+                        if (decl.tests != null) {
+                            for (TestCase testcase : decl.tests) {
+                                ValidationError error = structure.validateValue(testcase.data);
+                                if (error != null) {
+                                    if (testcase.valid) {
+                                        collector.addError(new Throwable(
+                                                String.format("%s, %s, %s.\nUnexpected object validation error: %s",
+                                                        file, decl.description, testcase.description, error)));
+                                    } else {
+                                        log.info("{}", error);
+                                    }
+                                } else if (!testcase.valid) {
                                     collector.addError(new Throwable(
-                                            String.format("%s, %s, %s.\nUnexpected object validation error: %s",
-                                                    file, decl.description, testcase.description, error)));
-                                } else {
-                                    log.info("{}", error);
+                                            String.format("%s, %s, %s.\nJSON object validation did not fail.",
+                                                    file, decl.description, testcase.description)));
                                 }
-                            } else if (!testcase.valid) {
-                                collector.addError(new Throwable(
-                                        String.format("%s, %s, %s.\nJSON object validation did not fail.",
-                                                file, decl.description, testcase.description)));
                             }
                         }
                     }

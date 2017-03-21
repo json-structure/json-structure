@@ -43,15 +43,23 @@ public class PrimitiveTypes {
         ARRAY(Arrays.asList("items", "minItems", "maxItems")),
         SET(Arrays.asList("items", "minItems", "maxItems")),
         MAP(Arrays.asList("items", "minItems", "maxItems")),
-        UNION(Collections.singletonList("types"));
+        UNION(Collections.singletonList("types")),
+        USER_DEFINED();
 
         @Nonnull
         private final Set<String> permissible;
 
-        PermissibleFields(@Nonnull List<String> permissable) {
-            this.permissible = new HashSet<>(permissable);
+        PermissibleFields() {
+            this.permissible = Collections.emptySet();
+        }
+
+        PermissibleFields(@Nonnull List<String> permissible) {
+            this.permissible = new HashSet<>(permissible);
             this.permissible.add("format");
             this.permissible.add("nullable");
+            this.permissible.add("optional");
+            this.permissible.add("default");
+            this.permissible.add("enum");
         }
 
         public boolean contains(String value) {
