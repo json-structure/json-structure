@@ -4,9 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.json-structure</groupId>
+        <artifactId>json-structure-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
     <groupId>org.json-structure</groupId>
     <artifactId>json-structure-validator-jackson</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+
 
     <properties>
         <maven.plugin.enforcer.version>1.4.1</maven.plugin.enforcer.version>
@@ -17,40 +23,7 @@
         <dep.apache.commons.validator>1.5.1</dep.apache.commons.validator>
         <dep.antlr4.runtime>4.6</dep.antlr4.runtime>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.plugin.compiler.version}</version>
-                <configuration>
-                    <source>${project.build.targetJdk}</source>
-                    <target>${project.build.targetJdk}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven.plugin.enforcer.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforcer-plugin</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <dependencyConvergence />
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
