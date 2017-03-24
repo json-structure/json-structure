@@ -19,22 +19,22 @@ import org.jsonstructure.jackson.validator.loanword.Result;
 public class StructDef {
 
     @Nullable
-    final String title;
+    public final String title;
 
     @Nullable
-    final String description;
+    public final String description;
 
     @Nonnull
-    final Map<String, String> imports;
+    public final Map<String, String> imports;
 
     @Nonnull
-    final Map<String, JsonNode> fragments;
+    public final Map<String, JsonNode> fragments;
 
     @Nonnull
-    final Map<String, TypeDecl> types;
+    public final Map<String, TypeDecl> types;
 
     @Nullable
-    final TypeDecl main;
+    public final TypeDecl main;
 
     @JsonCreator
     public StructDef(@Nullable @JsonProperty("title") String title,

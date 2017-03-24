@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>validator-jackson</module>
+        <module>jackson-validator</module>
     </modules>
 
     <properties>
@@ -56,7 +56,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.json-structure</groupId>
-                <artifactId>json-structure-validator-jackson</artifactId>
+                <artifactId>json-structure-jackson-validator</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

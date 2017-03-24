@@ -10,14 +10,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.json-structure</groupId>
-    <artifactId>json-structure-validator-jackson</artifactId>
-
+    <artifactId>json-structure-jackson-validator</artifactId>
 
     <properties>
-        <maven.plugin.enforcer.version>1.4.1</maven.plugin.enforcer.version>
-        <maven.plugin.compiler.version>3.5.1</maven.plugin.compiler.version>
-        <project.build.targetJdk>1.8</project.build.targetJdk>
         <dep.jackson.version>2.7.9</dep.jackson.version>
         <dep.jsr305.version>3.0.1</dep.jsr305.version>
         <dep.apache.commons.validator>1.5.1</dep.apache.commons.validator>
