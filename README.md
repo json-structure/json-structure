@@ -5,8 +5,7 @@ It is inspired by, and borrows heavily from,
 [JSON Schema](http://json-schema.org/). Structure has been designed
 to take advantage of host languages with static type systems. Other
 primary design goals include the capacity to compose multiple
-structures with ease, and the relative ease of writing property-based
-generators for QuickCheck-type testing of JSON objects.
+structures with ease.
 
 ## High Level Overview
 
@@ -310,5 +309,6 @@ We aren't. There are many good use cases for JSON Schema. And there
 probably a few things you can do using JSON Schema that you can't
 do using JSON Structure. The JSON Structure project started as
 an exercise in quickly generating property-based generators for
-JSON objects. Along the way we found that we could simplify the
-design if we started from scratch.
+JSON objects (inspired by 
+[Property-based Testing of JSON based Web Services](https://scholar.google.com/scholar?q=Property-based+Testing+of+JSON+based+Web+Services)).
+Along the way we found that we could simplify the design if we started from scratch.
